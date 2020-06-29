@@ -1,0 +1,26 @@
+{
+    "files.encoding": "shiftjis",
+    "files.associations": {
+        "SPR_2C.C": "cpp",
+        "scroll.h": "c",
+        "SCL_FUNC.C": "cpp",
+        "sprite.h": "c",
+        "graphicrefs.h": "c",
+        "SCL_VBLV.C": "cpp",
+        "SCL_FU03.C": "cpp",
+        "SCL_PR07.C": "cpp",
+        "SCL_PR10.C": "cpp",
+        "SCL_PRI.C": "cpp",
+        "print.h": "c",
+        "string.h": "c",
+        "GFS.C": "cpp",
+        "SCL_PR02.C": "cpp",
+        "SCL_PR05.C": "cpp",
+        "DMA_SCU1.C": "cpp",
+        "DMA_SCU0.C": "cpp",
+        "SEGA_MTH.H": "cpp",
+        "PER_X2.C": "cpp",
+        "PER_X1.C": "cpp",
+        "!template.h": "c"
+    }
+}

@@ -1,0 +1,157 @@
+program saturnconv;
+uses
+  SysUtils, VCL.Graphics;
+
+var
+  i,
+  outType, //c file (0) or binary (1)
+  fileCount:
+  Integer;
+  files: array of String;
+type WordMatrix = array of array of Word;
+procedure printHelp;
+begin
+  WriteLn('Usage: SaturnConv [rgb bitmap].bmp [outputfile]');
+  WriteLn('Optional parameters:');
+  WriteLn('-oc or -ob: output to c file or binary (default: c file)');
+end;
+
+procedure outputC(var cFile: TextFile; varName: String; img: WordMatrix);
+var
+  i, j: Integer;
+begin
+  WriteLn(cFile, 'const Uint16 ', varName, '[] = {');
+  for i := 0 to Length(img) - 1 do
+  begin
+    for j := 0 to Length(img[0]) - 1 do
+    begin
+      if (j < Length(img[0]) - 1) or (i < Length(img) - 1) then
+        Write(cFile, img[i][j], ',')
+      else
+        Write(cFile, img[i][j]);
+    end;
+    Write(cFile, #13#10); //new line
+  end;
+  WriteLn(cFile, '};');
+end;
+
+procedure handleImage(input: array of String; outType: Integer);
+var
+  img: TBitmap;
+  line: pByte;
+  saturnImg: WordMatrix; //array holding the converted image
+  //Saturn image format:
+  //0123456789ABCDEF
+  //BBBBBGGGGGRRRRR1
+  i, j, k, count, dimCount: Integer;
+  r, g, b: Word;
+  dimensions: array of Word;
+  outFile: TextFile;
+  varName: String;
+  varNames: array of String;
+begin
+  AssignFile(outFile, 'out.c');
+  ReWrite(outFile);
+  SetLength(dimensions, Length(input) * 2);
+  SetLength(varNames, Length(input));
+  dimCount := 0;
+  for i := 0 to (Length(input) - 1) do
+  begin
+    img := TBitmap.Create;
+    img.LoadFromFile(input[i]);
+    SetLength(saturnImg, img.Height, img.Width);
+    dimensions[dimCount] := img.Width;
+    dimensions[dimCount + 1] := img.Height;
+    dimCount := dimCount + 2;
+
+    for j := 0 to (img.Height - 1) do
+    begin
+      line := pByte(img.ScanLine[j]);
+      k := 0;
+      count := 0;
+      while k < (img.Width * 3) - 1 do
+      begin
+        r := line[k] div 8; //8 bpp to 5 bpp
+        g := line[k + 1] div 8;
+        b := line[k + 2] div 8;
+        //WriteLn('r in: ', line[k], ' out: ', r);
+        //WriteLn('g in: ', line[k + 1], ' out: ', g);
+        //WriteLn('b in: ', line[k + 2], ' out: ', b);
+        if (r > 0) or (g > 0) or (b > 0) then
+          saturnImg[j][count] := ($8000 or b or (g shl 5) or (r shl 10))
+        else
+          saturnImg[j][count] := 0;
+        //WriteLn('out: ', saturnImg[i][count]);
+        k := k + 3;
+        count := count + 1;
+      end;
+    end;
+    if outType = 0 then
+    begin
+      varName := copy(input[i], 0, pos('.', input[i]) - 1);
+      varName := stringreplace(varName, 'font', 'yeet', [rfReplaceAll]);
+      varNames[i] := varName;
+      outputC(outFile, varName, saturnImg);
+    end;
+  //  else
+  //    outputBin(saturnImg);
+    img.Destroy;
+  end;
+  if outType = 0 then
+  begin
+    Write(outFile, 'const Uint16 dimensions[] = {');
+    for i := 0 to (Length(dimensions) - 1) do
+        Write(outFile, dimensions[i], ',');
+    WriteLn(outFile, '};', #13#10);
+    WriteLn(outFile, '#define NUM_TILES ', Length(varNames), #13#10);
+    WriteLn(outFile, 'const Uint16 *tiles[] = {');
+    for i := 0 to (Length(varNames) - 1) do
+        WriteLn(outFile, '    ', varNames[i], ',');
+    WriteLn(outFile, '};');
+  end;
+  CloseFile(outFile);
+end;
+
+begin
+  //set up defaults
+  outType := 0;
+  fileCount := 0;
+  if ParamCount > 0 then
+  begin //process command line parameters
+    SetLength(files, ParamCount);
+    for i := 1 to ParamCount do
+    if paramstr(i)[1] = '-' then
+    begin
+      begin
+        if paramstr(i)[2] = 'o' then
+        begin
+          if paramstr(i)[3] = 'c' then
+            outType := 0
+          else if paramstr(i)[3] = 'b' then
+            outType := 1
+          else
+          begin
+            printHelp;
+            exit;
+          end
+        end
+        else
+        begin
+          printHelp;
+          exit;
+        end;
+      end;
+    end
+    else
+    begin
+      files[fileCount] := paramstr(i);
+      fileCount := fileCount + 1;
+    end;
+  handleImage(files, outType);
+  end
+  else
+    printHelp;
+end.
+
+
+

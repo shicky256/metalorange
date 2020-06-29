@@ -1,0 +1,5 @@
+s guy
+s test
+t4 wood.bmp
+t8 bg.bmp
+m8 map.tmx
