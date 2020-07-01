@@ -200,3 +200,9 @@ void scroll_scale(int num, Fixed32 scale) {
 		Scl_n_reg.zoomenbl |= (num == 0 ? ZOOM_QUARTER_NBG0 : ZOOM_QUARTER_NBG1);
 	}
 }
+
+void scroll_set(int num, Fixed32 x, Fixed32 y) {
+	SCL_Open(1 << (num + 2));
+	SCL_MoveTo(x, y, 0);
+	SCL_Close();
+}

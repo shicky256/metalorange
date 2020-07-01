@@ -34,7 +34,8 @@ void title_init() {
     char *title_buf = (char *)LWRAM;
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
     Uint16 *map_ptr = VRAM_PTR(0);
-
+    //put the image in a good location
+    scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
     cd_load_nosize(roarbg_name, title_buf);
     for (int i = 0; i < 256 * roarbg_num; i++) {
         tile_ptr[i] = title_buf[i];
@@ -58,7 +59,7 @@ void title_init() {
     cd_load_nosize(roarframes_name, title_buf);
 }
 
-void title_run(void) {
+int title_run(void) {
     if (cursor < (sizeof(timings) / sizeof(timings[0]))) {
         timer++;
         if (timer > timings[cursor]) {
@@ -68,5 +69,7 @@ void title_run(void) {
                 sound_play(0);
             }
         }
+        return 0;
     }
+    return 1;
 }

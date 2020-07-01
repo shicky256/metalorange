@@ -21,4 +21,5 @@ void scroll_init(void);
 void scroll_lores(void);
 void scroll_hires(void);
 void scroll_scale(int num, Fixed32 scale);
+void scroll_set(int num, Fixed32 x, Fixed32 y);
 #endif

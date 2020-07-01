@@ -2,6 +2,6 @@
 #define TITLE_H
 
 void title_init(void);
-void title_run(void);
+int title_run(void);
 
 #endif
