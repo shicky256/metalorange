@@ -27,7 +27,6 @@ static char *girls[5];
 static Uint32 *girl_pal[5] = {girl1_pal, girl2_pal, girl3_pal, girl4_pal, girl5_pal};
 static char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
 
-static SclRgb start, end; //for color calculation
 static int cursor; //where we are in the girl array
 static int frames; //frame counter
 static Fixed32 girl_xpos; //girl's x position
@@ -150,20 +149,17 @@ int intro_run() {
 
     switch(state) {
         case STATE_INTRO_INIT:
-            // SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
             SCL_SetColMixRate(SCL_NBG0, 31);
 
             intro_init();
             sound_cdda(3, 1);
-
-            start.red = start.green = start.blue = -255;
-            end.red = end.green = end.blue = 0;
             cursor = 0;
             state = STATE_INTRO_LOADGIRL;
             break;
         
         case STATE_INTRO_LOADGIRL:
             SCL_SetColRam(SCL_NBG0, 0, 256, girl_pal[cursor]); //load palette
+            SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, 0, 0, 0);
             // SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
             DMA_CpuMemCopy1(tile_ptr, girls[cursor], 256 * 17 * 30); //load tiles
             girl_xpos = MTH_FIXED(-((SCREEN_X / 2) - (GIRL_X / 2)));
