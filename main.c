@@ -8,28 +8,24 @@
 
 #include "cd.h"
 #include "graphicrefs.h"
+#include "intro.h"
+#include "logo.h"
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
 #include "print.h"
-#include "title.h"
 #include "vblank.h"
 
 Uint32 frame = 0;
 SclConfig off_config;
 
 typedef enum {
-	STATE_TITLE_INIT = 0,
-	STATE_TITLE_FADEIN,
-	STATE_TITLE_RUN,
-	STATE_TITLE_DONE,
-	STATE_TITLE_FADEOUT,
-	STATE_TITLE_END
+	STATE_LOGO = 0,
+	STATE_INTRO
 } GAME_STATE;
 
 int main() {
 	CdcStat cd_status;
-	SclRgb start, end;
 
 	cd_init();
 	sprite_init();
@@ -41,52 +37,19 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_TITLE_INIT;
+	int state = STATE_LOGO;
 	while(1) {
-		switch(state) {
-			case STATE_TITLE_INIT:
-				//fade out title screen
-				SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
-				SCL_DisplayFrame();
-				title_init();
-				start.red = start.green = start.blue = -255;
-				end.red = end.green = end.blue = 0;
-				SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &start, &end);
-				frame = 0;
-				state = STATE_TITLE_FADEIN;
+		
+		switch (state) {
+			case STATE_LOGO:
+				if (logo_run() || PadData1 & PAD_S) {
+					state = STATE_INTRO;
+				}
 				break;
 			
-			case STATE_TITLE_FADEIN:
-				if (frame > 60) {
-					sound_cdda(2); //play logo song
-					state = STATE_TITLE_RUN;
-				}
+			case STATE_INTRO:
+				intro_run();
 				break;
-
-			case STATE_TITLE_RUN:
-				if (title_run()) {
-					frame = 0;
-					state = STATE_TITLE_DONE;					
-				}
-				break;
-
-			case STATE_TITLE_DONE:
-				if (frame > 60) {
-					SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &end, &start);
-					frame = 0;
-					state = STATE_TITLE_FADEOUT;
-				}
-				break;
-				
-			case STATE_TITLE_FADEOUT:
-				if (frame > 60) {
-					state = STATE_TITLE_END;
-				}
-				break;
-
-			case STATE_TITLE_END:
-				break;
-
 		}
 
 		frame++;

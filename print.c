@@ -1,8 +1,8 @@
 #include "sprite.h"
 #include "print.h"
 
-#define ROWS 28
-#define COLS 40
+#define ROWS 60
+#define COLS 88
 #define FONT_X 8
 #define FONT_Y 8
 Uint8 text[ROWS][COLS];
@@ -28,8 +28,15 @@ void print_num(Uint32 num, int row, int col) {
 
 void print_string(char *ch, int row, int col) {
 	int index = 0;
+	int col_bak = col;
 	while (ch[index]) {
-		text[row][col + index] = ch[index] - 32;
+		if (ch[index] == '\n') {
+			row++;
+			col = col_bak;
+		}
+		else {
+			text[row][col++] = ch[index] - 32;
+		}
 		index++;
 	}
 }

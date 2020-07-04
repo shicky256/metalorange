@@ -36,7 +36,8 @@ void sprite_init() {
 	SPR_2Initial(&work2D);
 	SPR_2SetTvMode(SPR_TV_HIRESO, SPR_TV_704X240, ON);
 	count = 0;
-	SCL_SetColRamMode(SCL_CRM24_1024);	
+	SCL_SetColRamMode(SCL_CRM24_1024);
+	SCL_AllocColRam(SCL_SPR, 256, OFF);
 
 	SetVblank(); //setup vblank routine
 	set_imask(0);

@@ -1,1 +1,0 @@
-Music is in the format for the Domino midi sequencer, and is meant to be played on an SC-55mkII (might work on a normal SC-55, I don't have one)

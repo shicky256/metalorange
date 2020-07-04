@@ -1,3 +1,12 @@
 s font
 t8 roarbg.bmp
 t8 roarframes.bmp
+t8 girl1.bmp
+t8 girl2.bmp
+t8 girl3.bmp
+t8 girl4.bmp
+t8 girl5.bmp
+t4 stars.bmp
+m4 starfar.tmx
+m4 starmid.tmx
+m4 starnear.tmx

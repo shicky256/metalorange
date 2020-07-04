@@ -64,15 +64,21 @@ void sound_init() {
     load_8bit_pcm("ROAR.RAW", 11025);
 }
 
-void sound_cdda(int track) {
+void sound_cdda(int track, int loop) {
     CdcPly ply;
     CDC_PLY_STYPE(&ply) = CDC_PTYPE_TNO; //track number
 	CDC_PLY_STNO(&ply)  = track;
 	CDC_PLY_SIDX(&ply) = 1;
 	CDC_PLY_ETYPE(&ply) = CDC_PTYPE_TNO;
-	CDC_PLY_ETNO(&ply)  = track + 1;
+	CDC_PLY_ETNO(&ply)  = track;
 	CDC_PLY_EIDX(&ply) = 99;
-	CDC_PLY_PMODE(&ply) = CDC_PM_DFL; // | 0xf; //0xf = infinite repetitions
+    if (loop) {
+        CDC_PLY_PMODE(&ply) = CDC_PM_DFL | 0xf; //0xf = infinite repetitions
+    }
+    else {
+        CDC_PLY_PMODE(&ply) = CDC_PM_DFL;
+    }
+	
     CDC_CdPlay(&ply);
 }
 

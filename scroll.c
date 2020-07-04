@@ -11,7 +11,7 @@
 #include "scroll.h"
 #include "sprite.h"
 
-Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x1000, SCL_VDP2_VRAM_B1, SCL_VDP2_VRAM_B1 + 0x1000}; //where in VRAM each tilemap is
+Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x2000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x2000}; //where in VRAM each tilemap is
 int scroll_res = SCROLL_RES_LOW;
 
 /*
@@ -43,29 +43,29 @@ int scroll_res = SCROLL_RES_LOW;
 // There's also numerous read restrictions, see SOA technical bulletin #6 for more information
 //lo res vram layout: 
 //nbg 0/1 tilemaps in A0
-//nbg 0/1 graphics in A1
+//nbg 0 graphics in A1
 //nbg 2/3 graphics in B0
 //nbg 2/3 tilemaps in B1
-//nbg 0 & 1 are 256 color, 2 & 3 are 16 color
+//nbg 0 is 256 color, 1, 2, & 3 are 16 color
 Uint16	CycleTbLoRes[]={
-	0x0011,0xeeee,
-	0x5555,0x4444,
-	0x6677,0xffff,
-	0x23ff,0xeeee
+	0x01ee,0xeeee,
+	0x44ee,0xeeee,
+	0xff23,0xffff,
+	0x756f,0xeeee
 };
 
 //in hi-res mode, the last 4 timing cycles aren't valid
 //hi res vram layout:
 //nbg 0/1 tilemaps in A0
-//nbg 0/1 graphics in A1
-//nbg 2/3 graphics in B0
-//nbg 2/3 tilemaps in B1
+//nbg 0 graphics in A1
+//nbg 2/3 tilemaps in B0
+//nbg 1/2/3 graphics in B1
 //nbg 0 is 256 color, 1, 2 & 3 are 16 color
 Uint16	CycleTbHiRes[]={
-	0x01fe,0xffff,
-	0x445e,0xffff,
-	0x67ff,0xffff,
-	0x23ff,0xffff
+	0x01ee,0xffff,
+	0x44ee,0xffff,
+	0xff23,0xffff,
+	0x756f,0xffff
 };
 
 SclConfig scfg0;
@@ -82,6 +82,8 @@ void scroll_init(void) {
 	memset((void *)SCL_VDP2_VRAM, 0, 0x80000);
 
 	SCL_SetColRamMode(SCL_CRM24_1024);
+	SCL_AllocColRam(SCL_NBG0, 256, OFF);
+	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 16, OFF);
 		// SCL_AllocColRam(SCL_NBG2, 256, OFF);
 		// SCL_SetColRam(SCL_NBG2, 0, 256, (void *)(level->playfield.palette));
 
@@ -108,19 +110,20 @@ void scroll_init(void) {
 	SCL_SetConfig(SCL_NBG0, &scfg0);
 
 	memcpy((void *)&scfg1, (void *)&scfg0, sizeof(SclConfig));
-	scfg1.dispenbl = OFF;
-	scfg1.patnamecontrl = 0x0004;
+	scfg1.dispenbl = ON;
+	scfg1.platesize = SCL_PL_SIZE_1X1;
+	scfg1.coltype = SCL_COL_TYPE_16;
+	scfg1.patnamecontrl = 0x000c;
 	for(i=0;i<4;i++)   scfg1.plate_addr[i] = vram[1];
 	SCL_SetConfig(SCL_NBG1, &scfg1);
 
 	memcpy((void *)&scfg2, (void *)&scfg1, sizeof(SclConfig));
-	scfg2.dispenbl = OFF;
-	scfg2.patnamecontrl = 0x0008;
+	scfg2.dispenbl = ON;
 	for(i=0;i<4;i++)   scfg2.plate_addr[i] = vram[2];
 	SCL_SetConfig(SCL_NBG2, &scfg2);
 
 	memcpy((void *)&scfg3, (void *)&scfg2, sizeof(SclConfig));
-	scfg3.dispenbl = OFF;
+	scfg3.dispenbl = ON;
 	for(i=0;i<4;i++)   scfg3.plate_addr[i] = vram[3];
 	SCL_SetConfig(SCL_NBG3, &scfg3);
 	
@@ -147,12 +150,12 @@ void scroll_init(void) {
 	SCL_Close();
 	scroll_scale(0, FIXED(1));
 	scroll_scale(1, FIXED(1));
-	SCL_SetPriority(SCL_NBG3, 7); //set layer priorities
+	SCL_SetPriority(SCL_NBG0, 7);
 	SCL_SetPriority(SCL_SPR,  6);
-	SCL_SetPriority(SCL_SP1,  6);
-	SCL_SetPriority(SCL_NBG2, 6);
 	SCL_SetPriority(SCL_NBG1, 5);
-	SCL_SetPriority(SCL_NBG0, 4);
+	SCL_SetPriority(SCL_NBG2, 4);
+	SCL_SetPriority(SCL_NBG3, 3); //set layer priorities
+	
 }
 
 void scroll_lores() {

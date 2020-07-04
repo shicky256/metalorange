@@ -12,6 +12,51 @@ extern Uint16 roarframes_num;
 extern char roarframes_name[];
 extern Uint32 roarframes_pal[];
 
+//girl1.c
+extern Uint16 girl1_num;
+extern char girl1_name[];
+extern Uint32 girl1_pal[];
+
+//girl2.c
+extern Uint16 girl2_num;
+extern char girl2_name[];
+extern Uint32 girl2_pal[];
+
+//girl3.c
+extern Uint16 girl3_num;
+extern char girl3_name[];
+extern Uint32 girl3_pal[];
+
+//girl4.c
+extern Uint16 girl4_num;
+extern char girl4_name[];
+extern Uint32 girl4_pal[];
+
+//girl5.c
+extern Uint16 girl5_num;
+extern char girl5_name[];
+extern Uint32 girl5_pal[];
+
+extern Uint16 stars_num;
+extern char stars_name[];
+extern Uint32 stars_pal[];
+
+//---maps---
+//starnear.c
+extern Uint16 starnear_width;
+extern Uint16 starnear_height;
+extern char starnear_name[];
+
+//starmid.c
+extern Uint16 starmid_width;
+extern Uint16 starmid_height;
+extern char starmid_name[];
+
+//starfar.c
+extern Uint16 starfar_width;
+extern Uint16 starfar_height;
+extern char starfar_name[];
+
 //---sprite graphics---
 //font.c
 #define GRAPHIC_FONT (0)
