@@ -222,7 +222,7 @@ int intro_run() {
             break;            
     }
     //move stars
-    star_angle += MTH_FIXED(0.2);
+    star_angle += MTH_FIXED(0.1);
     if (star_angle > MTH_FIXED(180)) {
         star_angle = MTH_FIXED(-180);
     }
