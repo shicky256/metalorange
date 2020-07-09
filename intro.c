@@ -1,5 +1,7 @@
 #include <SEGA_DMA.H>
 #include <SEGA_SCL.H>
+#define _SPR2_
+#include <SEGA_SPR.H>
 
 #include "cd.h"
 #include "graphicrefs.h"
@@ -15,6 +17,9 @@ typedef enum {
     STATE_INTRO_MOVEGIRL,
     STATE_INTRO_TEXT,
     STATE_INTRO_FADEGIRL,
+    STATE_INTRO_LOADTITLE,
+    STATE_INTRO_SHOWTITLE,
+    STATE_INTRO_LOADTITLETEXT,
     STATE_INTRO_END
 } INTRO_STATE;
 
@@ -26,6 +31,8 @@ static int state = STATE_INTRO_INIT;
 static char *girls[5];
 static Uint32 *girl_pal[5] = {girl1_pal, girl2_pal, girl3_pal, girl4_pal, girl5_pal};
 static char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
+static char *title_gfx_ptr;
+static char *titletext_ptr;
 
 static int cursor; //where we are in the girl array
 static int frames; //frame counter
@@ -65,6 +72,8 @@ static inline void intro_init() {
         }
     }
 
+
+
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
     //load all 5 images
     girls[0] = dest_buf;
@@ -97,7 +106,14 @@ static inline void intro_init() {
     //far tilemap
     cd_load_nosize(starfar_name, dest_buf);
     DMA_CpuMemCopy2(VRAM_PTR(3), dest_buf, 32 * 32);
-    // SCL_SetColRam(SCL_NBG3, 0, 16, stars_pal);    
+    // SCL_SetColRam(SCL_NBG3, 0, 16, stars_pal);
+    
+    //load title screen gfx
+    int size = cd_load_nosize(title_name, dest_buf);
+    title_gfx_ptr = dest_buf;
+    dest_buf += size;
+    cd_load_nosize(titletext_name, dest_buf);
+    titletext_ptr = dest_buf;
 
 
     for (int i = 0; i < 256; i++) {
@@ -109,7 +125,7 @@ static inline void intro_init() {
 #define TEXT_LOAD (0)
 #define TEXT_SHOW (1)
 
-static int intro_disptext(int girl) {
+static inline int intro_disptext(int girl) {
     static int text_mode = TEXT_LOAD;
     static int text_num = 0;
     static int frame;
@@ -145,6 +161,50 @@ static int intro_disptext(int girl) {
     return 0;
 }
 
+static inline void intro_drawpolys(int num) {
+    XyInt rect[4];
+    switch (num) {
+        case 5:
+            rect[0].x = 140; rect[0].y = 0; //top left
+            rect[1].x = 140 + 72; rect[1].y = 0; //top right
+            rect[2].x = 140 + 72; rect[2].y = 240; //bottom right
+            rect[3].x = 140; rect[3].y = 240; //bottom left
+            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            //fall through to next case
+
+        case 4:
+            rect[0].x = 282; rect[0].y = 0;
+            rect[1].x = 282 + 72; rect[1].y = 0;
+            rect[2].x = 282 + 72; rect[2].y = 240;
+            rect[3].x = 282; rect[3].y = 240;
+            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            //fall through to next case
+
+        case 3:
+            rect[0].x = 0; rect[0].y = 0;
+            rect[1].x = 72; rect[1].y = 0;
+            rect[2].x = 72; rect[2].y = 240;
+            rect[3].x = 0; rect[3].y = 240;
+            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            //fall through to next case
+
+        case 2:
+            rect[0].x = 210; rect[0].y = 0;
+            rect[1].x = 210 + 72; rect[1].y = 0;
+            rect[2].x = 210 + 72; rect[2].y = 240;
+            rect[3].x = 210; rect[3].y = 240;
+            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            //fall through to next case
+
+        case 1:
+            rect[0].x = 72; rect[0].y = 0;
+            rect[1].x = 72 + 72; rect[1].y = 0;
+            rect[2].x = 72 + 72; rect[2].y = 240;
+            rect[3].x = 72; rect[3].y = 240;
+            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+    }    
+}
+
 int intro_run() {
 
     switch(state) {
@@ -154,7 +214,7 @@ int intro_run() {
             intro_init();
             sound_cdda(3, 1);
             cursor = 0;
-            state = STATE_INTRO_LOADGIRL;
+            state = STATE_INTRO_LOADTITLE;
             break;
         
         case STATE_INTRO_LOADGIRL:
@@ -209,10 +269,55 @@ int intro_run() {
             if (frames == 60) {
                 cursor++;
                 if (cursor == (sizeof(girls) / sizeof(girls[0]))) {
-                    state = STATE_INTRO_END;
+                    state = STATE_INTRO_LOADTITLE;
                 }
                 else {
                     state = STATE_INTRO_LOADGIRL;
+                }
+            }
+            break;
+
+        case STATE_INTRO_LOADTITLE:
+            SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
+            SCL_SetColMixRate(SCL_NBG0, 0); //make screen opaque
+            DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
+            scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
+            Uint16 count = 2;
+            Uint16 *map_ptr = VRAM_PTR(0);
+            for (int i = 0; i < (240 / 16); i++) {
+                for (int j = 0; j < (352 / 16); j++) {
+                    map_ptr[i * 32 + j] = count;
+                    count += 2;
+                }
+            }
+            scroll_lores();
+            cursor = 5;
+            frames = 0;
+            state = STATE_INTRO_SHOWTITLE;
+            //fall through
+
+        case STATE_INTRO_SHOWTITLE:
+            frames++;
+            if (frames == 12) {
+                cursor--;
+                frames = 0;
+                if (cursor == 0) {
+                    state = STATE_INTRO_LOADTITLETEXT;
+                }
+            }
+            intro_drawpolys(cursor);
+            break;
+        
+        case STATE_INTRO_LOADTITLETEXT:
+            SCL_SetColRam(SCL_NBG1, 0, 16, titletext_pal); //load palette
+            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), titletext_ptr, 128 * titletext_num); //skip first tile
+            SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
+            scroll_set(1, MTH_FIXED(0), MTH_FIXED(0)); //reset position
+            Uint16 *titletext_map = VRAM_PTR(1);
+            int counter = 1;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 16; j++) {
+                    titletext_map[i * 32 + j] = counter++;
                 }
             }
             break;
@@ -222,16 +327,17 @@ int intro_run() {
             break;            
     }
     //move stars
-    star_angle += MTH_FIXED(0.1);
-    if (star_angle > MTH_FIXED(180)) {
-        star_angle = MTH_FIXED(-180);
+    if (state < STATE_INTRO_LOADTITLE) {
+        star_angle += MTH_FIXED(0.1);
+        if (star_angle > MTH_FIXED(180)) {
+            star_angle = MTH_FIXED(-180);
+        }
+        star_x += MTH_Mul(MTH_Cos(star_angle), MTH_FIXED(10));
+        star_y += MTH_Mul(MTH_Sin(star_angle), MTH_FIXED(10));
+
+        scroll_set(1, star_x, star_y);
+        scroll_set(2, star_x >> 1, star_y >> 1);
+        scroll_set(3, star_x >> 2, star_y >> 2);
     }
-    star_x += MTH_Mul(MTH_Cos(star_angle), MTH_FIXED(10));
-    star_y += MTH_Mul(MTH_Sin(star_angle), MTH_FIXED(10));
-
-    scroll_set(1, star_x, star_y);
-    scroll_set(2, star_x >> 1, star_y >> 1);
-    scroll_set(3, star_x >> 2, star_y >> 2);
-
     return 0;
 }

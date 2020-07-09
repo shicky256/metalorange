@@ -10,3 +10,5 @@ t4 stars.bmp
 m4 starfar.tmx
 m4 starmid.tmx
 m4 starnear.tmx
+t8 title.bmp
+t4 titletext.bmp

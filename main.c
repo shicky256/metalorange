@@ -37,8 +37,9 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_LOGO;
+	int state = STATE_INTRO;
 	while(1) {
+		sprite_startdraw();
 		
 		switch (state) {
 			case STATE_LOGO:
@@ -62,10 +63,9 @@ int main() {
 		//if player hits A+B+C+Start, return to menu
 		if (PadData1 == (PAD_A | PAD_B | PAD_C | PAD_S)) {
 			SYS_EXECDMP();
-		}		
-		sprite_startdraw();
+		}
 			// sprite_draw_all();
-			print_display();
+		print_display();
 		SPR_2CloseCommand();
 
 		SCL_DisplayFrame();

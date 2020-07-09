@@ -45,7 +45,7 @@ extern SPRITE_INFO sprites[];
 //sets up initial sprite display
 void sprite_init(void);
 //erases framebuffer (run at start of draw command)
-void sprite_erase(void);
+void sprite_erase(Sint16 x, Sint16 y);
 //gets vdp1 ready for draw commands
 void sprite_startdraw(void);
 //automatically picks the simplest SBL function for drawing the sprite depending

@@ -37,9 +37,20 @@ extern Uint16 girl5_num;
 extern char girl5_name[];
 extern Uint32 girl5_pal[];
 
+//stars.c
 extern Uint16 stars_num;
 extern char stars_name[];
 extern Uint32 stars_pal[];
+
+//title.c
+extern Uint16 title_num;
+extern char title_name[];
+extern Uint32 title_pal[];
+
+//titletext.c
+extern Uint16 titletext_num;
+extern char titletext_name[];
+extern Uint32 titletext_pal[];
 
 //---maps---
 //starnear.c

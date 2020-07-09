@@ -42,7 +42,7 @@ void sprite_init() {
 	SetVblank(); //setup vblank routine
 	set_imask(0);
 	
-	SPR_2FrameChgIntr(1); //wait until next frame to set color mode
+	SPR_2FrameChgIntr(-1); //wait until next frame to set color mode
 	SCL_DisplayFrame();
 	
 
@@ -59,12 +59,12 @@ void sprite_init() {
 	SCL_DisplayFrame();
 }
 
-void sprite_erase() {
+void sprite_erase(Sint16 x, Sint16 y) {
 	XyInt xy[4];
 	xy[0].x = 0; xy[0].y = 0; //upper left
-	xy[1].x = 704; xy[1].y = 0; //upper right
-	xy[2].x = 704; xy[2].y = 480; //lower right
-	xy[3].x = 0; xy[3].y = 480; //lower right
+	xy[1].x = x; xy[1].y = 0; //upper right
+	xy[2].x = x; xy[2].y = y; //lower right
+	xy[3].x = 0; xy[3].y = y; //lower right
 	SPR_2Polygon(0, 0, 0, xy, NO_GOUR);
 }
 
@@ -73,7 +73,6 @@ void sprite_startdraw(void) {
 
 	SPR_2OpenCommand(SPR_2DRAW_PRTY_OFF);
 	if (scroll_res == SCROLL_RES_HIGH) {
-		sprite_erase();
 		xy.x = 704;
 		xy.y = 480;
 	}
@@ -82,13 +81,13 @@ void sprite_startdraw(void) {
 		xy.y = 240;
 	}
 	SPR_2SysClip(0, &xy);
+	sprite_erase(xy.x, xy.y);
 }
 
 void sprite_draw(SPRITE_INFO *info) {
 	XyInt xy[4];
 	Fixed32 xOffset, yOffset, sin, cos, scaledX, scaledY;
-	int i;
-	
+
 	if (info->scale == MTH_FIXED(1) && info->angle == 0) {
 		xy[0].x = (Sint16)MTH_FixedToInt(info->xPos);
 		xy[0].y = (Sint16)MTH_FixedToInt(info->yPos);
@@ -115,7 +114,7 @@ void sprite_draw(SPRITE_INFO *info) {
 		scaledY = info->yPos + MTH_Mul(info->ySize >> 1, info->scale);
 		//formula from
 		//https://gamedev.stackexchange.com/questions/86755/
-		for (i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			if (i == 1) xOffset = -xOffset; //upper right
 			if (i == 2) yOffset = -yOffset; //lower right
 			if (i == 3) xOffset = -xOffset; //lower left
