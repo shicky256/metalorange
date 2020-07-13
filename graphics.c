@@ -12,7 +12,8 @@ typedef unsigned long Uint32;
 #include "graphic/girl5.c"
 #include "graphic/stars.c"
 #include "graphic/title.c"
-#include "graphic/titletext.c"
+#include "graphic/metalorange.c"
+#include "graphic/cyberblock.c"
 
 //maps
 #include "graphic/starnear.c"

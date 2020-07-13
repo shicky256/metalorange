@@ -47,10 +47,15 @@ extern Uint16 title_num;
 extern char title_name[];
 extern Uint32 title_pal[];
 
-//titletext.c
-extern Uint16 titletext_num;
-extern char titletext_name[];
-extern Uint32 titletext_pal[];
+//metalorange.c
+extern Uint16 metalorange_num;
+extern char metalorange_name[];
+extern Uint32 metalorange_pal[];
+
+//cyberblock.c
+extern Uint16 cyberblock_num;
+extern char cyberblock_name[];
+extern Uint32 cyberblock_pal[];
 
 //---maps---
 //starnear.c

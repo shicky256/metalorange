@@ -19,26 +19,35 @@ typedef enum {
     STATE_INTRO_FADEGIRL,
     STATE_INTRO_LOADTITLE,
     STATE_INTRO_SHOWTITLE,
-    STATE_INTRO_LOADTITLETEXT,
+    STATE_INTRO_LOADMETALORANGE,
+    STATE_INTRO_SHOWMETALORANGE,
+    STATE_INTRO_MOVEMETALORANGE,
+    STATE_INTRO_LOADCYBERBLOCK,
+    STATE_INTRO_SHOWCYBERBLOCK,
+    STATE_INTRO_LOADCYBERBLOCK,
     STATE_INTRO_END
 } INTRO_STATE;
 
 #define SCREEN_X (704)
 #define GIRL_X (272)
 #define MOVE_SPEED (MTH_FIXED(6))
+#define METALORANGE_Y (-100)
 
 static int state = STATE_INTRO_INIT;
 static char *girls[5];
 static Uint32 *girl_pal[5] = {girl1_pal, girl2_pal, girl3_pal, girl4_pal, girl5_pal};
 static char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
 static char *title_gfx_ptr;
-static char *titletext_ptr;
+static char *metalorange_ptr;
+static char *cyberblock_ptr;
 
 static int cursor; //where we are in the girl array
 static int frames; //frame counter
 static Fixed32 girl_xpos; //girl's x position
 static Fixed32 star_x = 0, star_y = 0;
 static Fixed32 star_angle = 0;
+static SclLineparam line_param;
+static Fixed32 titletext_pos;
 
 //intro credits strings
 static char program_str[] = "PROGRAM\nKOCHAN";
@@ -112,8 +121,11 @@ static inline void intro_init() {
     int size = cd_load_nosize(title_name, dest_buf);
     title_gfx_ptr = dest_buf;
     dest_buf += size;
-    cd_load_nosize(titletext_name, dest_buf);
-    titletext_ptr = dest_buf;
+    size = cd_load_nosize(metalorange_name, dest_buf);
+    metalorange_ptr = dest_buf;
+    dest_buf += size;
+    size = cd_load_nosize(cyberblock_name, dest_buf);
+    cyberblock_ptr = dest_buf;
 
 
     for (int i = 0; i < 256; i++) {
@@ -205,6 +217,38 @@ static inline void intro_drawpolys(int num) {
     }    
 }
 
+static inline int intro_linescroll() {
+    static Fixed32 angle = 0;
+    static int multiplier = MTH_FIXED(16);
+
+    angle += MTH_FIXED(2);
+    multiplier -= MTH_FIXED(0.08);
+    if (multiplier < MTH_FIXED(4.5)) { //otherwise it spends too much time wiggling in the middle, which looks shitty
+        multiplier = 0;
+    }
+    for (int i = 0; i < 48; i++) {
+        Fixed32 curr_angle = angle + MTH_IntToFixed(i * 2);
+        curr_angle %= MTH_FIXED(360);
+        curr_angle -= MTH_FIXED(180);
+        // if (curr_angle > MTH_FIXED(180)) {
+        //     curr_angle -= MTH_FIXED(360);
+        // }
+        if (i & 1) {
+            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), multiplier);
+        }
+        else {
+            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), -multiplier);
+        }
+    }
+    SCL_Open(SCL_NBG1);
+    SCL_SetLineParam(&line_param);
+    SCL_Close();
+    if (multiplier == 0) {
+        return 1;
+    }
+    return 0;
+}
+
 int intro_run() {
 
     switch(state) {
@@ -214,7 +258,7 @@ int intro_run() {
             intro_init();
             sound_cdda(3, 1);
             cursor = 0;
-            state = STATE_INTRO_LOADTITLE;
+            state = STATE_INTRO_LOADGIRL;
             break;
         
         case STATE_INTRO_LOADGIRL:
@@ -302,24 +346,74 @@ int intro_run() {
                 cursor--;
                 frames = 0;
                 if (cursor == 0) {
-                    state = STATE_INTRO_LOADTITLETEXT;
+                    state = STATE_INTRO_LOADMETALORANGE;
                 }
             }
             intro_drawpolys(cursor);
             break;
         
-        case STATE_INTRO_LOADTITLETEXT:
-            SCL_SetColRam(SCL_NBG1, 0, 16, titletext_pal); //load palette
-            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), titletext_ptr, 128 * titletext_num); //skip first tile
+        case STATE_INTRO_LOADMETALORANGE:
+            SCL_SetColRam(SCL_NBG1, 0, 16, metalorange_pal); //load palette
+            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
             SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
-            scroll_set(1, MTH_FIXED(0), MTH_FIXED(0)); //reset position
-            Uint16 *titletext_map = VRAM_PTR(1);
+            scroll_set(1, MTH_FIXED(-((352 / 2) - (256 / 2))), MTH_FIXED(METALORANGE_Y)); //reset position
+            Uint16 *metalorange_map = VRAM_PTR(1);
             int counter = 1;
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 16; j++) {
-                    titletext_map[i * 32 + j] = counter++;
+            for (int i = 0; i < 32; i++) {
+                for (int j = 0; j < 32; j++) {
+                    if (i < 3 && j < 16) {
+                        metalorange_map[i * 32 + j] = counter++;
+                    }
+                    else {
+                        metalorange_map[i * 32 + j] = 0;
+                    }
                 }
             }
+            SCL_InitLineParamTb(&line_param);
+            line_param.h_enbl = ON;
+            line_param.line_addr = SCL_VDP2_VRAM_B1 + 0x1f000; //b1 + 124kb
+            line_param.interval = SCL_1_LINE;
+            state = STATE_INTRO_SHOWMETALORANGE;
+            break;
+        
+        case STATE_INTRO_SHOWMETALORANGE:
+            if (intro_linescroll()) {
+                titletext_pos = MTH_FIXED(METALORANGE_Y);
+                state = STATE_INTRO_MOVEMETALORANGE;
+            }
+            break;
+        case STATE_INTRO_MOVEMETALORANGE:
+            titletext_pos -= MTH_FIXED(1);
+            scroll_set(1, MTH_FIXED(-((352 / 2) - (256 / 2))), titletext_pos);
+            if (titletext_pos <= MTH_FIXED(-140)) {
+                state = STATE_INTRO_LOADCYBERBLOCK;
+            }
+            break;
+
+        case STATE_INTRO_LOADCYBERBLOCK:
+            SCL_SetColMixRate(SCL_NBG2, 31); //make bg2 transparent
+            SCL_SetColRam(SCL_NBG1, 16, 16, cyberblock_pal);
+            //skip 1st blank tile & all the "metal orange" text tiles
+            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + (128 * (metalorange_num + 1))), cyberblock_ptr, 128 * cyberblock_num);
+            SCL_SetPriority(SCL_NBG2, 7); //put on top
+            scroll_set(2, MTH_FIXED(-((352 / 2) - (192 / 2))), MTH_FIXED(-120));
+            Uint16 *cyberblock_map = VRAM_PTR(2);
+            counter = metalorange_num + 1;
+            for (int i = 0; i < 32; i++) {
+                for (int j = 0; j < 32; j++) {
+                    if (i < 2 && j < 12) {
+                        cyberblock_map[i * 32 + j] = counter++ | (1 << 12);
+                    }
+                    else {
+                        cyberblock_map[i * 32 + j] = 0;
+                    }
+                }
+            }
+            SCL_SetAutoColMix(SCL_NBG2, 1, 30, 31, 0);
+            state = STATE_INTRO_SHOWCYBERBLOCK;
+            break;
+        
+        case STATE_INTRO_SHOWCYBERBLOCK:
             break;
 
         case STATE_INTRO_END:

@@ -83,7 +83,7 @@ void scroll_init(void) {
 
 	SCL_SetColRamMode(SCL_CRM24_1024);
 	SCL_AllocColRam(SCL_NBG0, 256, OFF);
-	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 16, OFF);
+	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 32, OFF);
 		// SCL_AllocColRam(SCL_NBG2, 256, OFF);
 		// SCL_SetColRam(SCL_NBG2, 0, 256, (void *)(level->playfield.palette));
 
