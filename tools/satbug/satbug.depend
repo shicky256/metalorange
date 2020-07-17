@@ -1,0 +1,97 @@
+# depslib dependency file v1.0
+1338754922 source:c:\users\nathan\documents\satbug\crc.c
+	"crc.h"
+	<stdlib.h>
+	<stdint.h>
+
+1338754909 c:\users\nathan\documents\satbug\crc.h
+	<stdlib.h>
+	<stdint.h>
+
+1594864031 source:c:\users\nathan\documents\satbug\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	<signal.h>
+	<sys/time.h>
+	"devcart.h"
+	"server.h"
+
+1594863444 c:\users\nathan\documents\satbug\devcart.h
+
+1594787176 source:c:\users\nathan\documents\satbug\devcart.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	"ftdi.h"
+	"crc.h"
+	"devcart.h"
+
+1359113975 c:\users\nathan\documents\satbug\ftdi.h
+	<stdint.h>
+	<sys/time.h>
+
+1594864375 c:\users\nathan\documents\satbug\server.h
+
+1594874391 source:c:\users\nathan\documents\satbug\server.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	"ftdi.h"
+	"crc.h"
+	"devcart.h"
+
+1338754922 source:c:\saturn\orange\tools\satbug\crc.c
+	"crc.h"
+	<stdlib.h>
+	<stdint.h>
+
+1338754909 c:\saturn\orange\tools\satbug\crc.h
+	<stdlib.h>
+	<stdint.h>
+
+1594787176 source:c:\saturn\orange\tools\satbug\devcart.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	"ftdi.h"
+	"crc.h"
+	"devcart.h"
+
+1359113975 c:\saturn\orange\tools\satbug\ftdi.h
+	<stdint.h>
+	<sys/time.h>
+
+1594863444 c:\saturn\orange\tools\satbug\devcart.h
+
+1594944066 source:c:\saturn\orange\tools\satbug\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	<signal.h>
+	<sys/time.h>
+	"devcart.h"
+	"server.h"
+
+1594864375 c:\saturn\orange\tools\satbug\server.h
+
+1594957720 source:c:\saturn\orange\tools\satbug\server.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<unistd.h>
+	"ftdi.h"
+	"crc.h"
+	"devcart.h"
+

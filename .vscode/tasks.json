@@ -23,6 +23,13 @@
             "command": "C:/saturn/orange/clean.bat",
             "group": "build",
             "problemMatcher": []
+        },
+        {
+            "label": "Devcart",
+            "type": "shell",
+            "command": "C:/saturn/orange/tools/satbug/bin/Debug/satbug.exe -x C:\\saturn\\orange\\out.bin 0x6010000 -s C:\\saturn\\orange\\cd\\",
+            "group": "build",
+            "problemMatcher": []            
         }
     ]
 }

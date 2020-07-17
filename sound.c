@@ -5,6 +5,7 @@
 #include "sound.h"
 #include "pcmsys.h"
 #include "print.h"
+#include "release.h"
 
 static void sound_external_audio_enable(Uint8 vol_l, Uint8 vol_r) {
     volatile Uint16 *slot_ptr;
@@ -59,12 +60,15 @@ static void sound_external_audio_enable(Uint8 vol_l, Uint8 vol_r) {
 
 //must be called after cd_init
 void sound_init() {
+    #if DEVCART_LOAD == 0
     sound_external_audio_enable(5, 5);
+    #endif
     load_drv();
     load_8bit_pcm("ROAR.RAW", 11025);
 }
 
 void sound_cdda(int track, int loop) {
+    #if DEVCART_LOAD == 0
     CdcPly ply;
     CDC_PLY_STYPE(&ply) = CDC_PTYPE_TNO; //track number
 	CDC_PLY_STNO(&ply)  = track;
@@ -80,6 +84,7 @@ void sound_cdda(int track, int loop) {
     }
 	
     CDC_CdPlay(&ply);
+    #endif
 }
 
 void sound_play(short num) {

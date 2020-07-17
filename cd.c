@@ -1,5 +1,8 @@
 #include <sega_gfs.h>
+
+#include "devcart.h"
 #include "print.h"
+#include "release.h"
 
 // max num files that can be opened simultaneously
 #define MAX_OPEN        1
@@ -16,10 +19,14 @@ GfsDirTbl directory_table; //directory info management struct
 GfsDirName dirname[MAX_DIR]; //list of all filenames
 
 void cd_init(void) {
+    #if DEVCART_LOAD == 0
+
     GFS_DIRTBL_TYPE(&directory_table) = GFS_DIR_NAME;
     GFS_DIRTBL_DIRNAME(&directory_table) = dirname;
     GFS_DIRTBL_NDIR(&directory_table) = MAX_DIR;
     GFS_Init(MAX_OPEN, lib_work, &directory_table);
+
+    #endif
 }
 
 /**
@@ -29,14 +36,21 @@ void cd_init(void) {
  * read_size: # of bytes to read 
  */
 void cd_load(char *filename, void *dataBuf, int read_size) {
+    #if DEVCART_LOAD
+    devcart_loadfile(filename, dataBuf);
+    #else
     GfsHn gfs = GFS_Open(GFS_NameToId(filename));
     //make sure we read at least one sector
     GFS_Fread(gfs, read_size < SECT_SIZE ? 1 : (read_size >> 11) + 1, dataBuf, read_size);
     GFS_Close(gfs);
+    #endif
 }
 
 
 Sint32 cd_load_nosize(char *filename, void *dataBuf) {
+    #if DEVCART_LOAD
+    return devcart_loadfile(filename, dataBuf);
+    #else
     Sint32 filesize;
     GfsHn gfs = GFS_Open(GFS_NameToId(filename));
     GFS_GetFileInfo(gfs, NULL, NULL, &filesize, NULL);
@@ -44,4 +58,5 @@ Sint32 cd_load_nosize(char *filename, void *dataBuf) {
     GFS_Fread(gfs, filesize < SECT_SIZE ? 1 : (filesize >> 11) + 1, dataBuf, filesize);
     GFS_Close(gfs);
     return filesize;
+    #endif
 }

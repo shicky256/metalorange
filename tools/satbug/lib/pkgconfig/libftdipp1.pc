@@ -1,0 +1,11 @@
+prefix=C:/Program Files/libftdi1
+exec_prefix=C:/Program Files/libftdi1/bin
+libdir=C:/Program Files/libftdi1/bin
+includedir=C:/Program Files/libftdi1/include/libftdi1
+
+Name: libftdipp1
+Description: C++ wrapper for libftdi1
+Requires: libftdi1
+Version: 1.0
+Libs: -L${libdir} -lftdipp1
+Cflags: -I${includedir}

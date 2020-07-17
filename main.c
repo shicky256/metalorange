@@ -7,6 +7,7 @@
 #include <sega_sys.h>
 
 #include "cd.h"
+#include "devcart.h"
 #include "graphicrefs.h"
 #include "intro.h"
 #include "logo.h"
@@ -37,6 +38,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
+	devcart_printstr("hello, i am a sega saturn\r\n");
 	int state = STATE_LOGO;
 	while(1) {
 		sprite_startdraw();
