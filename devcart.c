@@ -92,3 +92,10 @@ void devcart_printstr(char *string) {
     }
     #endif
 }
+
+void devcart_reset() {
+    void (*func_ptr)(void);
+
+    func_ptr = (void(*)(void))(0x02000100);
+    (*func_ptr)();
+}

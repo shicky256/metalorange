@@ -161,7 +161,6 @@ void scroll_init(void) {
 void scroll_lores() {
 	SCL_DisplayFrame();
 	SCL_DisplayFrame();
-	// SPR_2FrameChgIntr(-1);
 	SCL_SetDisplayMode(SCL_NON_INTER, SCL_240LINE, SCL_NORMAL_B);
 	SPR_2SetTvMode(SPR_TV_NORMAL, SPR_TV_352X240, OFF);
 	SCL_SetCycleTable(CycleTbLoRes);
@@ -171,7 +170,6 @@ void scroll_lores() {
 void scroll_hires() {
 	SCL_DisplayFrame();
 	SCL_DisplayFrame();
-	// SPR_2FrameChgIntr(-1);
 	SCL_SetDisplayMode(SCL_DOUBLE_INTER, SCL_240LINE, SCL_HIRESO_B);
 	SPR_2SetTvMode(SPR_TV_HIRESO, SPR_TV_704X240, ON);
 	SCL_SetCycleTable(CycleTbHiRes);

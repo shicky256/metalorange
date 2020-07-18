@@ -43,10 +43,9 @@ void sprite_init() {
 	set_imask(0);
 	
 	SPR_2FrameChgIntr(-1); //wait until next frame to set color mode
+	SPR_2FrameEraseData(RGB16_COLOR(0, 0, 0)); //zero out frame
 	SCL_DisplayFrame();
 	
-
-
 	cd_load(font_name, image_buf, font_size * font_num);
 	for (i = 0; i < font_num; i++) {
 		SPR_2SetChar(i, COLOR_0, 0, font_width, font_height, (Uint8 *)(image_buf) + (i * font_size));
@@ -65,7 +64,7 @@ void sprite_erase(Sint16 x, Sint16 y) {
 	xy[1].x = x; xy[1].y = 0; //upper right
 	xy[2].x = x; xy[2].y = y; //lower right
 	xy[3].x = 0; xy[3].y = y; //lower right
-	SPR_2Polygon(0, 0, 0, xy, NO_GOUR);
+	SPR_2Polygon(0, SPD_DISABLE, 0, xy, NO_GOUR);
 }
 
 void sprite_startdraw(void) {

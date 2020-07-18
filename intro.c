@@ -181,7 +181,7 @@ static inline void intro_drawpolys(int num) {
             rect[1].x = 140 + 72; rect[1].y = 0; //top right
             rect[2].x = 140 + 72; rect[2].y = 240; //bottom right
             rect[3].x = 140; rect[3].y = 240; //bottom left
-            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            SPR_2Polygon(0, SPD_DISABLE, 2, rect, NO_GOUR);
             //fall through to next case
 
         case 4:
@@ -189,7 +189,7 @@ static inline void intro_drawpolys(int num) {
             rect[1].x = 282 + 72; rect[1].y = 0;
             rect[2].x = 282 + 72; rect[2].y = 240;
             rect[3].x = 282; rect[3].y = 240;
-            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            SPR_2Polygon(0, SPD_DISABLE, 2, rect, NO_GOUR);
             //fall through to next case
 
         case 3:
@@ -197,7 +197,7 @@ static inline void intro_drawpolys(int num) {
             rect[1].x = 72; rect[1].y = 0;
             rect[2].x = 72; rect[2].y = 240;
             rect[3].x = 0; rect[3].y = 240;
-            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            SPR_2Polygon(0, SPD_DISABLE, 2, rect, NO_GOUR);
             //fall through to next case
 
         case 2:
@@ -205,7 +205,7 @@ static inline void intro_drawpolys(int num) {
             rect[1].x = 210 + 72; rect[1].y = 0;
             rect[2].x = 210 + 72; rect[2].y = 240;
             rect[3].x = 210; rect[3].y = 240;
-            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            SPR_2Polygon(0, SPD_DISABLE, 2, rect, NO_GOUR);
             //fall through to next case
 
         case 1:
@@ -213,7 +213,7 @@ static inline void intro_drawpolys(int num) {
             rect[1].x = 72 + 72; rect[1].y = 0;
             rect[2].x = 72 + 72; rect[2].y = 240;
             rect[3].x = 72; rect[3].y = 240;
-            SPR_2Polygon(0, 0, 2, rect, NO_GOUR);
+            SPR_2Polygon(0, SPD_DISABLE, 2, rect, NO_GOUR);
     }    
 }
 
@@ -250,6 +250,8 @@ static inline int intro_linescroll() {
 }
 
 int intro_run() {
+    Uint16 *map_ptr;
+    Uint16 count;
 
     switch(state) {
         case STATE_INTRO_INIT:
@@ -322,18 +324,32 @@ int intro_run() {
             break;
 
         case STATE_INTRO_LOADTITLE:
+            intro_drawpolys(5); //black out the screen
             SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
             SCL_SetColMixRate(SCL_NBG0, 0); //make screen opaque
             DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
             scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
-            Uint16 count = 2;
-            Uint16 *map_ptr = VRAM_PTR(0);
+            count = 2;
+            map_ptr = VRAM_PTR(0);
             for (int i = 0; i < (240 / 16); i++) {
                 for (int j = 0; j < (352 / 16); j++) {
                     map_ptr[i * 32 + j] = count;
                     count += 2;
                 }
             }
+            //zero out the other maps to avoid artifacts
+            map_ptr = VRAM_PTR(1);
+            for (int i = 0; i < 32 * 32; i++) {
+                map_ptr[i] = 0;
+            }
+            map_ptr = VRAM_PTR(2);
+            for (int i = 0; i < 32 * 32; i++) {
+                map_ptr[i] = 0;
+            }
+            map_ptr = VRAM_PTR(3);
+            for (int i = 0; i < 32 * 32; i++) {
+                map_ptr[i] = 0;
+            }            
             scroll_lores();
             cursor = 5;
             frames = 0;
@@ -353,19 +369,23 @@ int intro_run() {
             break;
         
         case STATE_INTRO_LOADMETALORANGE:
+
+            for (int i = 0; i < 32; i++) {
+
+            }
             SCL_SetColRam(SCL_NBG1, 0, 16, metalorange_pal); //load palette
             DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
             SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
             scroll_set(1, MTH_FIXED(-((352 / 2) - (256 / 2))), MTH_FIXED(METALORANGE_Y)); //reset position
-            Uint16 *metalorange_map = VRAM_PTR(1);
-            int counter = 1;
+            map_ptr = VRAM_PTR(1);
+            count = 1;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {
                     if (i < 3 && j < 16) {
-                        metalorange_map[i * 32 + j] = counter++;
+                        map_ptr[i * 32 + j] = count++;
                     }
                     else {
-                        metalorange_map[i * 32 + j] = 0;
+                        map_ptr[i * 32 + j] = 0;
                     }
                 }
             }
@@ -397,15 +417,15 @@ int intro_run() {
             DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + (128 * (metalorange_num + 1))), cyberblock_ptr, 128 * cyberblock_num);
             SCL_SetPriority(SCL_NBG2, 7); //put on top
             scroll_set(2, MTH_FIXED(-((352 / 2) - (192 / 2))), MTH_FIXED(-120));
-            Uint16 *cyberblock_map = VRAM_PTR(2);
-            counter = metalorange_num + 1;
+            map_ptr = VRAM_PTR(2);
+            count = metalorange_num + 1;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {
                     if (i < 2 && j < 12) {
-                        cyberblock_map[i * 32 + j] = counter++ | (1 << 12);
+                        map_ptr[i * 32 + j] = count++ | (1 << 12);
                     }
                     else {
-                        cyberblock_map[i * 32 + j] = 0;
+                        map_ptr[i * 32 + j] = 0;
                     }
                 }
             }

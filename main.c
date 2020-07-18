@@ -5,12 +5,14 @@
 #include <sega_mth.h>
 #include <sega_cdc.h>
 #include <sega_sys.h>
+#include <SEGA_PER.H>
 
 #include "cd.h"
 #include "devcart.h"
 #include "graphicrefs.h"
 #include "intro.h"
 #include "logo.h"
+#include "release.h"
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
@@ -38,7 +40,6 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	devcart_printstr("hello, i am a sega saturn\r\n");
 	int state = STATE_LOGO;
 	while(1) {
 		sprite_startdraw();
@@ -60,11 +61,18 @@ int main() {
 		//if the cd drive is opened, return to menu
 		CDC_GetPeriStat(&cd_status);
 		if ((cd_status.status & 0xF) == CDC_ST_OPEN) {
+			#if DEVCART_LOAD
+			#else
 			SYS_EXECDMP();
+			#endif
 		}
 		//if player hits A+B+C+Start, return to menu
 		if (PadData1 == (PAD_A | PAD_B | PAD_C | PAD_S)) {
+			#if DEVCART_LOAD
+			devcart_reset();
+			#else
 			SYS_EXECDMP();
+			#endif
 		}
 			// sprite_draw_all();
 		print_display();
