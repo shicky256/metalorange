@@ -71,24 +71,38 @@ static inline void menu_init() {
     SCL_SetColRam(SCL_NBG0, 0, 256, chipframes_pal);
 }
 
-static void menu_starmove(SPRITE_INFO *star) {
-    if ((star->x < 0) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
-        (star->y < 0) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
-        sprite_delete(star);
-    }
-    //slight acceleration
-    MTH_Mul(star->dx, MTH_FIXED(1.5));
-    MTH_Mul(star->dy, MTH_FIXED(1.5));
-    star->x += star->dx;
-    star->y += star->dy;
-    //calculate distance using pythagorean theorem, use to calculate sprite scale
-    Fixed32 distance_x = star->x - MTH_FIXED(SCROLL_LORES_X >> 1);
-    Fixed32 distance_y = star->y - MTH_FIXED(SCROLL_LORES_Y >> 1);
-    distance_x = MTH_Mul(distance_x, distance_x);
-    distance_y = MTH_Mul(distance_y, distance_y);
-    Fixed32 distance = MTH_Sqrt(distance_x + distance_y);
-    star->scale = MTH_Div(distance, MTH_FIXED(80));
+//Algorithm by Tristan Muntsinger
+Uint32 sqrt32(Uint32 n)  
+{  
+    unsigned int c = 0x8000;  
+    unsigned int g = 0x8000;  
+    
+    for(;;) {  
+        if(g*g > n)  
+            g ^= c;  
+        c >>= 1;  
+        if(c == 0)  
+            return g;  
+        g |= c;  
+    }  
+}  
 
+static void menu_starmove(SPRITE_INFO *star) {
+    if ((star->x < MTH_FIXED(-20)) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
+        (star->y < MTH_FIXED(-20)) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
+        sprite_delete(star);
+        return;
+    }
+    //acceleration
+    star->x += MTH_Mul(star->dx, star->scale);
+    star->y += MTH_Mul(star->dy, star->scale);
+    //calculate distance using pythagorean theorem, use to calculate sprite scale
+    Sint32 distance_x = (star->x >> 16) - (SCROLL_LORES_X >> 1);
+    Sint32 distance_y = (star->y >> 16) - (SCROLL_LORES_Y >> 1);
+    distance_x *= distance_x;
+    distance_y *= distance_y;
+    Uint32 distance = sqrt32((Uint32)distance_x + (Uint32)distance_y);
+    star->scale = MTH_Div(MTH_IntToFixed(distance), MTH_FIXED(80));
 }
 
 static inline void menu_starcreate(SPRITE_INFO *star) {
