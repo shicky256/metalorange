@@ -1,0 +1,20 @@
+chip animation timing:
+(after 1s fadein)
+1 50
+2 32
+1 16
+3 10
+4 10
+5 13
+6 13
+7 13
+8 13 [5 6 7 8 loop after]
+
+(on menu selection)
+4 10
+3 10
+1 16
+2 32
+1 32
+9 32
+1 (stay at 1 and fade out)

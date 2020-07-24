@@ -107,6 +107,9 @@ void server_run(char *directory)
                         putchar(curr_char);
                     }
                     break;
+
+                case FUNC_QUIT:
+                    return;
                 }
             }
         }

@@ -25,22 +25,25 @@ typedef struct SpriteInfo {
 	Uint16 options;
 	Uint16 state;
 	Uint16 collision;
-	Fixed32 xPos;
-	Fixed32 yPos;
-	Fixed32 xSize;
-	Fixed32 ySize;
+	Fixed32 x;
+	Fixed32 y;
+	Fixed32 x_size;
+	Fixed32 y_size;
 	Fixed32 dx;
 	Fixed32 dy;
 	Fixed32 scale;
 	Fixed32 angle;
 	Uint16 mirror;
-	Uint16 animTimer; //timer for animations
-	Uint16 animCursor; //where we are in animation array
+	Uint16 anim_timer; //timer for animations
+	Uint16 anim_cursor; //where we are in animation array
 	IterateFunc iterate;
 } SPRITE_INFO;
 
 #define SPRITE_LIST_SIZE (20)
 extern SPRITE_INFO sprites[];
+//buffer in HWRAM to load sprite graphics in since you can't dma from LWRAM
+#define SPRITE_BUF_SIZE (8192)
+extern Uint8 sprite_buf[];
 
 //sets up initial sprite display
 void sprite_init(void);

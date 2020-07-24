@@ -12,6 +12,7 @@
 #include "graphicrefs.h"
 #include "intro.h"
 #include "logo.h"
+#include "menu.h"
 #include "release.h"
 #include "scroll.h"
 #include "sound.h"
@@ -24,7 +25,8 @@ SclConfig off_config;
 
 typedef enum {
 	STATE_LOGO = 0,
-	STATE_INTRO
+	STATE_INTRO,
+	STATE_MENU,
 } GAME_STATE;
 
 int main() {
@@ -37,10 +39,14 @@ int main() {
 	print_init();
 	SCL_SetSpriteMode(SCL_TYPE8, SCL_PALETTE, SCL_SP_WINDOW);
 	sound_init();
+	//init RNG
+	Uint8 *time = PER_GET_TIM();
+	Uint32 seed = time[4] | (time[3] << 8) | (time[2] << 16) | (time[3] << 24);
+	MTH_InitialRand(seed);
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_LOGO;
+	int state = STATE_MENU;
 	while(1) {
 		sprite_startdraw();
 		
@@ -53,6 +59,13 @@ int main() {
 			
 			case STATE_INTRO:
 				intro_run();
+				if (PadData1 & PAD_S) {
+					state = STATE_MENU;
+				}
+				break;
+			
+			case STATE_MENU:
+				menu_run();
 				break;
 		}
 
@@ -74,7 +87,7 @@ int main() {
 			SYS_EXECDMP();
 			#endif
 		}
-			// sprite_draw_all();
+		sprite_draw_all();
 		print_display();
 		SPR_2CloseCommand();
 

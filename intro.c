@@ -24,8 +24,6 @@ typedef enum {
     STATE_INTRO_MOVEMETALORANGE,
     STATE_INTRO_LOADCYBERBLOCK,
     STATE_INTRO_SHOWCYBERBLOCK,
-    STATE_INTRO_LOADCYBERBLOCK,
-    STATE_INTRO_END
 } INTRO_STATE;
 
 #define SCREEN_X (704)
@@ -434,9 +432,6 @@ int intro_run() {
             break;
         
         case STATE_INTRO_SHOWCYBERBLOCK:
-            break;
-
-        case STATE_INTRO_END:
             return 1;
             break;            
     }

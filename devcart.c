@@ -13,7 +13,8 @@ enum {
     FUNC_DOWNLOAD,
     FUNC_UPLOAD,
     FUNC_EXEC,
-    FUNC_PRINT
+    FUNC_PRINT,
+    FUNC_QUIT
 };
 
 static inline Uint8 devcart_getbyte(void) {
@@ -96,6 +97,9 @@ void devcart_printstr(char *string) {
 void devcart_reset() {
     void (*func_ptr)(void);
 
+    //quit server program
+    devcart_putbyte(FUNC_QUIT);
     func_ptr = (void(*)(void))(0x02000100);
     (*func_ptr)();
 }
+

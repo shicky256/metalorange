@@ -4,6 +4,11 @@
 #define VRAM_PTR(bg) ((Uint16 *)vram[bg])
 extern Uint32 vram[];
 
+#define SCROLL_HIRES_X (704)
+#define SCROLL_HIRES_Y (480)
+#define SCROLL_LORES_X (352)
+#define SCROLL_LORES_Y (240)
+
 #define SCROLL_RES_LOW (0)
 #define SCROLL_RES_HIGH (1)
 extern int scroll_res;

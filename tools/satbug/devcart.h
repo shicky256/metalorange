@@ -14,7 +14,8 @@ enum
     FUNC_DOWNLOAD,
     FUNC_UPLOAD,
     FUNC_EXEC,
-    FUNC_PRINT
+    FUNC_PRINT,
+    FUNC_QUIT
 };
 
 typedef struct ftdi_context ftdi_context_t;

@@ -14,6 +14,7 @@ typedef unsigned long Uint32;
 #include "graphic/title.c"
 #include "graphic/metalorange.c"
 #include "graphic/cyberblock.c"
+#include "graphic/chipframes.c"
 
 //maps
 #include "graphic/starnear.c"
@@ -22,4 +23,4 @@ typedef unsigned long Uint32;
 
 //sprites
 #include "graphic/font.c"
-
+#include "graphic/starspr.c"
