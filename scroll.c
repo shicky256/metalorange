@@ -83,7 +83,7 @@ void scroll_init(void) {
 
 	SCL_SetColRamMode(SCL_CRM24_1024);
 	SCL_AllocColRam(SCL_NBG0, 256, OFF);
-	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 32, OFF);
+	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 64, OFF);
 		// SCL_AllocColRam(SCL_NBG2, 256, OFF);
 		// SCL_SetColRam(SCL_NBG2, 0, 256, (void *)(level->playfield.palette));
 
@@ -206,4 +206,11 @@ void scroll_set(int num, Fixed32 x, Fixed32 y) {
 	SCL_Open(1 << (num + 2));
 	SCL_MoveTo(x, y, 0);
 	SCL_Close();
+}
+
+void scroll_clearmaps(void) {
+	memset(MAP_PTR(0), 0, 0x2000);
+	memset(MAP_PTR(1), 0, 0x2000);
+	memset(MAP_PTR(2), 0, 0x2000);
+	memset(MAP_PTR(3), 0, 0x2000);
 }

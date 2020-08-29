@@ -1,7 +1,7 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#define VRAM_PTR(bg) ((Uint16 *)vram[bg])
+#define MAP_PTR(bg) ((Uint16 *)vram[bg])
 extern Uint32 vram[];
 
 #define SCROLL_HIRES_X (704)
@@ -27,4 +27,6 @@ void scroll_lores(void);
 void scroll_hires(void);
 void scroll_scale(int num, Fixed32 scale);
 void scroll_set(int num, Fixed32 x, Fixed32 y);
+//zeroes out all tilemap vram
+void scroll_clearmaps(void);
 #endif

@@ -15,6 +15,7 @@ typedef unsigned long Uint32;
 #include "graphic/metalorange.c"
 #include "graphic/cyberblock.c"
 #include "graphic/chipframes.c"
+#include "graphic/menufont.c"
 
 //maps
 #include "graphic/starnear.c"

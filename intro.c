@@ -65,7 +65,7 @@ static char *intro_strs[] = {program_str, design_str, graphic_str, character_str
 static inline void intro_init() {
     char *img_buf = (char *)LWRAM;
     char *dest_buf = img_buf;
-    Uint16 *map_ptr = VRAM_PTR(0);
+    Uint16 *map_ptr = MAP_PTR(0);
     //initialize tilemap
     int counter = 1;
     for (int i = 0; i < 30; i++) {
@@ -78,8 +78,6 @@ static inline void intro_init() {
             }
         }
     }
-
-
 
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
     //load all 5 images
@@ -104,15 +102,15 @@ static inline void intro_init() {
     DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, dest_buf, 128 * stars_num);
     //near tilemap
     cd_load_nosize(starnear_name, dest_buf);
-    DMA_CpuMemCopy2(VRAM_PTR(1), dest_buf, 32 * 32);
+    DMA_CpuMemCopy2(MAP_PTR(1), dest_buf, 32 * 32);
     SCL_SetColRam(SCL_NBG1, 0, 16, stars_pal);
     //mid tilemap
     cd_load_nosize(starmid_name, dest_buf);
-    DMA_CpuMemCopy2(VRAM_PTR(2), dest_buf, 32 * 32);
+    DMA_CpuMemCopy2(MAP_PTR(2), dest_buf, 32 * 32);
     // SCL_SetColRam(SCL_NBG2, 0, 16, stars_pal);
     //far tilemap
     cd_load_nosize(starfar_name, dest_buf);
-    DMA_CpuMemCopy2(VRAM_PTR(3), dest_buf, 32 * 32);
+    DMA_CpuMemCopy2(MAP_PTR(3), dest_buf, 32 * 32);
     // SCL_SetColRam(SCL_NBG3, 0, 16, stars_pal);
     
     //load title screen gfx
@@ -328,7 +326,7 @@ int intro_run() {
             DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
             scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
             count = 2;
-            map_ptr = VRAM_PTR(0);
+            map_ptr = MAP_PTR(0);
             for (int i = 0; i < (240 / 16); i++) {
                 for (int j = 0; j < (352 / 16); j++) {
                     map_ptr[i * 32 + j] = count;
@@ -336,15 +334,15 @@ int intro_run() {
                 }
             }
             //zero out the other maps to avoid artifacts
-            map_ptr = VRAM_PTR(1);
+            map_ptr = MAP_PTR(1);
             for (int i = 0; i < 32 * 32; i++) {
                 map_ptr[i] = 0;
             }
-            map_ptr = VRAM_PTR(2);
+            map_ptr = MAP_PTR(2);
             for (int i = 0; i < 32 * 32; i++) {
                 map_ptr[i] = 0;
             }
-            map_ptr = VRAM_PTR(3);
+            map_ptr = MAP_PTR(3);
             for (int i = 0; i < 32 * 32; i++) {
                 map_ptr[i] = 0;
             }            
@@ -375,7 +373,7 @@ int intro_run() {
             DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
             SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
             scroll_set(1, MTH_FIXED(-((352 / 2) - (256 / 2))), MTH_FIXED(METALORANGE_Y)); //reset position
-            map_ptr = VRAM_PTR(1);
+            map_ptr = MAP_PTR(1);
             count = 1;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {
@@ -415,7 +413,7 @@ int intro_run() {
             DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + (128 * (metalorange_num + 1))), cyberblock_ptr, 128 * cyberblock_num);
             SCL_SetPriority(SCL_NBG2, 7); //put on top
             scroll_set(2, MTH_FIXED(-((352 / 2) - (192 / 2))), MTH_FIXED(-120));
-            map_ptr = VRAM_PTR(2);
+            map_ptr = MAP_PTR(2);
             count = metalorange_num + 1;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {

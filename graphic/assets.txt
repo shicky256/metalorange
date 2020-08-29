@@ -13,3 +13,4 @@ m4 starnear.tmx
 t8 title.bmp
 t8 chipframes.bmp
 s starspr
+t4 menufont.bmp

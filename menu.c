@@ -9,6 +9,8 @@
 #include "menu.h"
 #include "scroll.h"
 #include "sprite.h"
+#include "sound.h"
+#include "vblank.h"
 
 #define CHIP_FRAME_SIZE (42 * 256)
 
@@ -28,7 +30,11 @@ static char *chip_run_frames[CHIP_RUN_NUMFRAMES] = {(char *)LWRAM + 4 * CHIP_FRA
                                                     (char *)LWRAM + 7 * CHIP_FRAME_SIZE};
 
 static char *tile_ptr = ((char *)SCL_VDP2_VRAM_A1) + 256;
+static char *font_ptr = ((char *)SCL_VDP2_VRAM_B1);
+static Uint32 font_highlight[16];
 static int timer;
+static int menu_cursor = 0;
+int nudity = 0;
 
 #define STAR_CHARNO (font_num)
 
@@ -40,13 +46,84 @@ typedef enum {
 
 static int state = STATE_MENU_INIT;
 
+static void menu_print(int x, int y, int highlight, char *str) {
+    Uint16 *text_ptr = MAP_PTR(1);
+    char ch;
+    int counter = 0;
+    if (highlight) {
+        while ((ch = *str++)) {
+            text_ptr[y * 32 + x + counter++] = (1 << 12) | (ch - 32); //set palette #1
+        }
+    }
+    else {
+        while ((ch = *str++)) {
+            text_ptr[y * 32 + x + counter++] = ch - 32;
+        }
+    }
+}
+
+static int menu_cycleiter(Uint8 r_val, Uint8 g_val, Uint8 b_val) {
+    static Uint8 r = 255;
+    static Uint8 g = 255;
+    static Uint8 b = 255;
+
+    if (r > r_val) r--;
+    if (r < r_val) r++;
+
+    if (g > g_val) g--;
+    if (g < g_val) g++;
+
+    if (b > b_val) b--;
+    if (b < b_val) b++;
+
+    Uint32 r_mod = r;
+    Uint32 g_mod = g;
+    Uint32 b_mod = b;
+    for (int i = 8; i > 0; i--) {
+        font_highlight[i] = r_mod | (g_mod << 8) | (b_mod << 16);
+        r_mod *= 9; r_mod /= 10;
+        g_mod *= 9; g_mod /= 10;
+        b_mod *= 9; b_mod /= 10;
+    }
+    font_highlight[0] = 0;
+    SCL_SetColRam(SCL_NBG1, 16, 16, font_highlight);
+    return (r == r_val) && (g == g_val) && (b == b_val);
+}
+
+static void menu_palcycle() {
+    static int pal_cursor = 0;
+
+    switch(pal_cursor) {
+        case 0: //red
+            if (menu_cycleiter(255, 0, 0)) pal_cursor++;
+            break;
+        case 1: //green
+            if (menu_cycleiter(0, 255, 0)) pal_cursor++;
+            break;
+        case 2: //blue
+            if (menu_cycleiter(0, 0, 255)) pal_cursor++;
+            break;
+        case 3: //yellow
+            if (menu_cycleiter(255, 255, 0)) pal_cursor++;
+            break;
+        case 4: //purple
+            if (menu_cycleiter(80, 0, 80)) pal_cursor++;
+            break;
+        case 5: //aqua
+            if (menu_cycleiter(0, 255, 255)) pal_cursor = 0;
+            break;
+    }
+}
+
 static inline void menu_init() {
     char *menu_buf = (char *)LWRAM;
-    Uint16 *map_ptr = VRAM_PTR(0);
+    Uint16 *map_ptr = MAP_PTR(0);
 
     scroll_lores();
+    scroll_clearmaps();
     //put NBG0 in a good location
     scroll_set(0, MTH_FIXED(-220), MTH_FIXED(-140));
+    scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
     //load star gfx
     cd_load_nosize(starspr_name, sprite_buf);
     SCL_SetColRam(SCL_SPR, 16, 16, starspr_pal);
@@ -54,6 +131,14 @@ static inline void menu_init() {
 		SPR_2SetChar(i + STAR_CHARNO, COLOR_0, 16, starspr_width, starspr_height, sprite_buf + (i * starspr_size));
 	}
     SCL_SetPriority(SCL_SPR, 2); //put spr scroll layer under everything
+    //load font gfx
+    cd_load_nosize(menufont_name, menu_buf);
+    DMA_CpuMemCopy1(font_ptr, menu_buf, 128 * menufont_num);
+    SCL_SetColRam(SCL_NBG1, 0, 16, menufont_pal);
+    menu_print(6, 5, 1, "START GAME");
+    menu_print(6, 6, 0, "LOAD GAME");
+    menu_print(6, 7, 0, "NUDITY: OFF");
+    //load chip gfx
     cd_load_nosize(chipframes_name, menu_buf);
     DMA_CpuMemCopy1(tile_ptr, menu_buf, 256 * 42);
     int counter = 2;
@@ -69,6 +154,7 @@ static inline void menu_init() {
         }
     }
     SCL_SetColRam(SCL_NBG0, 0, 256, chipframes_pal);
+    sound_cdda(4, 1);
 }
 
 //Algorithm by Tristan Muntsinger
@@ -88,14 +174,14 @@ Uint32 sqrt32(Uint32 n)
 }  
 
 static void menu_starmove(SPRITE_INFO *star) {
-    if ((star->x < MTH_FIXED(-20)) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
-        (star->y < MTH_FIXED(-20)) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
+    if ((star->x < MTH_FIXED(0)) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
+        (star->y < MTH_FIXED(0)) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
         sprite_delete(star);
         return;
     }
     //acceleration
-    star->x += MTH_Mul(star->dx, star->scale);
-    star->y += MTH_Mul(star->dy, star->scale);
+    star->x += MTH_Mul(star->dx, MAX(star->scale, MTH_FIXED(0.5)));
+    star->y += MTH_Mul(star->dy, MAX(star->scale, MTH_FIXED(0.5)));
     //calculate distance using pythagorean theorem, use to calculate sprite scale
     Sint32 distance_x = (star->x >> 16) - (SCROLL_LORES_X >> 1);
     Sint32 distance_y = (star->y >> 16) - (SCROLL_LORES_Y >> 1);
@@ -120,6 +206,8 @@ static inline void menu_starcreate(SPRITE_INFO *star) {
 }
 
 int menu_run() {
+    static int frames = 0;
+    frames++;    
     switch (state) {
         case STATE_MENU_INIT:
             menu_init();
@@ -156,10 +244,41 @@ int menu_run() {
             break;
 
     }
-    //spawn a bg star every frame
-    SPRITE_INFO *star = sprite_next();
-    if (star != NULL) {
-        menu_starcreate(star);
+    if (state >= STATE_MENU_ANIMIN) {
+        //spawn a bg star everyframe
+        SPRITE_INFO *star = sprite_next();
+        if (star != NULL) {
+            menu_starcreate(star);
+        }
+        //cycle palette for selected item
+        menu_palcycle();
+        //handle menu movement
+        if ((PadData1E & PAD_U) && (menu_cursor > 0)) {
+            menu_cursor--;
+        }
+        if ((PadData1E & PAD_D) && (menu_cursor < 2)) {
+            menu_cursor++;
+        }
+        //handle nudity toggle
+        if ((menu_cursor == 2) && (PadData1E & (PAD_A | PAD_B | PAD_C))) {
+            nudity ^= 1;
+        }
+
+        if (menu_cursor == 0) { menu_print(6, 5, 1, "START GAME"); }
+        else menu_print(6, 5, 0, "START GAME");
+
+        if (menu_cursor == 1) { menu_print(6, 6, 1, "LOAD GAME"); }
+        else { menu_print(6, 6, 0, "LOAD GAME"); }
+
+        if (nudity) {
+            if (menu_cursor == 2) { menu_print(6, 7, 1, "NUDITY: ON "); }
+            else { menu_print(6, 7, 0, "NUDITY: ON "); }
+        }
+
+        else {
+            if (menu_cursor == 2) { menu_print(6, 7, 1, "NUDITY: OFF"); }
+            else { menu_print(6, 7, 0, "NUDITY: OFF"); }
+        }
     }
     return 0;
 }

@@ -60,6 +60,7 @@ int main() {
 			case STATE_INTRO:
 				intro_run();
 				if (PadData1 & PAD_S) {
+					print_init();
 					state = STATE_MENU;
 				}
 				break;

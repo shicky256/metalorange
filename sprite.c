@@ -147,6 +147,7 @@ void sprite_draw_all() {
 	int i;
 	Sint32 rel_x, rel_y;
 	SPRITE_INFO tmp;
+	print_num(num_sprites, 0, 0);
 	for (i = 0; i < SPRITE_LIST_SIZE; i++) {
 		rel_x = sprites[i].x;
 		rel_y = sprites[i].y;

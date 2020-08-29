@@ -62,6 +62,11 @@ extern Uint16 chipframes_num;
 extern char chipframes_name[];
 extern Uint32 chipframes_pal[];
 
+//menufont.c
+extern Uint16 menufont_num;
+extern char menufont_name[];
+extern Uint32 menufont_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;

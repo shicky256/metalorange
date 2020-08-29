@@ -43,7 +43,7 @@ void logo_loadframe(int num) {
 static inline void logo_init() {
     char *logo_buf = (char *)LWRAM;
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
-    Uint16 *map_ptr = VRAM_PTR(0);
+    Uint16 *map_ptr = MAP_PTR(0);
     //put the image in a good location
     scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
     cd_load_nosize(roarbg_name, logo_buf);
