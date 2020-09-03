@@ -9,6 +9,7 @@
 #include "sound.h"
 #include "intro.h"
 #include "print.h"
+#include "vblank.h"
 
 typedef enum {
     STATE_INTRO_INIT = 0,
@@ -24,6 +25,7 @@ typedef enum {
     STATE_INTRO_MOVEMETALORANGE,
     STATE_INTRO_LOADCYBERBLOCK,
     STATE_INTRO_SHOWCYBERBLOCK,
+    STATE_INTRO_FADEOUT,
 } INTRO_STATE;
 
 #define SCREEN_X (704)
@@ -430,8 +432,14 @@ int intro_run() {
             break;
         
         case STATE_INTRO_SHOWCYBERBLOCK:
-            return 1;
-            break;            
+            break;
+
+        case STATE_INTRO_FADEOUT:
+            frames++;
+            if (frames == 30) {
+                return 1;
+            }
+            break;       
     }
     //move stars
     if (state < STATE_INTRO_LOADTITLE) {
@@ -445,6 +453,17 @@ int intro_run() {
         scroll_set(1, star_x, star_y);
         scroll_set(2, star_x >> 1, star_y >> 1);
         scroll_set(3, star_x >> 2, star_y >> 2);
+    }
+
+    //do fadeout
+    if (PadData1E & PAD_S) {
+        SCL_SetColOffset(SCL_OFFSET_A, SCL_SPR | SCL_NBG0 | SCL_NBG1 | SCL_NBG2, 0, 0, 0);
+        SclRgb start, end;
+        start.red = 0; start.green = 0; start.blue = 0;
+        end.red = -255; end.green = -255; end.blue = -255;
+        SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
+        frames = 0;
+        state = STATE_INTRO_FADEOUT;
     }
     return 0;
 }

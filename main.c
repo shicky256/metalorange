@@ -46,7 +46,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_MENU;
+	int state = STATE_LOGO;
 	while(1) {
 		sprite_startdraw();
 		
@@ -58,9 +58,7 @@ int main() {
 				break;
 			
 			case STATE_INTRO:
-				intro_run();
-				if (PadData1 & PAD_S) {
-					print_init();
+				if (intro_run()) {
 					state = STATE_MENU;
 				}
 				break;

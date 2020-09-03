@@ -65,6 +65,8 @@ void sound_init() {
     #endif
     load_drv();
     load_8bit_pcm("ROAR.RAW", 11025);
+    load_8bit_pcm("SELECT.RAW", 11025);
+    load_8bit_pcm("START.RAW", 11025);
 }
 
 void sound_cdda(int track, int loop) {
