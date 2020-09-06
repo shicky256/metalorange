@@ -9,6 +9,7 @@
 
 #include "cd.h"
 #include "devcart.h"
+#include "game.h"
 #include "graphicrefs.h"
 #include "intro.h"
 #include "logo.h"
@@ -27,6 +28,7 @@ typedef enum {
 	STATE_LOGO = 0,
 	STATE_INTRO,
 	STATE_MENU,
+	STATE_GAME,
 } GAME_STATE;
 
 int main() {
@@ -46,13 +48,13 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_LOGO;
+	int state = STATE_GAME;
 	while(1) {
 		sprite_startdraw();
 		
 		switch (state) {
 			case STATE_LOGO:
-				if (logo_run() || PadData1 & PAD_S) {
+				if (logo_run()) {
 					state = STATE_INTRO;
 				}
 				break;
@@ -64,7 +66,13 @@ int main() {
 				break;
 			
 			case STATE_MENU:
-				menu_run();
+				if (menu_run()) {
+					state = STATE_GAME;
+				}
+				break;
+
+			case STATE_GAME:
+				game_run();
 				break;
 		}
 

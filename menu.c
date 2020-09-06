@@ -54,6 +54,7 @@ typedef enum {
     STATE_MENU_ANIMIN,
     STATE_MENU_RUN,
     STATE_MENU_ANIMOUT,
+    STATE_MENU_FADEOUT,
     STATE_MENU_DONE
 } MENU_STATE;
 
@@ -277,16 +278,32 @@ int menu_run() {
                 chip_cursor++;
                 if (chip_cursor == CHIP_ANIMOUT_NUMFRAMES) {
                     chip_cursor = 0;
-                    state = STATE_MENU_DONE;
                     //use first frame for fadeout
                     DMA_CpuMemCopy1(tile_ptr, (Uint8 *)LWRAM, 42 * 256);
+                    state = STATE_MENU_FADEOUT;
                     break;
                 }
                 DMA_CpuMemCopy1(tile_ptr, chip_animout_frames[chip_cursor], 42 * 256);
             }
             break;
 
+        case STATE_MENU_FADEOUT:
+            timer++;
+            //wait a second before fading out
+            if (timer == 60) {
+                SclRgb start, end;
+                start.red = 0; start.green = 0; start.blue = 0;
+                end.red = -255; end.green = -255; end.blue = -255;
+                SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
+            }
+            else if (timer == 90) {
+                sprite_deleteall();
+                state = STATE_MENU_DONE;
+            }
+            break;
+
         case STATE_MENU_DONE:
+            return 1;
             break;
 
     }

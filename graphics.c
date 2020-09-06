@@ -16,11 +16,14 @@ typedef unsigned long Uint32;
 #include "graphic/cyberblock.c"
 #include "graphic/chipframes.c"
 #include "graphic/menufont.c"
+#include "graphic/game_tiles.c"
+#include "graphic/chipgame.c"
 
 //maps
 #include "graphic/starnear.c"
 #include "graphic/starmid.c"
 #include "graphic/starfar.c"
+#include "graphic/game.c"
 
 //sprites
 #include "graphic/font.c"

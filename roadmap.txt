@@ -1,0 +1,15 @@
+---metal orange roadmap---
+minimum "shippable" game:
+- game engine fully implemented
+- all powerups
+- ~20 levels
+
+high priority:
+- between level animated cutscenes
+- analog control
+- 50 levels
+
+nice to have:
+- game saving
+- sc-55 midi soundtrack (would probably need another disc)
+- better intro text font (animated too)

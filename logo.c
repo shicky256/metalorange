@@ -5,6 +5,7 @@
 #include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
+#include "vblank.h"
 #include "logo.h"
 
 #define FRAME_XPIXELS (144)
@@ -70,8 +71,17 @@ static inline void logo_init() {
 }
 
 int logo_run(void) {
-    static SclRgb start, end;
     static int frame;
+
+    //allow user to skip the logo
+    if ((PadData1 & PAD_S) && state > STATE_LOGO_FADEIN) {
+        SclRgb start, end;
+        start.red = start.green = start.blue = 0;
+        end.red = end.green = end.blue = -255;
+        SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &start, &end);
+        frame = 0;
+        state = STATE_LOGO_FADEOUT;
+    }
 
     switch(state) {
         case STATE_LOGO_INIT:
@@ -79,6 +89,7 @@ int logo_run(void) {
             SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
             SCL_DisplayFrame();
             logo_init();
+            SclRgb start, end;
             start.red = start.green = start.blue = -255;
             end.red = end.green = end.blue = 0;
             SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &start, &end);
@@ -115,7 +126,10 @@ int logo_run(void) {
         case STATE_LOGO_DONE:
             frame++;
             if (frame > 60) {
-                SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &end, &start);
+                SclRgb start, end;
+                start.red = start.green = start.blue = 0;
+                end.red = end.green = end.blue = -255;
+                SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 60, &start, &end);
                 frame = 0;
                 state = STATE_LOGO_FADEOUT;
             }

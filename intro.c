@@ -284,15 +284,15 @@ int intro_run() {
         case STATE_INTRO_MOVEGIRL:
             if ((cursor & 1) == 0) {
                 girl_xpos -= MOVE_SPEED;
-                if (girl_xpos <= MTH_FIXED(-(SCREEN_X - GIRL_X))) {
-                    girl_xpos = MTH_FIXED(-(SCREEN_X - GIRL_X));
+                if (girl_xpos < MTH_FIXED(-(SCREEN_X - GIRL_X))) {
+                    girl_xpos = MTH_FIXED(-(SCREEN_X - GIRL_X) - 1);
                     state = STATE_INTRO_TEXT;
                 }
             }
             else {
                 girl_xpos += MOVE_SPEED;
-                if (girl_xpos > MTH_FIXED(0)) {
-                    girl_xpos = MTH_FIXED(0);
+                if (girl_xpos > MTH_FIXED(1)) {
+                    girl_xpos = MTH_FIXED(1);
                     state = STATE_INTRO_TEXT;
                 }
             }

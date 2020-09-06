@@ -14,3 +14,6 @@ t8 title.bmp
 t8 chipframes.bmp
 s starspr
 t4 menufont.bmp
+t8 game_tiles.bmp
+m8 game.tmx
+t8 chipgame.bmp
