@@ -27,6 +27,7 @@ void scroll_lores(void);
 void scroll_hires(void);
 void scroll_scale(int num, Fixed32 scale);
 void scroll_set(int num, Fixed32 x, Fixed32 y);
+void scroll_move(int num, Fixed32 x, Fixed32 y);
 //zeroes out all tilemap vram
 void scroll_clearmaps(void);
 #endif

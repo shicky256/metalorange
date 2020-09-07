@@ -17,3 +17,7 @@ t4 menufont.bmp
 t8 game_tiles.bmp
 m8 game.tmx
 t8 chipgame.bmp
+t4 gamestar.bmp
+m4 gamefar.tmx
+m4 gamemid.tmx
+m4 gamenear.tmx

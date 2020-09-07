@@ -10,11 +10,19 @@
 #include "sprite.h"
 #include "vblank.h"
 
+typedef enum {
+    STATE_ANIM_NONE = 0,
+    STATE_ANIM_HAND,
+    STATE_ANIM_SBLINK,
+    STATE_ANIM_DBLINK
+} ANIM_STATE;
+
+static int anim_state = STATE_ANIM_NONE;
+static int anim_frames = 0;
 
 typedef enum {
     STATE_GAME_INIT = 0,
     STATE_GAME_FADEIN,
-    STATE_GAME_HAND,
     STATE_GAME_PLAY
 } GAME_STATE;
 
@@ -27,19 +35,28 @@ static int state = STATE_GAME_INIT;
 #define IMAGE_XTILES (9)
 
 #define CHIPFRAME_SIZE (96 * 80)
-#define CHIP_HAND_FRAMES (4)
-static int chip_hand_timings[CHIP_HAND_FRAMES] = {7, 6, 6, 35};
+#define CHIP_HAND_NUMFRAMES (4)
+static int chip_hand_frames[CHIP_HAND_NUMFRAMES] = {1, 2, 3, 4};
+static int chip_hand_timings[CHIP_HAND_NUMFRAMES] = {7, 6, 6, 35};
+
+#define CHIP_BLINK_NUMFRAMES (3)
+static int chip_blink_frames[CHIP_BLINK_NUMFRAMES] = {5, 6, 0};
+static int chip_blink_timings[CHIP_BLINK_NUMFRAMES] = {11, 4, 4};
 static int anim_cursor;
+static int chip_blinktimer;
 
 static inline void game_init() {
     Uint16 *game_buf = (Uint16 *)LWRAM;
     //blank display
     scroll_lores();
-    SCL_SetColOffset(SCL_OFFSET_A, SCL_SPR | SCL_NBG0 | SCL_NBG1 | SCL_NBG2, -255, -255, -255);
+    SCL_SetColOffset(SCL_OFFSET_A, SCL_SPR | SCL_NBG0 | SCL_NBG1 | SCL_NBG2 | SCL_NBG3, -255, -255, -255);
     //wipe tilemaps
     scroll_clearmaps();
     //reset nbg0
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
+    scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
+    scroll_set(2, MTH_FIXED(0), MTH_FIXED(0));
+    scroll_set(3, MTH_FIXED(0), MTH_FIXED(0));
     //load tiles for hud
     cd_load_nosize(game_tiles_name, game_buf);
     //write them to the screen
@@ -60,6 +77,20 @@ static inline void game_init() {
             }
         }
     }
+    //load tiles for stars
+    cd_load_nosize(gamestar_name, game_buf);
+    //write them to screen
+    tile_ptr = (char *)SCL_VDP2_VRAM_B1;
+    DMA_CpuMemCopy1(tile_ptr, game_buf, gamestar_num * 128);
+    //load palette for stars
+    SCL_SetColRam(SCL_NBG1, 0, 16, gamestar_pal);
+    //load maps
+    cd_load_nosize(gamenear_name, game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(1), game_buf, 32 * 32 * 2);
+    cd_load_nosize(gamemid_name, game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(2), game_buf, 32 * 32 * 2);
+    cd_load_nosize(gamefar_name, game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(3), game_buf, 32 * 32 * 2);
     //fade in
     SclRgb start, end;
     start.red = start.green = start.blue = -255;
@@ -84,11 +115,73 @@ static void game_loadchip(int num) {
     }
 }
 
+static void game_animset(int state) {
+    anim_cursor = 0;
+    anim_frames = 0;
+    anim_state = state;
+    switch(state) {
+        case STATE_ANIM_NONE:
+            game_loadchip(0);
+            break;
+
+        case STATE_ANIM_HAND:
+            game_loadchip(chip_hand_frames[0]);
+            break;
+
+        case STATE_ANIM_SBLINK:
+        case STATE_ANIM_DBLINK:
+            game_loadchip(chip_blink_frames[0]);
+            break;
+    }
+}
+
+static void game_animate() {
+    switch (anim_state) {
+        case STATE_ANIM_HAND: //chip does her hand thing here
+            anim_frames++;
+            if (anim_frames >= chip_hand_timings[anim_cursor]) {
+                anim_frames = 0;
+                anim_cursor++;
+                if (anim_cursor >= CHIP_HAND_NUMFRAMES) {
+                    game_animset(STATE_ANIM_NONE);
+                    break;
+                }
+                game_loadchip(chip_hand_frames[anim_cursor]);
+            }
+            break;
+
+        case STATE_ANIM_SBLINK:
+        case STATE_ANIM_DBLINK:
+            anim_frames++;
+            if (anim_frames >= chip_blink_timings[anim_cursor]) {
+                anim_frames = 0;
+                anim_cursor++;
+                if (anim_cursor >= CHIP_BLINK_NUMFRAMES) {
+                    if (anim_state == STATE_ANIM_DBLINK) {
+                        game_animset(STATE_ANIM_SBLINK);
+                    }
+                    else {
+                        game_animset(STATE_ANIM_NONE);
+                    }
+                    break;
+                }
+                game_loadchip(chip_blink_frames[anim_cursor]);
+            }
+            break;
+    }
+}
+
+static inline int game_setblinktimer() {
+    return 180 + (MTH_GetRand() & 0x1f);
+}
+
 int game_run() {
     static int frames;
     switch (state) {
         case STATE_GAME_INIT:
             game_init();
+            game_animset(STATE_ANIM_NONE);
+            chip_blinktimer = game_setblinktimer();
             frames = 0;
             state = STATE_GAME_FADEIN;
             break;
@@ -96,34 +189,31 @@ int game_run() {
         case STATE_GAME_FADEIN:
             frames++;
             if (frames > 90) {
-                anim_cursor = 0;
+                game_animset(STATE_ANIM_HAND);
                 frames = 0;
-                game_loadchip(0);
-                state = STATE_GAME_HAND;
-            }
-            break;
-        
-        case STATE_GAME_HAND: //chip does her hand thing here
-            frames++;
-            if (frames >= chip_hand_timings[anim_cursor]) {
-                frames = 0;
-                anim_cursor++;
-                if (anim_cursor >= CHIP_HAND_FRAMES) {
-                    state = STATE_GAME_PLAY;
-                    break;
-                }
-                game_loadchip(anim_cursor);
+                state = STATE_GAME_PLAY;
             }
             break;
         
         case STATE_GAME_PLAY:
-            if (PadData1E & PAD_A) {
-                anim_cursor = 0;
+            frames++;
+            if (frames == chip_blinktimer) {
                 frames = 0;
-                game_loadchip(0);
-                state = STATE_GAME_HAND;
+                chip_blinktimer = game_setblinktimer();
+                //chip blinks twice 1/4 of the time
+                if ((MTH_GetRand() & 0xf) < 4) {
+                    game_animset(STATE_ANIM_DBLINK);
+                }
+                else {
+                    game_animset(STATE_ANIM_SBLINK);
+                }
             }
             break;
     }
+
+    game_animate();
+    scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));
+    scroll_move(2, MTH_FIXED(0), MTH_FIXED(-2));
+    scroll_move(3, MTH_FIXED(0), MTH_FIXED(-1));
     return 0;
 }

@@ -77,6 +77,11 @@ extern Uint16 chipgame_num;
 extern char chipgame_name[];
 extern Uint32 chipgame_pal[];
 
+//gamestar.c
+extern Uint16 gamestar_num;
+extern char gamestar_name[];
+extern Uint32 gamestar_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;
@@ -97,6 +102,21 @@ extern char starfar_name[];
 extern Uint16 game_width;
 extern Uint16 game_height;
 extern char game_name[];
+
+//gamenear.c
+extern Uint16 gamenear_width;
+extern Uint16 gamenear_height;
+extern char gamenear_name[];
+
+//gamemid.c
+extern Uint16 gamemid_width;
+extern Uint16 gamemid_height;
+extern char gamemid_name[];
+
+//gamefar.c
+extern Uint16 gamefar_width;
+extern Uint16 gamefar_height;
+extern char gamefar_name[];
 
 //---sprite graphics---
 //font.c

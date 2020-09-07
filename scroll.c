@@ -208,6 +208,12 @@ void scroll_set(int num, Fixed32 x, Fixed32 y) {
 	SCL_Close();
 }
 
+void scroll_move(int num, Fixed32 x, Fixed32 y) {
+	SCL_Open(1 << (num + 2));
+	SCL_Move(x, y, 0);
+	SCL_Close();
+}
+
 void scroll_clearmaps(void) {
 	memset(MAP_PTR(0), 0, 0x2000);
 	memset(MAP_PTR(1), 0, 0x2000);

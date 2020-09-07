@@ -18,12 +18,16 @@ typedef unsigned long Uint32;
 #include "graphic/menufont.c"
 #include "graphic/game_tiles.c"
 #include "graphic/chipgame.c"
+#include "graphic/gamestar.c"
 
 //maps
 #include "graphic/starnear.c"
 #include "graphic/starmid.c"
 #include "graphic/starfar.c"
 #include "graphic/game.c"
+#include "graphic/gamenear.c"
+#include "graphic/gamemid.c"
+#include "graphic/gamefar.c"
 
 //sprites
 #include "graphic/font.c"
