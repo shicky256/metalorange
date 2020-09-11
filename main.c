@@ -39,6 +39,7 @@ int main() {
 	scroll_init();
 	scroll_hires();
 	print_init();
+	print_load();
 	SCL_SetSpriteMode(SCL_TYPE8, SCL_PALETTE, SCL_SP_WINDOW);
 	sound_init();
 	//init RNG
@@ -77,7 +78,6 @@ int main() {
 		}
 
 		frame++;
-		print_num(frame, 5, 5);
 		//if the cd drive is opened, return to menu
 		CDC_GetPeriStat(&cd_status);
 		if ((cd_status.status & 0xF) == CDC_ST_OPEN) {

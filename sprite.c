@@ -8,7 +8,6 @@
 
 #include "cd.h"
 #include "graphicrefs.h"
-#include "print.h"
 #include "scroll.h"
 #include "sprite.h"
 #include "vblank.h"
@@ -29,13 +28,10 @@ Uint8 sprite_buf[SPRITE_BUF_SIZE];
 
 
 void sprite_init() {
-	int count, i, char_base;
-
 	SCL_Vdp2Init();
 	SCL_SetDisplayMode(SCL_DOUBLE_INTER, SCL_240LINE, SCL_HIRESO_B);
 	SPR_2Initial(&work2D);
 	SPR_2SetTvMode(SPR_TV_HIRESO, SPR_TV_704X240, ON);
-	count = 0;
 	SCL_SetColRamMode(SCL_CRM24_1024);
 	SCL_AllocColRam(SCL_SPR, 256, OFF);
 
@@ -45,14 +41,8 @@ void sprite_init() {
 	SPR_2FrameChgIntr(-1); //wait until next frame to set color mode
 	SPR_2FrameEraseData(RGB16_COLOR(0, 0, 0)); //zero out frame
 	SCL_DisplayFrame();
-	
-	cd_load(font_name, sprite_buf, font_size * font_num);
-	for (i = 0; i < font_num; i++) {
-		SPR_2SetChar(i, COLOR_0, 0, font_width, font_height, sprite_buf + (i * font_size));
-	}
-	char_base = font_num;
+
 	SCL_AllocColRam(SCL_SPR, 96, OFF);
-	SCL_SetColRam(SCL_SPR, 0, 16, &font_pal);
 	sprite_deleteall();
 	SCL_DisplayFrame();
 }
@@ -147,7 +137,6 @@ void sprite_draw_all() {
 	int i;
 	Sint32 rel_x, rel_y;
 	SPRITE_INFO tmp;
-	print_num(num_sprites, 0, 0);
 	for (i = 0; i < SPRITE_LIST_SIZE; i++) {
 		rel_x = sprites[i].x;
 		rel_y = sprites[i].y;

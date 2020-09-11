@@ -32,3 +32,4 @@ typedef unsigned long Uint32;
 //sprites
 #include "graphic/font.c"
 #include "graphic/starspr.c"
+#include "graphic/ship.c"

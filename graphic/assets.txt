@@ -21,3 +21,4 @@ t4 gamestar.bmp
 m4 gamefar.tmx
 m4 gamemid.tmx
 m4 gamenear.tmx
+s ship

@@ -234,6 +234,7 @@ int menu_run() {
             end.red = 0; end.green = 0; end.blue = 0;
             SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
 
+            
             state = STATE_MENU_FADEIN;
             break;
 
@@ -347,7 +348,7 @@ int menu_run() {
             else { menu_print(6, 7, 0, "NUDITY: OFF"); }
         }
     }
-    if (state >= STATE_MENU_ANIMIN) {
+    if ((state >= STATE_MENU_ANIMIN) && (state < STATE_MENU_DONE)) {
         //spawn a bg star everyframe
         SPRITE_INFO *star = sprite_next();
         if (star != NULL) {

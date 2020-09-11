@@ -134,4 +134,12 @@ extern Uint16 starspr_width;
 extern Uint16 starspr_height;
 extern char starspr_name[];
 extern Uint32 starspr_pal[];
+
+//ship.c
+extern Uint16 ship_num;
+extern Uint16 ship_size;
+extern Uint16 ship_width;
+extern Uint16 ship_height;
+extern char ship_name[];
+extern Uint32 ship_pal[];
 #endif
