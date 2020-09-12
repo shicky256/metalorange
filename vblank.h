@@ -28,9 +28,14 @@
 	****************************************/
 	extern volatile trigger_t	PadData1;
 	extern volatile trigger_t	PadData1E;
+	volatile int PadID1;
+	volatile Uint8 PadAnalogX1;
+	volatile Uint8 PadAnalogY1;
+	volatile Uint8 PadAnalogL1;
+	volatile Uint8 PadAnalogR1;
 	extern volatile trigger_t	PadData2;
 	extern volatile trigger_t	PadData2E;
-	
+
 	/****************************************
 	*			declare functions			*
 	****************************************/

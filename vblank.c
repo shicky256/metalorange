@@ -19,11 +19,29 @@
 #include 	<sega_int.h>
 #include    "pcmsys.h"
 #include	"per_x.h"
+#include    "print.h"
+
+typedef	struct {
+	Uint8	type;
+	Uint8	size;
+	Uint8	data[2];
+	Uint8	ax;
+	Uint8	ay;
+	Uint8	ar;
+	Uint8	al;
+} AnalogPadData;
+
 
 volatile trigger_t	PadData1  = 0x0000;
 volatile trigger_t	PadData1E = 0x0000;
+volatile int PadID1;
+volatile Uint8 PadAnalogX1;
+volatile Uint8 PadAnalogY1;
+volatile Uint8 PadAnalogL1;
+volatile Uint8 PadAnalogR1;
 volatile trigger_t	PadData2  = 0x0000;
 volatile trigger_t	PadData2E = 0x0000;
+
 SysPort	*__port = NULL;
 void UsrVblankIn(void);
 void UsrVblankOut(void);
@@ -50,10 +68,27 @@ void UsrVblankOut(void) {
 	
 	if( __port != NULL ){
 		const SysDevice	*device;
-		
+
 		PER_GetPort( __port );
 		
 		if(( device = PER_GetDeviceR( &__port[0], 0 )) != NULL ){
+
+			int id = PER_GetID(device);
+			PadID1 = id;
+
+			if (id == ANALOGPAD_ID) {
+				const AnalogPadData *analog = (const AnalogPadData *)device;
+				print_num(analog->ax, 6, 2);
+				print_num(analog->ay, 7, 2);
+				print_num(analog->al, 8, 2);
+				print_num(analog->ar, 9, 2);
+
+				PadAnalogX1 = analog->ax;
+				PadAnalogY1 = analog->ay;
+				PadAnalogL1 = analog->al;
+				PadAnalogR1 = analog->ar;
+			}
+
 			trigger_t	prev = PadData1;
 			trigger_t	current = PER_GetTrigger( device );
 			

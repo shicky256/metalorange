@@ -7,6 +7,7 @@
 #include "cd.h"
 #include "game.h"
 #include "graphicrefs.h"
+#include "print.h"
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
@@ -118,11 +119,12 @@ static inline void game_init() {
     start.red = start.green = start.blue = -255;
     end.red = end.green = end.blue = 0;
     SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
-
     //load sprite frames
     cd_load_nosize(ship_name, game_buf);
     SCL_SetColRam(SCL_SPR, 16, 16, ship_pal);
     SPR_2ClrAllChar();
+    //load font
+    print_load();
     for (int i = 0; i < ship_num; i++) {
         // SPR_2ClrChar(i + SHIP_CHARNO);
         SPR_2SetChar(i + SHIP_CHARNO, COLOR_0, 16, ship_width, ship_height, (char *)game_buf + (i * ship_size));
@@ -265,11 +267,33 @@ int game_run() {
                 }
             }
             //handle input
-            if (PadData1 & PAD_L) {
-                ship_sprite->x -= SHIP_SPEED;
+            if (PadID1 == ANALOGPAD_ID) {
+                Fixed32 dx = 0;
+                //shoulder trigger controls
+                Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, SHIP_SPEED);
+                dx -= left_trigger;
+                Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, SHIP_SPEED);
+                dx += right_trigger;
+
+                //analog stick controls
+                //transform x pos by converting the 0-255 range of the analog x pos to be
+                //MTH_FIXED(0) to MTH_FIXED(1), multiplying it by twice the max ship speed
+                //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
+                //(range: -SHIP_SPEED to SHIP_SPEED)
+                Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (SHIP_SPEED + MTH_FIXED(0.15)) << 1) - (SHIP_SPEED + MTH_FIXED(0.15));
+                dx += movement;
+                //limit speed
+                if (dx > SHIP_SPEED) dx = SHIP_SPEED;
+                if (dx < -SHIP_SPEED) dx = -SHIP_SPEED;
+                ship_sprite->x += dx;
             }
-            if (PadData1 & PAD_R) {
-                ship_sprite->x += SHIP_SPEED;
+            else {
+                if (PadData1 & PAD_L) {
+                    ship_sprite->x -= SHIP_SPEED;
+                }
+                if (PadData1 & PAD_R) {
+                    ship_sprite->x += SHIP_SPEED;
+                }
             }
             //ship boundaries
             if (ship_sprite->x < LEFT_BOUND) {
