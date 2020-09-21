@@ -59,11 +59,30 @@ static SPRITE_INFO *ship_sprite;
 #define SHIP_TIMING (6)
 static int ship_frames;
 //the area between where the sprite is and where the actual pixel graphics start
-#define SHIP_MARGIN (MTH_FIXED(4))
+#define SHIP_XMARGIN (MTH_FIXED(4))
+#define SHIP_YMARGIN (MTH_FIXED(8))
+#define SHIP_WIDTH (MTH_FIXED(40))
+#define SHIP_HEIGHT (MTH_FIXED(24))
 
 //leftmost area of the playfield
-#define LEFT_BOUND (MTH_FIXED(16) - SHIP_MARGIN)
-#define RIGHT_BOUND (MTH_FIXED(224) - MTH_FIXED(ship_width) + SHIP_MARGIN)
+#define LEFT_WALL (MTH_FIXED(16))
+#define RIGHT_WALL (MTH_FIXED(224))
+#define LEFT_BOUND (LEFT_WALL - SHIP_XMARGIN)
+#define RIGHT_BOUND (RIGHT_WALL - MTH_FIXED(ship_width) + SHIP_XMARGIN)
+
+#define BALL_CHARNO (SHIP_CHARNO + ship_num)
+#define BALL_MARGIN (MTH_FIXED(2))
+#define BALL_WIDTH (MTH_FIXED(8))
+#define BALL_HEIGHT (MTH_FIXED(8))
+#define BALL_SPEED (MTH_FIXED(3))
+#define BALL_LBOUND (LEFT_WALL - BALL_MARGIN)
+#define BALL_RBOUND (RIGHT_WALL - BALL_WIDTH + BALL_MARGIN)
+#define BALL_STATE_INIT (0)
+#define BALL_STATE_NORMAL (1)
+#define BALL_SPAWN_XOFFSET (MTH_FIXED(16))
+#define BALL_SPAWN_YOFFSET (MTH_FIXED(-2))
+static SPRITE_INFO *ball_sprite;
+
 
 static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
@@ -126,10 +145,15 @@ static inline void game_init() {
     //load font
     print_load();
     for (int i = 0; i < ship_num; i++) {
-        // SPR_2ClrChar(i + SHIP_CHARNO);
         SPR_2SetChar(i + SHIP_CHARNO, COLOR_0, 16, ship_width, ship_height, (char *)game_buf + (i * ship_size));
     }
-    //load chip's animation frames into ram
+    //load ball
+    cd_load_nosize(ball_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 32, 16, ball_pal);
+    for (int i = 0; i < ball_num; i++) {
+        SPR_2SetChar(i + BALL_CHARNO, COLOR_0, 32, ball_width, ball_height, (char *)game_buf + (i * ball_size));
+    }
+    //load chip's animation frames into lwram
     cd_load_nosize(chipgame_name, game_buf);
     sound_cdda(5, 1);
 }
@@ -221,6 +245,7 @@ static inline void game_shipanim() {
     if (ship_frames == SHIP_TIMING) {
         ship_frames = 0;
         ship_sprite->char_num++;
+        // reset to idle animation
         if (ship_sprite->char_num == SHIP_CHARNO + ship_num) {
             ship_sprite->char_num = SHIP_IDLE;
         }
@@ -239,6 +264,11 @@ int game_run() {
             ship_sprite = sprite_next();
             sprite_make(SHIP_CHARNO, MTH_FIXED(102), MTH_FIXED(240), ship_sprite);
             ship_frames = 0;
+
+            ball_sprite = sprite_next();
+            //spawn the ball offscreen, it only appears when the ship's done
+            sprite_make(BALL_CHARNO, MTH_FIXED(-80), MTH_FIXED(-80), ball_sprite);
+            ball_sprite->state = BALL_STATE_INIT;
 
             state = STATE_GAME_FADEIN;
             break;
@@ -285,16 +315,18 @@ int game_run() {
                 //limit speed
                 if (dx > SHIP_SPEED) dx = SHIP_SPEED;
                 if (dx < -SHIP_SPEED) dx = -SHIP_SPEED;
-                ship_sprite->x += dx;
             }
             else {
+                ship_sprite->dx = 0;
                 if (PadData1 & PAD_L) {
-                    ship_sprite->x -= SHIP_SPEED;
+                    ship_sprite->dx -= SHIP_SPEED;
                 }
                 if (PadData1 & PAD_R) {
-                    ship_sprite->x += SHIP_SPEED;
+                    ship_sprite->dx += SHIP_SPEED;
                 }
             }
+            ship_sprite->x += ship_sprite->dx;
+
             //ship boundaries
             if (ship_sprite->x < LEFT_BOUND) {
                 ship_sprite->x = LEFT_BOUND;
@@ -302,6 +334,54 @@ int game_run() {
             if (ship_sprite->x > RIGHT_BOUND) {
                 ship_sprite->x = RIGHT_BOUND;
             }
+
+            //when the player spawns, keep the ball attached to his ship
+            //until he presses A
+            if (ball_sprite->state == BALL_STATE_INIT) {
+                ball_sprite->x = ship_sprite->x + BALL_SPAWN_XOFFSET;
+                ball_sprite->y = ship_sprite->y + BALL_SPAWN_YOFFSET;
+                if (ship_sprite->dx < 0) {
+                    ball_sprite->dx = -BALL_SPEED;
+                    ball_sprite->dy = -BALL_SPEED;
+                }
+                else {
+                    ball_sprite->dx = BALL_SPEED;
+                    ball_sprite->dy = -BALL_SPEED;
+                }
+
+                if (PadData1E & PAD_A) {
+                    ball_sprite->state = BALL_STATE_NORMAL;
+                }
+            }
+            else if (ball_sprite->state == BALL_STATE_NORMAL) {
+                ball_sprite->x += ball_sprite->dx;
+                ball_sprite->y += ball_sprite->dy;
+                //left/right wall
+                if ((ball_sprite->x <= BALL_LBOUND) || ball_sprite->x >= BALL_RBOUND) {
+                    ball_sprite->dx = -ball_sprite->dx;
+                }
+                //top of screen
+                if (ball_sprite->y <= BALL_MARGIN) {
+                    ball_sprite->dy = -ball_sprite->dy;
+                }
+                //bottom
+                if ((ball_sprite->x + BALL_MARGIN > ship_sprite->x + SHIP_XMARGIN) &&
+                    (ball_sprite->x + BALL_WIDTH - BALL_MARGIN < ship_sprite->x + SHIP_WIDTH - SHIP_XMARGIN) && 
+                    (ball_sprite->y + BALL_HEIGHT - BALL_MARGIN >= ship_sprite->y + SHIP_YMARGIN) &&
+                    (ball_sprite->y + BALL_MARGIN < ship_sprite->y + SHIP_HEIGHT)) {
+                    //calculate ball's offset from paddle center
+                    Fixed32 ball_offset = ball_sprite->x - ship_sprite->x - (SHIP_WIDTH >> 1);
+                    Fixed32 normalized_offset = MTH_Div(ball_offset, (SHIP_WIDTH >> 1));
+                    Fixed32 ball_angle = MTH_Mul(normalized_offset, MTH_FIXED(75));
+                    ball_sprite->dx = MTH_Mul(MTH_Sin(ball_angle), BALL_SPEED);
+                    ball_sprite->dy = MTH_Mul(MTH_Cos(ball_angle), -BALL_SPEED);
+                }
+
+                if (PadData1E & PAD_A) {
+                    ball_sprite->state = BALL_STATE_INIT;
+                }
+            }
+
             break;
     }
 

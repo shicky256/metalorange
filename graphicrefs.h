@@ -119,6 +119,14 @@ extern Uint16 gamefar_height;
 extern char gamefar_name[];
 
 //---sprite graphics---
+//ball.c
+extern Uint16 ball_num;
+extern Uint16 ball_size;
+extern Uint16 ball_width;
+extern Uint16 ball_height;
+extern char ball_name[];
+extern Uint32 ball_pal[];
+
 //font.c
 extern Uint16 font_num;
 extern Uint16 font_size;

@@ -30,6 +30,7 @@ typedef unsigned long Uint32;
 #include "graphic/gamefar.c"
 
 //sprites
+#include "graphic/ball.c"
 #include "graphic/font.c"
 #include "graphic/starspr.c"
 #include "graphic/ship.c"

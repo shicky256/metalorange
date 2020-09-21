@@ -4,6 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/smpclib",
                 "C:/saturn/SBL6/SEGALIB/INCLUDE",
                 "C:/saturn/SBL6/SEGASMP/PER/SMPCLIB",
                 "C:/saturn/SH_COFF/sh-coff/sh-coff/include"
