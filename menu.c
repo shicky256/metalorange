@@ -44,7 +44,7 @@ static char *font_ptr = ((char *)SCL_VDP2_VRAM_B1);
 static Uint32 font_highlight[16];
 static int timer;
 static int menu_cursor = 0;
-int nudity = 0;
+int cutscene = 1;
 
 #define STAR_CHARNO (font_num)
 
@@ -150,9 +150,9 @@ static inline void menu_init() {
     cd_load_nosize(menufont_name, menu_buf);
     DMA_CpuMemCopy1(font_ptr, menu_buf, 128 * menufont_num);
     SCL_SetColRam(SCL_NBG1, 0, 16, menufont_pal);
-    menu_print(6, 5, 0, "START GAME");
-    menu_print(6, 6, 0, "LOAD GAME");
-    menu_print(6, 7, 0, "NUDITY: OFF");
+    menu_print(5, 5, 0, "START GAME");
+    menu_print(5, 6, 0, "LOAD GAME");
+    menu_print(5, 7, 0, "CUTSCENE: ON ");
     //load chip gfx
     cd_load_nosize(chipframes_name, menu_buf);
     DMA_CpuMemCopy1(tile_ptr, menu_buf, 256 * 42);
@@ -325,27 +325,27 @@ int menu_run() {
             state = STATE_MENU_ANIMOUT;
             pcm_play(2, PCM_SEMI, 6);
         }
-        //handle nudity toggle
+        //handle cutscene toggle
         if ((menu_cursor == 2) && (PadData1E & (PAD_S | PAD_A | PAD_B | PAD_C))) {
-            nudity ^= 1;
+            cutscene ^= 1;
             pcm_play(2, PCM_SEMI, 6);
         }
         //cycle palette for selected item
         menu_palcycle();
-        if (menu_cursor == 0) { menu_print(6, 5, 1, "START GAME"); }
-        else menu_print(6, 5, 0, "START GAME");
+        if (menu_cursor == 0) { menu_print(5, 5, 1, "START GAME"); }
+        else menu_print(5, 5, 0, "START GAME");
 
-        if (menu_cursor == 1) { menu_print(6, 6, 1, "LOAD GAME"); }
-        else { menu_print(6, 6, 0, "LOAD GAME"); }
+        if (menu_cursor == 1) { menu_print(5, 6, 1, "LOAD GAME"); }
+        else { menu_print(5, 6, 0, "LOAD GAME"); }
 
-        if (nudity) {
-            if (menu_cursor == 2) { menu_print(6, 7, 1, "NUDITY: ON "); }
-            else { menu_print(6, 7, 0, "NUDITY: ON "); }
+        if (cutscene) {
+            if (menu_cursor == 2) { menu_print(5, 7, 1, "CUTSCENE: ON "); }
+            else { menu_print(5, 7, 0, "CUTSCENE: ON "); }
         }
 
         else {
-            if (menu_cursor == 2) { menu_print(6, 7, 1, "NUDITY: OFF"); }
-            else { menu_print(6, 7, 0, "NUDITY: OFF"); }
+            if (menu_cursor == 2) { menu_print(5, 7, 1, "CUTSCENE: OFF"); }
+            else { menu_print(5, 7, 0, "CUTSCENE: OFF"); }
         }
     }
     if ((state >= STATE_MENU_ANIMIN) && (state < STATE_MENU_DONE)) {

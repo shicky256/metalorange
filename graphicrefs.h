@@ -150,4 +150,12 @@ extern Uint16 ship_width;
 extern Uint16 ship_height;
 extern char ship_name[];
 extern Uint32 ship_pal[];
+
+//explosion.c
+extern Uint16 explosion_num;
+extern Uint16 explosion_size;
+extern Uint16 explosion_width;
+extern Uint16 explosion_height;
+extern char explosion_name[];
+extern Uint32 explosion_pal[];
 #endif

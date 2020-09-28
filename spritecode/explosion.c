@@ -3,33 +3,31 @@
 #include "explosion.h"
 #include "../graphicrefs.h"
 #include "../sprite.h"
-#include "../sound.h"
-#include "../player.h"
 #include "../print.h"
 
-#define EXPLOSION_MINCHARNUM (GRAPHIC_EXPLOSION)
-#define EXPLOSION_MAXCHARNUM (GRAPHIC_EXPLOSION + explosion_num)
 //how many frames to wait before switching to next frame
 #define FRAME_DELAY (5)
+#define NUM_FRAMES (4)
 
-void explosion_make(Fixed32 x, Fixed32 y) {
+void explosion_make(int char_num, Fixed32 x, Fixed32 y) {
     SPRITE_INFO *explosion = sprite_next();
-    sprite_make(EXPLOSION_MINCHARNUM, x, y, explosion);
-    explosion->animTimer = FRAME_DELAY;
+    sprite_make(char_num, x, y, explosion);
+    explosion->anim_timer = FRAME_DELAY;
+    explosion->anim_cursor = 0;
     explosion->iterate = &explosion_move;
-    sound_play(SOUND_EXPLOSION);
 }
 
 void explosion_move(SPRITE_INFO *explosion) {
-    if (explosion->animTimer == 0) {
+    if (explosion->anim_timer == 0) {
+        explosion->anim_cursor++;
         explosion->char_num++;
-        if (explosion->char_num >= EXPLOSION_MAXCHARNUM) {
+        if (explosion->anim_cursor >= NUM_FRAMES) {
             sprite_delete(explosion);
             return;
         }
-        explosion->animTimer = FRAME_DELAY;
+        explosion->anim_timer = FRAME_DELAY;
     }
     else {
-        explosion->animTimer--;
+        explosion->anim_timer--;
     }
 }

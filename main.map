@@ -308,6 +308,7 @@ LOAD vblank.o
 LOAD smpclib/per_x1.o
 LOAD smpclib/per_x2.o
 LOAD smpclib/per_x3.o
+LOAD spritecode/explosion.o
 LOAD cd.o
 LOAD crc.o
 LOAD devcart.o
@@ -334,7 +335,7 @@ LOAD C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a
 LOAD C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a
 LOAD C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a
 
-.text           0x06010000    0x16890
+.text           0x06010000    0x16c80
  *(.text)
  .text          0x06010000       0x30 ../sbl6/segasmp/lib/strt1_g.o
                 0x06010024                _D_END
@@ -364,1410 +365,1420 @@ LOAD C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a
                 0x06010610                PER_GetDeviceR
  .text          0x06010670       0x20 smpclib/per_x3.o
                 0x06010670                PER_DisguiseTrigger
- .text          0x06010690      0x120 cd.o
-                0x06010730                cd_load_nosize
-                0x06010690                cd_init
-                0x060106c0                cd_load
- .text          0x060107b0      0x140 crc.o
-                0x060108b0                crc_update
- .text          0x060108f0      0x1c0 devcart.o
-                0x06010a70                devcart_reset
-                0x06010960                devcart_loadfile
-                0x06010a60                devcart_printstr
- .text          0x06010ab0      0x980 game.o
-                0x06010b90                game_run
- .text          0x06011430      0xe00 intro.o
-                0x06011430                intro_run
- .text          0x06012230      0x370 logo.o
-                0x06012290                logo_run
-                0x06012230                logo_loadframe
- .text          0x060125a0      0xbc0 menu.o
-                0x060128c0                menu_run
-                0x06012780                sqrt32
- .text          0x06013160      0x8c0 pcmsys.o
-                0x06013820                load_8bit_pcm
-                0x06013580                smpc_issue_command
-                0x06013620                load_drv
-                0x060139b0                pcm_parameter_change
-                0x06013560                smpc_wait_till_ready
-                0x060135a0                load_driver_binary
-                0x06013970                pcm_play
-                0x060139e0                pcm_cease
-                0x06013670                calculate_bytes_per_blank
-                0x060136c0                load_16bit_pcm
- .text          0x06013a20      0x230 print.o
-                0x06013bb0                print_display
-                0x06013b00                print_num
-                0x06013a20                print_load
-                0x06013ad0                print_init
-                0x06013b50                print_string
- .text          0x06013c50      0x4b0 scroll.o
-                0x06013c50                scroll_lores
-                0x06014060                scroll_move
-                0x060140b0                scroll_clearmaps
-                0x06014010                scroll_set
-                0x06013cb0                scroll_hires
-                0x06013df0                scroll_init
-                0x06013d10                scroll_scale
- .text          0x06014100      0x1a0 sound.o
-                0x06014280                sound_play
-                0x06014130                sound_init
-                0x06014220                sound_cdda
- .text          0x060142a0      0x5f0 sprite.o
-                0x060142d0                sprite_init
-                0x060146c0                sprite_make
-                0x06014800                sprite_next
-                0x06014390                sprite_erase
-                0x06014860                sprite_delete
-                0x06014710                sprite_draw_all
-                0x060142a0                sprite_deleteall
-                0x060143f0                sprite_startdraw
-                0x06014470                sprite_draw
- .text          0x06014890      0x220 main.o
-                0x06014890                main
- .text          0x06014ab0       0x40 ../sbl6/segalib/lib/sega_int.a(int.o)
-                0x06014adc                INT_GetScuFunc
-                0x06014ab0                INT_SetScuFunc
- .text          0x06014af0      0x624 ../sbl6/segalib/lib/sega_int.a(int_trmp.o)
-                0x06014c58                __interrupt_handler60
-                0x06014e08                __interrupt_handler132
-                0x06014fbe                __interrupt_handler205
-                0x06014e26                __interrupt_handler137
-                0x06014d54                __interrupt_handler102
-                0x06014b92                __interrupt_handler27
-                0x06014f94                __interrupt_handler198
-                0x06014e86                __interrupt_handler153
-                0x06014b6e                __interrupt_handler21
-                0x06014c7c                __interrupt_handler66
-                0x06014d6c                __interrupt_handler106
-                0x06014eb6                __interrupt_handler161
-                0x06014d00                __interrupt_handler88
-                0x06014ece                __interrupt_handler165
-                0x06014dde                __interrupt_handler125
-                0x06014b14                __interrupt_handler6
-                0x06014bb0                __interrupt_handler32
-                0x06014f6a                __interrupt_handler191
-                0x06015084                __interrupt_handler238
-                0x0601509c                __interrupt_handler242
-                0x06014ea4                __interrupt_handler158
-                0x06014d0c                __interrupt_handler90
-                0x06014ec8                __interrupt_handler164
-                0x06014bec                __interrupt_handler42
-                0x06014f2e                __interrupt_handler181
-                0x06015036                __interrupt_handler225
-                0x060150de                __interrupt_handler253
-                0x06014ef2                __interrupt_handler171
-                0x06014cac                __interrupt_handler74
-                0x06014b02                __interrupt_handler3
-                0x06014c46                __interrupt_handler57
-                0x06014b44                __interrupt_handler14
-                0x06014fdc                __interrupt_handler210
-                0x0601500c                __interrupt_handler218
-                0x06014fd0                __interrupt_handler208
-                0x06014bd4                __interrupt_handler38
-                0x06014af0                __interrupt_handler0
-                0x06014d60                __interrupt_handler104
-                0x06014e9e                __interrupt_handler157
-                0x06014fee                __interrupt_handler213
-                0x06014ee0                __interrupt_handler168
-                0x06014cee                __interrupt_handler85
-                0x06014d8a                __interrupt_handler111
-                0x06014d9c                __interrupt_handler114
-                0x06014c0a                __interrupt_handler47
-                0x06015060                __interrupt_handler232
-                0x0601502a                __interrupt_handler223
-                0x0601507e                __interrupt_handler237
-                0x06014c6a                __interrupt_handler63
-                0x06014bf8                __interrupt_handler44
-                0x06014f0a                __interrupt_handler175
-                0x06014f34                __interrupt_handler182
-                0x06014f4c                __interrupt_handler186
-                0x06014e4a                __interrupt_handler143
-                0x06014d72                __interrupt_handler107
-                0x06014dd8                __interrupt_handler124
-                0x06014ef8                __interrupt_handler172
-                0x060150ae                __interrupt_handler245
-                0x06014d2a                __interrupt_handler95
-                0x06014e02                __interrupt_handler131
-                0x06014e14                __interrupt_handler134
-                0x06014e32                __interrupt_handler139
-                0x06014ca0                __interrupt_handler72
-                0x0601505a                __interrupt_handler231
-                0x06014eb0                __interrupt_handler160
-                0x06014df6                __interrupt_handler129
-                0x06014b68                __interrupt_handler20
-                0x06014c76                __interrupt_handler65
-                0x06014c40                __interrupt_handler56
-                0x06014b3e                __interrupt_handler13
-                0x06014fd6                __interrupt_handler209
-                0x06014d90                __interrupt_handler112
-                0x06014b62                __interrupt_handler19
-                0x06014d1e                __interrupt_handler93
-                0x06014f88                __interrupt_handler196
-                0x06014e7a                __interrupt_handler151
-                0x06014eda                __interrupt_handler167
-                0x060150f0                __trampoline
-                0x06014b56                __interrupt_handler17
-                0x06015048                __interrupt_handler228
-                0x060150ea                __interrupt_handler255
-                0x060150a8                __interrupt_handler244
-                0x06014d42                __interrupt_handler99
-                0x06014f3a                __interrupt_handler183
-                0x06014e38                __interrupt_handler140
-                0x06014f5e                __interrupt_handler189
-                0x06014e5c                __interrupt_handler146
-                0x06015024                __interrupt_handler222
-                0x06014e98                __interrupt_handler156
-                0x06014dcc                __interrupt_handler122
-                0x060150c0                __interrupt_handler248
-                0x06014c10                __interrupt_handler48
-                0x06014c8e                __interrupt_handler69
-                0x06014b80                __interrupt_handler24
-                0x06014d06                __interrupt_handler89
-                0x06014ffa                __interrupt_handler215
-                0x060150e4                __interrupt_handler254
-                0x06014cfa                __interrupt_handler87
-                0x06014c5e                __interrupt_handler61
-                0x06014f82                __interrupt_handler195
-                0x06014e74                __interrupt_handler150
-                0x06014be6                __interrupt_handler41
-                0x06014d84                __interrupt_handler110
-                0x06014dea                __interrupt_handler127
-                0x06014d78                __interrupt_handler108
-                0x06014d96                __interrupt_handler113
-                0x06014da8                __interrupt_handler116
-                0x06014dc6                __interrupt_handler121
-                0x06014cbe                __interrupt_handler77
-                0x06014bda                __interrupt_handler39
-                0x06014bf2                __interrupt_handler43
-                0x060150c6                __interrupt_handler249
-                0x06014f04                __interrupt_handler174
-                0x06014e20                __interrupt_handler136
-                0x06014f58                __interrupt_handler188
-                0x06014e56                __interrupt_handler145
-                0x06014b26                __interrupt_handler9
-                0x06014cca                __interrupt_handler79
-                0x06015042                __interrupt_handler227
-                0x06014bbc                __interrupt_handler34
-                0x06014dfc                __interrupt_handler130
-                0x060150ba                __interrupt_handler247
-                0x06014cb2                __interrupt_handler75
-                0x06014efe                __interrupt_handler173
-                0x06014c2e                __interrupt_handler53
-                0x06014e6e                __interrupt_handler149
-                0x060150d2                __interrupt_handler251
-                0x06015066                __interrupt_handler233
-                0x06014b2c                __interrupt_handler10
-                0x06014fb8                __interrupt_handler204
-                0x06014cdc                __interrupt_handler82
-                0x06014ce2                __interrupt_handler83
-                0x06014b86                __interrupt_handler25
-                0x060150a2                __interrupt_handler243
-                0x06014ebc                __interrupt_handler162
-                0x06014c04                __interrupt_handler46
-                0x06014f1c                __interrupt_handler178
-                0x06014cd0                __interrupt_handler80
-                0x06014c64                __interrupt_handler62
-                0x06014afc                __interrupt_handler2
-                0x06014b9e                __interrupt_handler29
-                0x06014c94                __interrupt_handler70
-                0x06014d7e                __interrupt_handler109
-                0x06014e68                __interrupt_handler148
-                0x06014d24                __interrupt_handler94
-                0x06015030                __interrupt_handler224
-                0x06014d5a                __interrupt_handler103
-                0x06014bc8                __interrupt_handler36
-                0x06014de4                __interrupt_handler126
-                0x060150b4                __interrupt_handler246
-                0x06014c3a                __interrupt_handler55
-                0x06014b38                __interrupt_handler12
-                0x06014c28                __interrupt_handler52
-                0x06014f52                __interrupt_handler187
-                0x06014e50                __interrupt_handler144
-                0x06014dae                __interrupt_handler117
-                0x06014b5c                __interrupt_handler18
-                0x06014f8e                __interrupt_handler197
-                0x06014e80                __interrupt_handler152
-                0x06014db4                __interrupt_handler118
-                0x06014eec                __interrupt_handler170
-                0x06014fa6                __interrupt_handler201
-                0x06014d36                __interrupt_handler97
-                0x06014ec2                __interrupt_handler163
-                0x06014f28                __interrupt_handler180
-                0x06014f70                __interrupt_handler192
-                0x06015090                __interrupt_handler240
-                0x06014dd2                __interrupt_handler123
-                0x06014ff4                __interrupt_handler214
-                0x06014baa                __interrupt_handler31
-                0x06014b98                __interrupt_handler28
-                0x06014c82                __interrupt_handler67
-                0x06014c88                __interrupt_handler68
-                0x06014b74                __interrupt_handler22
-                0x06014b7a                __interrupt_handler23
-                0x06014f10                __interrupt_handler176
-                0x06014b1a                __interrupt_handler7
-                0x0601501e                __interrupt_handler221
-                0x06015006                __interrupt_handler217
-                0x0601504e                __interrupt_handler229
-                0x06014c16                __interrupt_handler49
-                0x06014b08                __interrupt_handler4
-                0x06014be0                __interrupt_handler40
-                0x06014da2                __interrupt_handler115
-                0x06015072                __interrupt_handler235
-                0x06014d12                __interrupt_handler91
-                0x06014fc4                __interrupt_handler206
-                0x06014f16                __interrupt_handler177
-                0x06014e62                __interrupt_handler147
-                0x06014bce                __interrupt_handler37
-                0x060150cc                __interrupt_handler250
-                0x06014af6                __interrupt_handler1
-                0x06015012                __interrupt_handler219
-                0x06014cb8                __interrupt_handler76
-                0x06014d48                __interrupt_handler100
-                0x06014c4c                __interrupt_handler58
-                0x06014b4a                __interrupt_handler15
-                0x06014fe8                __interrupt_handler212
-                0x06015096                __interrupt_handler241
-                0x06014fac                __interrupt_handler202
-                0x06014f76                __interrupt_handler193
-                0x06014cc4                __interrupt_handler78
-                0x06014c1c                __interrupt_handler50
-                0x06014bb6                __interrupt_handler33
-                0x06014ed4                __interrupt_handler166
-                0x06014e2c                __interrupt_handler138
-                0x06014e1a                __interrupt_handler135
-                0x06014ba4                __interrupt_handler30
-                0x06014f40                __interrupt_handler184
-                0x06014e3e                __interrupt_handler141
-                0x06015054                __interrupt_handler230
-                0x06015078                __interrupt_handler236
-                0x06014dba                __interrupt_handler119
-                0x06014cf4                __interrupt_handler86
-                0x06014d66                __interrupt_handler105
-                0x06014cd6                __interrupt_handler81
-                0x06014dc0                __interrupt_handler120
-                0x06014df0                __interrupt_handler128
-                0x06014c34                __interrupt_handler54
-                0x06014b32                __interrupt_handler11
-                0x06014f9a                __interrupt_handler199
-                0x06014e8c                __interrupt_handler154
-                0x06014bfe                __interrupt_handler45
-                0x06015000                __interrupt_handler216
-                0x06014fb2                __interrupt_handler203
-                0x06014d4e                __interrupt_handler101
-                0x06014ce8                __interrupt_handler84
-                0x06014f46                __interrupt_handler185
-                0x06014e44                __interrupt_handler142
-                0x06014b8c                __interrupt_handler26
-                0x06014c70                __interrupt_handler64
-                0x06014fa0                __interrupt_handler200
-                0x06014fca                __interrupt_handler207
-                0x06014f7c                __interrupt_handler194
-                0x06014d18                __interrupt_handler92
-                0x06014e92                __interrupt_handler155
-                0x06014fe2                __interrupt_handler211
-                0x06014e0e                __interrupt_handler133
-                0x06014b0e                __interrupt_handler5
-                0x06014ca6                __interrupt_handler73
-                0x06014b50                __interrupt_handler16
-                0x0601508a                __interrupt_handler239
-                0x0601506c                __interrupt_handler234
-                0x06014bc2                __interrupt_handler35
-                0x06014c52                __interrupt_handler59
-                0x06014ee6                __interrupt_handler169
-                0x06014d3c                __interrupt_handler98
-                0x06014c9a                __interrupt_handler71
-                0x06014c22                __interrupt_handler51
-                0x06014eaa                __interrupt_handler159
-                0x0601503c                __interrupt_handler226
-                0x06014d30                __interrupt_handler96
-                0x06014f64                __interrupt_handler190
-                0x06015018                __interrupt_handler220
-                0x06014b20                __interrupt_handler8
-                0x06014f22                __interrupt_handler179
-                0x060150d8                __interrupt_handler252
- *fill*         0x06015114        0xc 00
- .text          0x06015120     0x12a0 ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
-                0x06016380                SlaveFlushDrawPrtyBlock
-                0x06015120                SPR_2Initial
-                0x06015964                SPR_2SysClip
-                0x06015904                SPR_2LocalCoord
-                0x060161fc                SPR_2FlushDrawPrtyBlock
-                0x06015ee8                SPR_2DistSpr
-                0x060158ec                SPR_2FlushDrawPrty
-                0x0601600c                SPR_2Cmd
-                0x060155e8                SPR_2GourTblNoToVram
-                0x06015648                SPR_2GetAreaSizeInfo
-                0x060153b0                SPR_2SetGourTbl
-                0x06015b9c                SPR_2Polygon
-                0x06015624                SPR_2CharNoToVram
-                0x06015330                SPR_2SetTvMode
-                0x0601578c                SPR_2CloseCommand
-                0x0601536c                SPR_2FrameEraseData
-                0x06015148                SPR_2Initial2
-                0x06015d7c                SPR_2ScaleSpr
-                0x06015a0c                SPR_2Line
-                0x060156d8                SPR_2OpenCommand
-                0x0601534c                SPR_2FrameChgIntr
-                0x06015c58                SPR_2NormSpr
-                0x060153e0                SPR_2SetLookupTbl
-                0x06015414                SPR_2SetChar
-                0x0601560c                SPR_2LookupTblNoToVram
-                0x06015ae0                SPR_2PolyLine
-                0x06015580                SPR_2ClrAllChar
-                0x06015534                SPR_2ClrChar
-                0x060159b0                SPR_2UserClip
- .text          0x060163c0      0x1e6 ../sbl6/segalib/lib/sega_spr.a(spr_slv.o)
-                0x06016524                SPR_WaitEndSlaveSH
-                0x060163c0                SPR_SMPC_SSHON
-                0x06016500                SPR_RunSlaveSH
-                0x060163c4                SPR_InitSlaveSH
-                0x0601648c                SPR_SlaveSHmain
-                0x060163c1                SPR_SMPC_SSHOFF
- *fill*         0x060165a6        0xa 00
- .text          0x060165b0      0x36a ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
-                0x06016864                SPR_WaitDrawEnd
-                0x0601687c                SPR_SetEosMode
-                0x06016794                SPR_SetEraseData
-                0x060165b0                SPR_Initial
-                0x06016688                SPR_SetTvMode
-                0x06016720                SPR_GetStatus
- *fill*         0x0601691a        0x6 00
- .text          0x06016920      0x244 ../sbl6/segalib/lib/sega_spr.a(spr_2a.o)
-                0x06016932                sprMemCpyW
-                0x06016990                flushDrawPrtyBlock
-                0x06016920                sprMemCpyL
-                0x06016944                SPR_2SetDrawPrty
- *fill*         0x06016b64        0xc 00
- .text          0x06016b70      0x2fc ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
-                0x06016c2c                SCL_DisplayFrame
-                0x06016b70                SCL_SetFrameInterval
-                0x06016c60                SCL_VblInit
-                0x06016cb0                SCL_VblankStart
-                0x06016cf4                SCL_VblankEnd
- *fill*         0x06016e6c        0x4 00
- .text          0x06016e70      0x1f4 ../sbl6/segalib/lib/sega_scl.a(scl_pr12.o)
-                0x06016e70                SCL_SetColOffset
- *fill*         0x06017064        0xc 00
- .text          0x06017070      0x214 ../sbl6/segalib/lib/sega_scl.a(scl_pr07.o)
-                0x06017070                SCL_SetPriority
- *fill*         0x06017284        0xc 00
- .text          0x06017290       0x9c ../sbl6/segalib/lib/sega_scl.a(scl_pr02.o)
-                0x06017290                SCL_SetColRam
- *fill*         0x0601732c        0x4 00
- .text          0x06017330      0x180 ../sbl6/segalib/lib/sega_scl.a(scl_pr11.o)
-                0x06017330                SCL_SetAutoColOffset
- .text          0x060174b0     0x10a4 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
-                0x06017544                SCL_AbortAutoVe
-                0x060183f4                SCL_SetShadowBit
-                0x060179bc                SCL_AutoExec
-                0x060174b0                SCL_PriorityInit
-                0x06017ed0                SCL_IncColOffset
-                0x06017558                SCL_SetColMixRate
-                0x06017528                SCL_GetColRamMode
- *fill*         0x06018554        0xc 00
- .text          0x06018560       0x98 ../sbl6/segalib/lib/sega_scl.a(scl_pr10.o)
-                0x06018560                SCL_SetAutoColMix
- *fill*         0x060185f8        0x8 00
- .text          0x06018600      0x278 ../sbl6/segalib/lib/sega_scl.a(scl_fu05.o)
-                0x060186bc                SCL_SetLineParam
-                0x06018608                SCL_InitLineParamTb
- *fill*         0x06018878        0x8 00
- .text          0x06018880      0xb9c ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
-                0x0601925c                SCL_Vdp2_SGLInit
-                0x0601916c                SCL_PriIntProc
-                0x060190e4                SCL_Memcpyw
-                0x060193fc                SCL_SglOff
-                0x060193dc                SCL_SglOn
-                0x06019050                SCL_ScrollShow
-                0x06018af8                SCL_Close
-                0x06018df0                SCL_Scale
-                0x06018880                SCL_Vdp2Init
-                0x06018c64                SCL_Move
-                0x06018f2c                SCL_CopyReg
-                0x06018ad4                SCL_Open
-                0x06018904                SCL_ParametersInit
-                0x06018b14                SCL_MoveTo
-                0x0601910c                SCL_SetColRamMode
- *fill*         0x0601941c        0x4 00
- .text          0x06019420      0x1ec ../sbl6/segalib/lib/sega_scl.a(scl_fu01.o)
-                0x06019420                SCL_SetDisplayMode
- *fill*         0x0601960c        0x4 00
- .text          0x06019610       0x28 ../sbl6/segalib/lib/sega_scl.a(scl_fu04.o)
-                0x06019610                SCL_SetCycleTable
- *fill*         0x06019638        0x8 00
- .text          0x06019640      0x138 ../sbl6/segalib/lib/sega_scl.a(scl_pr03.o)
-                0x06019640                SCL_FreeColRam
-                0x06019678                SCL_AllocColRam
- *fill*         0x06019778        0x8 00
- .text          0x06019780       0x84 ../sbl6/segalib/lib/sega_scl.a(scl_back.o)
-                0x06019780                SCL_SetBack
- *fill*         0x06019804        0xc 00
- .text          0x06019810      0x94c ../sbl6/segalib/lib/sega_scl.a(scl_fu03.o)
-                0x0601986c                SCL_SetConfig
-                0x06019810                SCL_InitConfigTb
- *fill*         0x0601a15c        0x4 00
- .text          0x0601a160      0x4f4 ../sbl6/segalib/lib/sega_scl.a(scl_fu02.o)
-                0x0601a198                SCL_SetVramConfig
-                0x0601a160                SCL_InitVramConfigTb
- *fill*         0x0601a654        0xc 00
- .text          0x0601a660       0x58 ../sbl6/segalib/lib/sega_scl.a(scl_pr01.o)
-                0x0601a660                SCL_SetSpriteMode
- *fill*         0x0601a6b8        0x8 00
- .text          0x0601a6c0       0xac ../sbl6/segalib/lib/sega_scl.a(scl_pr05.o)
-                0x0601a6c0                SCL_GetColRamOffset
- *fill*         0x0601a76c        0x4 00
- .text          0x0601a770     0x1394 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
-                0x0601b95c                SCL_RotateZD
-                0x0601ac24                SCL_Rotate
-                0x0601a8f8                SCL_InitRotateTable
- *fill*         0x0601bb04        0xc 00
- .text          0x0601bb10      0x1b4 ../sbl6/segalib/lib/sega_scl.a(scl_pr06.o)
-                0x0601bb10                SCL_SetColRamOffset
- *fill*         0x0601bcc4        0xc 00
- .text          0x0601bcd0       0x30 ../sbl6/segalib/lib/sega_mth.a(mth_rand.o)
-                0x0601bce0                MTH_GetRand
-                0x0601bcd0                MTH_InitialRand
- .text          0x0601bd00       0xa4 ../sbl6/segalib/lib/sega_mth.a(mth_fixd.o)
-                0x0601bd50                MTH_FixedToInt
-                0x0601bd40                MTH_IntToFixed
-                0x0601bd00                MTH_Mul
-                0x0601bd60                MTH_Product
-                0x0601bd20                MTH_Div
- *fill*         0x0601bda4        0xc 00
- .text          0x0601bdb0      0x600 ../sbl6/segalib/lib/sega_mth.a(mth_tri.o)
-                0x0601be4c                fcos
-                0x0601be52                fsin
-                0x0601bdfc                MTH_Cos
-                0x0601bdb0                MTH_Sin
-                0x0601bff0                MTH_Atan
- .text          0x0601c3b0      0x130 ../sbl6/segalib/lib/sega_cdc.a(cdc_drv.o)
-                0x0601c3b0                CDC_CdPlay
-                0x0601c47c                CDC_CdSeek
-                0x0601c4b0                CDC_CdScan
- .text          0x0601c4e0      0x3a0 ../sbl6/segalib/lib/sega_cdc.a(cdc_cmn.o)
-                0x0601c684                CDC_TgetToc
-                0x0601c828                CDC_DataEnd
-                0x0601c548                CDC_GetPeriStat
-                0x0601c7bc                CDC_DataReady
-                0x0601c794                CDC_CdOpen
-                0x0601c710                CDC_CdInit
-                0x0601c6d4                CDC_GetSes
-                0x0601c530                CDC_GetLastStat
-                0x0601c4e0                CDC_GetCurStat
-                0x0601c61c                CDC_GetHwInfo
- .text          0x0601c880      0x152 ../sbl6/segalib/lib/sega_cdc.a(cdc_sub.o)
-                0x0601c928                CDSUB_GetCdstat
-                0x0601c898                CDSUB_UpdCdstat
-                0x0601c968                CDSUB_RspToCdstat
-                0x0601c9b0                CDSUB_SoftTimer
-                0x0601c880                CDSUB_UpdStatus
-                0x0601c8b8                CDSUB_CdCmd
- *fill*         0x0601c9d2        0xe 00
- .text          0x0601c9e0      0x2dc ../sbl6/segalib/lib/sega_cdc.a(cdc_reg.o)
-                0x0601ca34                CDREG_ClrHirqReq
-                0x0601ca04                CDC_ClrHirqReq
-                0x0601cab4                CDREG_TgetData
-                0x0601caa4                CDC_GetMpegPtr
-                0x0601ca80                CDC_GetHirqMsk
-                0x0601c9e0                CDC_GetDataPtr
-                0x0601c9f0                CDC_GetHirqReq
-                0x0601cc10                CDREG_WaitHirq
-                0x0601ca94                CDC_SetHirqMsk
-                0x0601cb10                CDREG_CmdRsp
-                0x0601ca44                CDREG_InitHirqReq
-                0x0601ca6c                CDREG_SetHirqFlag
-                0x0601cc80                CDREG_ReadRsp
- *fill*         0x0601ccbc        0x4 00
- .text          0x0601ccc0      0xf50 ../sbl6/segalib/lib/sega_per.a(per_prt.o)
-                0x0601d0e0                PER_IntFunc
-                0x0601ced8                PER_LGetPer
-                0x0601ccc0                PER_LInit
- .text          0x0601dc10     0x1b04 ../sbl6/segalib/lib/sega_sat.a(gfs.o)
-                0x0601dc10                gfs_version
-                0x0601ee84                gfs_mngGetNumFile
-                0x0601f604                gfs_closeSub
-                0x0601e9a0                GFS_SetGmode
-                0x0601ec5c                GFS_SetErrFunc
-                0x0601edac                gfs_mngSetupFuncTbl
-                0x0601df68                GFS_Reset
-                0x0601ecd4                gfs_chgRoot
-                0x0601eda0                gfs_aborttrans
-                0x0601f084                gfs_svrAddHndl
-                0x0601ef34                gfs_mngFreeGrp
-                0x0601ecac                GFS_ConvTno
-                0x0601f238                gfs_getRootDir
-                0x0601ec88                GFS_GetErrStat
-                0x0601e0d8                GFS_Seek
-                0x0601e744                GFS_NwStop
-                0x0601ef40                gfs_mngTermAccess
-                0x0601dfec                GFS_Open
-                0x0601eeec                GFS_mngAllocGrp
-                0x0601f64c                gfs_isTaskDone
-                0x0601e444                GFS_Fread
-                0x0601eba4                GFS_StartTrans
-                0x0601f5a0                gfs_GetFinfo
-                0x0601ede0                gfs_mngInitWork
-                0x0601e230                GFS_ByteToSct
-                0x0601f044                gfs_svrSearchHndl
-                0x0601f334                gfs_loadRootDir
-                0x0601de8c                GFS_IdToName
-                0x0601e588                GFS_NwFread
-                0x0601ead4                GFS_SetTransPara
-                0x0601e694                GFS_NwCdRead
-                0x0601f174                gfs_loadVol
-                0x0601ea70                GFS_SetReadPara
-                0x0601e18c                GFS_Tell
-                0x0601ea04                GFS_SetTmode
-                0x0601f508                GFS_GetFad
-                0x0601eb40                GFS_SetTrFunc
-                0x0601ebf0                GFS_CdMovePickup
-                0x0601de28                GFS_NameToId
-                0x0601e85c                GFS_NwExecOne
-                0x0601f3bc                gfs_flowIn
-                0x0601e2e4                GFS_GetFileInfo
-                0x0601f464                gfs_transData
-                0x0601f0c0                gfs_svrRemoveHndl
-                0x0601e70c                GFS_NwIsComplete
-                0x0601f640                gfs_getGmode
-                0x0601e7b0                GFS_NwGetStat
-                0x0601f11c                GFS_OpenSub
-                0x0601ddc0                GFS_SetDir
-                0x0601e28c                GFS_GetFileSize
-                0x0601e358                GFS_GetNumCdbuf
-                0x0601f6a0                gfs_convFinStat
-                0x0601e380                GFS_Load
-                0x0601e4e0                gfs_waitRead
-                0x0601dd18                GFS_LoadDir
-                0x0601def8                GFS_GetDirInfo
-                0x0601e0a0                GFS_Close
-                0x0601dc30                GFS_Init
-                0x0601e82c                gfs_recovRdErr
-                0x0601efc4                gfs_mngSetErrCode
-                0x0601e91c                GFS_NwExecServer
-                0x0601e1dc                GFS_IsEof
-                0x0601f560                gfs_SetSct
- *fill*         0x0601f714        0xc 00
- .text          0x0601f720       0x90 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU1.o)
-                0x0601f720                DMA_CpuMemCopy1
- .text          0x0601f7b0       0x94 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU2.o)
-                0x0601f7b0                DMA_CpuMemCopy2
- *fill*         0x0601f844        0xc 00
- .text          0x0601f850      0x1f4 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU1.o)
-                0x0601f9ac                DMA_ScuResult
-                0x0601f850                DMA_ScuInit
-                0x0601f8a0                DMA_ScuMemCopy
- *fill*         0x0601fa44        0xc 00
- .text          0x0601fa50      0x8d4 ../sbl6/segalib/lib/sega_sat.a(gfs_cdf.o)
-                0x0601ff44                GFCF_Seek
-                0x0602004c                GFCF_GetStat
-                0x0601ff2c                GFCF_Tell
-                0x0601faf0                GFCF_Setup
-                0x0601fff8                GFCF_cnvIntlvOfs
-                0x0601fa50                GFCF_Init
-                0x0601fee4                GFCF_Recover
-                0x0601fc38                GFCF_SetSct
-                0x0601ff5c                GFCF_MovePickup
-                0x06020120                gfcf_isCdOk
-                0x0601fcf0                GFCF_FlowInBuf
-                0x0601fc7c                GFCF_GetFileInfo
-                0x0601fe44                GFCF_StopInBuf
-                0x060200e4                gfcf_getSctSize
-                0x060201e0                gfcf_getPlayRange
- *fill*         0x06020324        0xc 00
- .text          0x06020330      0x928 ../sbl6/segalib/lib/sega_sat.a(gfs_dir.o)
-                0x06020820                gfdr_setNextRec
-                0x06020c1c                gfdr_setDirrecCd
-                0x06020618                gfdr_open
-                0x0602042c                GFDR_GetAtrDirId
-                0x06020700                gfdr_readByte
-                0x06020330                GFDR_SetupDirTbl
-                0x060207f8                gfdr_readLongNM
-                0x060208a4                gfdr_readDirEnt
-                0x0602045c                GFDR_ChgRoot
-                0x060203a4                GFDR_NameToId
-                0x060204e8                gfdr_setupDirIdTbl
-                0x06020444                GFDR_GetAtrDirName
-                0x06020404                GFDR_GetInfoDirId
-                0x060207ac                gfdr_readLongNB
-                0x06020640                gfdr_read
-                0x0602072c                gfdr_readWord
-                0x0602056c                gfdr_setupDirNameTbl
-                0x06020418                GFDR_GetInfoDirName
-                0x06020474                GFDR_ChgDir
-                0x06020758                gfdr_readWordNB
- *fill*         0x06020c58        0x8 00
- .text          0x06020c60      0xa46 ../sbl6/segalib/lib/sega_sat.a(gfs_trn.o)
-                0x06020d40                GFTR_SetTransMax
-                0x06021110                gftr_execScu
-                0x06021694                GFTR_SetTransFunc
-                0x0602155c                gftr_remTrn
-                0x06021680                GFTR_SetData
-                0x06021380                gftr_execSdma1
-                0x060215d0                gftr_copyFrac
-                0x06020d34                GFTR_GetNumTrans
-                0x06020cd4                GFTR_SetMode
-                0x06021350                gftr_remDma0
-                0x060215f8                GFTR_GetLenData
-                0x06021104                gftr_reqScu
-                0x06021368                gftr_reqDma1
-                0x06021020                gftr_getSrcPack
-                0x06021650                GFTR_RtnDstPk
-                0x060211ec                gfdma_exec
-                0x06021484                gftr_execTrn
-                0x06020f18                GFTR_ExecSvr
-                0x06021414                gftr_reqTrn
-                0x060212dc                gfdma_getBytecnt
-                0x060213bc                gftr_reqCpu
-                0x0602161c                GFTR_GetDstPack
-                0x06021314                gftr_reqDma0
-                0x06020ea0                GFTR_Idle
-                0x06020d58                GFTR_Pause
-                0x06020d28                GFTR_GetTransPara
-                0x06021408                gftr_remCpu
-                0x06020cf4                GFTR_SetTransPara
-                0x060213a4                gftr_remDma1
-                0x06020d64                GFTR_Stop
-                0x0602132c                gftr_execSdma0
-                0x06020c90                GFTR_Setup
-                0x060211ac                gftr_remScu
-                0x060210a8                gftr_getDstPack
-                0x060211e0                gfdma_canUse
-                0x06020e1c                GFTR_Exec
-                0x0602166c                GFTR_GetData
-                0x06020d4c                GFTR_Start
-                0x06020ce8                GFTR_SetUnit
-                0x060213c8                gftr_execCpu
-                0x06021604                GFTR_GetLenRoom
- *fill*         0x060216a6        0xa 00
- .text          0x060216b0      0x106 ../sbl6/segalib/lib/sega_sat.a(gfs_buf.o)
-                0x06021708                GFBF_GetNumData
-                0x06021784                GFBF_RtnPk
-                0x06021738                GFBF_GetSrcPk
-                0x060217ac                gfbf_getSctDt
-                0x060216e0                GFBF_GetTranData
-                0x06021760                GFBF_GetSctData
- *fill*         0x060217b6        0xa 00
- .text          0x060217c0      0x600 ../sbl6/segalib/lib/sega_sat.a(gfs_cdb.o)
-                0x06021d68                GFCB_GetPickup
-                0x060218e0                GFCB_Close
-                0x06021bac                GFCB_GetSrcPack
-                0x06021d34                GFCB_SetCon
-                0x060219b4                GFCB_GetLenRoom
-                0x06021d18                GFCB_MovePickup
-                0x06021c8c                GFCB_GetSctData
-                0x060219c0                GFCB_SetFilt
-                0x06021908                GFCB_GetLenData
-                0x06021da8                GFCB_UngetPickup
-                0x060217c0                GFCB_Setup
-                0x06021a50                GFCB_Tell
-                0x06021d90                GFCB_IsPuOwner
-                0x06021ab0                GFCB_Seek
-                0x06021a28                GFCB_DeleteAllData
-                0x06021cc4                GFCB_GetDstPack
-                0x06021a60                gfcb_getSctNum
-                0x06021cd0                GFCB_RtnPk
- .text          0x06021dc0     0x1a04 ../sbl6/segalib/lib/sega_sat.a(gfs_cdc.o)
-                0x0602205c                GFCD_AllocBuf
-                0x06022e38                gfcd_doGetLenDataTsk
-                0x060236d4                GFCD_SetCsctFunc
-                0x06022134                GFCD_GetBaseFad
-                0x060222b0                GFCD_GetFilt
-                0x060232c4                gfcd_doChgDirTsk
-                0x06023604                gfcd_checkEflag
-                0x060225f8                GFCD_MovePickup
-                0x060226dc                GFCD_GetSctInfo
-                0x06022f8c                gfcd_doReqDataTsk
-                0x06022724                GFCD_ChgDir
-                0x06022418                GFCD_ReqData
-                0x060236f0                GFCD_ChkScdqFlag
-                0x06022ba8                GFCD_WaitServer
-                0x060224bc                GFCD_DelSctData
-                0x06022994                GFCD_ExecServer
-                0x06022da8                gfcd_doSetConTsk
-                0x06021ff0                GFCD_AllocFilt
-                0x060221ec                GFCD_SetFilt
-                0x06022be4                gfcd_doSetFiltTsk
-                0x06023714                GFCD_ClrScdqFlag
-                0x0602302c                gfcd_doDelSctDataTsk
-                0x06022af0                gfcd_doTask
-                0x06022168                GFCD_GetPickup
-                0x060226b8                GFCD_CheckMove
-                0x06023730                GFCD_WaitScdqFlag
-                0x06022350                GFCD_Play
-                0x06023160                gfcd_doMoveSctTsk
-                0x060222f8                GFCD_SetCon
-                0x06022798                GFCD_SetFiltCon
-                0x06023774                GFCD_WaitPause
-                0x0602295c                GFCD_GetBufSiz
-                0x0602219c                GFCD_UngetPickup
-                0x06022880                GFCD_GetFileInfo
-                0x06022474                GFCD_EndData
-                0x06022090                GFCD_FreeBuf
-                0x060223b0                GFCD_GetLenData
-                0x0602202c                GFCD_FreeFilt
-                0x06022a68                gfcd_isIdleTask
-                0x06021dec                GFCD_Init
-                0x060234c0                gfcd_doSetFiltConTsk
-                0x06022544                GFCD_GetStat
-                0x06022644                GFCD_MoveSctData
-                0x060221c8                GFCD_IsPuOwner
-                0x06023628                gfcd_initCdbMng
-                0x06021dc0                GFCD_SetCdbfs
-                0x06022b94                GFCD_SetTimer
-                0x060236a8                gfcd_setStat
-                0x06022514                GFCD_CheckDelSctData
- *fill*         0x060237c4        0xc 00
- .text          0x060237d0      0x1b6 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU0.o)
-                0x06023818                DMA_CpuSetPrm
-                0x0602391c                DMA_CpuStart
-                0x06023974                DMA_CpuGetStatus
-                0x06023948                DMA_CpuAllStop
-                0x0602395c                DMA_CpuGetComStatus
-                0x060237d0                DMA_CpuSetComPrm
-                0x06023930                DMA_CpuStop
- *fill*         0x06023986        0xa 00
- .text          0x06023990       0x50 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU5.o)
-                0x06023990                DMA_CpuResult
- .text          0x060239e0      0x308 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU0.o)
-                0x06023a64                DMA_ScuStart
-                0x06023b98                DMA_ScuIntFunc0
-                0x06023c08                DMA_ScuIntFunc1
-                0x06023c78                DMA_ScuIntFunc2
-                0x06023b58                DMA_ScuGetStatus
-                0x060239e0                DMA_ScuSetPrm
- *fill*         0x06023ce8        0x8 00
- .text          0x06023cf0       0xe8 ../sbl6/segalib/lib/sega_sat.a(csh_main.o)
-                0x06023cf0                CSH_Init
-                0x06023d58                CSH_AllClr
-                0x06023da4                CSH_Purge
- *fill*         0x06023dd8        0x8 00
- .text          0x06023de0      0x194 ../sbl6/segalib/lib/sega_sat.a(cdc_cfs.o)
-                0x06023de0                CDC_ChgDir
-                0x06023e14                CDC_ReadDir
-                0x06023f38                CDC_AbortFile
-                0x06023e48                CDC_GetFileScope
-                0x06023ea8                CDC_TgetFileInfo
-                0x06023f04                CDC_ReadFile
- *fill*         0x06023f74        0xc 00
- .text          0x06023f80      0x1e4 ../sbl6/segalib/lib/sega_sat.a(cdc_bio.o)
-                0x0602402c                CDC_GetdelSctData
-                0x06023fb4                CDC_GetSctData
-                0x06024068                CDC_PutSctData
-                0x060240e4                CDC_MoveSctData
-                0x06024128                CDC_GetCopyErr
-                0x06023ff0                CDC_DelSctData
-                0x06023f80                CDC_SetSctLen
-                0x060240a0                CDC_CopySctData
- *fill*         0x06024164        0xc 00
- .text          0x06024170      0x2b8 ../sbl6/segalib/lib/sega_sat.a(cdc_sel.o)
-                0x060243a0                CDC_GetFiltCon
-                0x0602431c                CDC_GetFiltMode
-                0x060243f4                CDC_ResetSelector
-                0x06024170                CDC_SetFiltRange
-                0x060241fc                CDC_SetFiltSubh
-                0x0602426c                CDC_GetFiltSubh
-                0x060241a4                CDC_GetFiltRange
-                0x060242e8                CDC_SetFiltMode
-                0x06024360                CDC_SetFiltCon
- *fill*         0x06024428        0x8 00
- .text          0x06024430      0x270 ../sbl6/segalib/lib/sega_sat.a(cdc_bif.o)
-                0x0602448c                CDC_GetSctNum
-                0x0602460c                CDC_ExeFadSearch
-                0x0602458c                CDC_GetSctInfo
-                0x060244d0                CDC_CalActSiz
-                0x06024430                CDC_GetBufSiz
-                0x0602450c                CDC_GetActSiz
-                0x06024644                CDC_GetFadSearch
- .text          0x060246a0       0xa8 ../sbl6/segalib/lib/sega_sat.a(cdc_dev.o)
-                0x0602470c                CDC_CdGetLastBuf
-                0x060246a0                CDC_CdSetCon
-                0x060246d0                CDC_CdGetCon
- *fill*         0x06024748        0x8 00
- .text          0x06024750       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftrt.o)
-                0x0602475c                __ashiftrt_r4_27
-                0x06024790                __ashiftrt_r4_6
-                0x06024780                __ashiftrt_r4_14
-                0x06024772                __ashiftrt_r4_19
-                0x0602478a                __ashiftrt_r4_9
-                0x0602479e                __ashiftrt_r4_0
-                0x06024750                __ashiftrt_r4_31
-                0x0602475e                __ashiftrt_r4_26
-                0x0602476c                __ashiftrt_r4_22
-                0x06024778                __ashiftrt_r4_16
-                0x06024784                __ashiftrt_r4_12
-                0x06024758                __ashiftrt_r4_29
-                0x06024776                __ashiftrt_r4_17
-                0x06024756                __ashiftrt_r4_30
-                0x06024792                __ashiftrt_r4_5
-                0x0602478c                __ashiftrt_r4_8
-                0x06024750                __ashiftrt_r4_32
-                0x06024760                __ashiftrt_r4_25
-                0x06024798                __ashiftrt_r4_2
-                0x06024762                __ashiftrt_r4_24
-                0x0602477e                __ashiftrt_r4_15
-                0x06024788                __ashiftrt_r4_10
-                0x0602479a                __ashiftrt_r4_1
-                0x0602475a                __ashiftrt_r4_28
-                0x06024770                __ashiftrt_r4_20
-                0x0602478e                __ashiftrt_r4_7
-                0x06024782                __ashiftrt_r4_13
-                0x06024786                __ashiftrt_r4_11
-                0x06024794                __ashiftrt_r4_4
-                0x0602476a                __ashiftrt_r4_23
-                0x06024774                __ashiftrt_r4_18
-                0x0602476e                __ashiftrt_r4_21
-                0x06024796                __ashiftrt_r4_3
- .text          0x060247b0       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_si_to_df.o)
-                0x060247b0                __floatsidf
- .text          0x06024860      0x2e0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mul_df.o)
-                0x06024870                __muldf3
- .text          0x06024b40       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_df_to_si.o)
-                0x06024b40                __fixdfsi
- .text          0x06024bc0       0x70 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_udivsi3.o)
-                0x06024be2                __udivsi3
- .text          0x06024c30       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_sdivsi3.o)
-                0x06024c30                __sdivsi3
- .text          0x06024cd0       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftrt_n.o)
-                0x06024cd0                __ashrsi3
- .text          0x06024d60       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftlt.o)
-                0x06024d60                __ashlsi3
- .text          0x06024df0       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_movstr.o)
-                0x06024e30                __movstrSI16
-                0x06024e04                __movstrSI60
-                0x06024e10                __movstrSI48
-                0x06024e0c                __movstrSI52
-                0x06024e00                __movstrSI64
-                0x06024e14                __movstrSI44
-                0x06024e18                __movstrSI40
-                0x06024e1c                __movstrSI36
-                0x06024e50                __movstr
-                0x06024e08                __movstrSI56
-                0x06024e24                __movstrSI28
-                0x06024e20                __movstrSI32
-                0x06024e34                __movstrSI12
-                0x06024e38                __movstrSI8
-                0x06024e40                __movstrSI0
-                0x06024e28                __movstrSI24
-                0x06024e2c                __movstrSI20
-                0x06024e3c                __movstrSI4
- .text          0x06024ea0       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
-                0x06024f14                __main
-                0x06024ea0                __do_global_dtors
-                0x06024ed4                __do_global_ctors
- .text          0x06024f40      0x220 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_pack_df.o)
-                0x06024f50                __pack_d
- .text          0x06025160      0x120 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_unpack_df.o)
-                0x06025170                __unpack_d
- .text          0x06025280       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_thenan_df.o)
-                0x06025280                __thenan_df
- .text          0x060252a0       0xd0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_muldi3.o)
-                0x060252a0                __muldi3
- .text          0x06025370       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshrdi3.o)
-                0x06025370                __lshrdi3
- .text          0x060253f0       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashldi3.o)
-                0x060253f0                __ashldi3
- .text          0x06025470       0x30 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mulsi3.o)
-                0x06025470                __mulsi3
- .text          0x060254a0       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshiftrt.o)
-                0x060254a0                __lshrsi3
- .text          0x06025530       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memset.o)
-                0x06025530                memset
- .text          0x06025570       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcmp.o)
-                0x06025570                memcmp
- .text          0x060255d0       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcpy.o)
-                0x060255d0                memcpy
- .text          0x06025670       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncmp.o)
-                0x06025670                strncmp
- .text          0x06025720       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncpy.o)
-                0x06025720                strncpy
- .text          0x060257c0       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
-                0x060257c0                atexit
- .text          0x06025850       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
-                0x06025850                _global_impure_ptr
- .text          0x06025860       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(malloc.o)
-                0x0602587c                free
-                0x06025860                malloc
- .text          0x060258a0      0x5b0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
-                0x060258a0                _malloc_r
- .text          0x06025e50      0x340 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(freer.o)
-                0x06025e50                _malloc_trim_r
-                0x06025f44                _free_r
- .text          0x06026190       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mlock.o)
-                0x06026190                __malloc_lock
-                0x0602619c                __malloc_unlock
- .text          0x060261b0       0x50 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(sbrkr.o)
-                0x060261b0                _sbrk_r
- .text          0x06026200      0x380 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
-                0x0602636c                _exit
-                0x060263a0                _getpid
-                0x06026408                _utime
-                0x06026238                _write
-                0x06026200                _read
-                0x06026354                _unlink
-                0x0602631c                _open
-                0x060263b8                _stat
-                0x06026360                isatty
-                0x06026438                _wait
-                0x06026384                _kill
-                0x060263d4                _chmod
-                0x06026468                _execv
-                0x0602644c                _execve
-                0x06026544                __setup_argv_and_call_main
-                0x060264a0                _gettimeofday
-                0x0602626c                _link
-                0x060263ac                _raise
-                0x06026338                _creat
-                0x06026480                _pipe
-                0x060263ec                _chown
-                0x0602621c                _lseek
-                0x06026254                _close
-                0x06026494                _times
-                0x06026308                _fstat
-                0x06026424                _fork
-                0x06026294                _sbrk
- .text          0x06026580       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(trap.o)
-                0x06026580                __trap34
- .text          0x060265a0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(abort.o)
-                0x060265a0                abort
- .text          0x060265c0      0x270 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signal.o)
-                0x06026680                _raise_r
-                0x06026808                __sigtramp
-                0x060267b4                raise
-                0x060267f0                _init_signal
-                0x06026740                __sigtramp_r
-                0x060267d0                signal
-                0x0602660c                _signal_r
-                0x060265c0                _init_signal_r
- .text          0x06026830       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signalr.o)
-                0x06026878                _getpid_r
-                0x06026830                _kill_r
+ .text          0x06010690       0xb0 spritecode/explosion.o
+                0x060106f0                explosion_move
+                0x06010690                explosion_make
+ .text          0x06010740      0x120 cd.o
+                0x060107e0                cd_load_nosize
+                0x06010740                cd_init
+                0x06010770                cd_load
+ .text          0x06010860      0x140 crc.o
+                0x06010960                crc_update
+ .text          0x060109a0      0x1c0 devcart.o
+                0x06010b20                devcart_reset
+                0x06010a10                devcart_loadfile
+                0x06010b10                devcart_printstr
+ .text          0x06010b60      0xcb0 game.o
+                0x06010c60                game_run
+ .text          0x06011810      0xe00 intro.o
+                0x06011810                intro_run
+ .text          0x06012610      0x370 logo.o
+                0x06012670                logo_run
+                0x06012610                logo_loadframe
+ .text          0x06012980      0xbd0 menu.o
+                0x06012cb0                menu_run
+                0x06012b60                sqrt32
+ .text          0x06013550      0x8c0 pcmsys.o
+                0x06013c10                load_8bit_pcm
+                0x06013970                smpc_issue_command
+                0x06013a10                load_drv
+                0x06013da0                pcm_parameter_change
+                0x06013950                smpc_wait_till_ready
+                0x06013990                load_driver_binary
+                0x06013d60                pcm_play
+                0x06013dd0                pcm_cease
+                0x06013a60                calculate_bytes_per_blank
+                0x06013ab0                load_16bit_pcm
+ .text          0x06013e10      0x230 print.o
+                0x06013fa0                print_display
+                0x06013ef0                print_num
+                0x06013e10                print_load
+                0x06013ec0                print_init
+                0x06013f40                print_string
+ .text          0x06014040      0x4b0 scroll.o
+                0x06014040                scroll_lores
+                0x06014450                scroll_move
+                0x060144a0                scroll_clearmaps
+                0x06014400                scroll_set
+                0x060140a0                scroll_hires
+                0x060141e0                scroll_init
+                0x06014100                scroll_scale
+ .text          0x060144f0      0x1a0 sound.o
+                0x06014670                sound_play
+                0x06014520                sound_init
+                0x06014610                sound_cdda
+ .text          0x06014690      0x5f0 sprite.o
+                0x060146c0                sprite_init
+                0x06014ab0                sprite_make
+                0x06014bf0                sprite_next
+                0x06014780                sprite_erase
+                0x06014c50                sprite_delete
+                0x06014b00                sprite_draw_all
+                0x06014690                sprite_deleteall
+                0x060147e0                sprite_startdraw
+                0x06014860                sprite_draw
+ .text          0x06014c80      0x220 main.o
+                0x06014c80                main
+ .text          0x06014ea0       0x40 ../sbl6/segalib/lib/sega_int.a(int.o)
+                0x06014ecc                INT_GetScuFunc
+                0x06014ea0                INT_SetScuFunc
+ .text          0x06014ee0      0x624 ../sbl6/segalib/lib/sega_int.a(int_trmp.o)
+                0x06015048                __interrupt_handler60
+                0x060151f8                __interrupt_handler132
+                0x060153ae                __interrupt_handler205
+                0x06015216                __interrupt_handler137
+                0x06015144                __interrupt_handler102
+                0x06014f82                __interrupt_handler27
+                0x06015384                __interrupt_handler198
+                0x06015276                __interrupt_handler153
+                0x06014f5e                __interrupt_handler21
+                0x0601506c                __interrupt_handler66
+                0x0601515c                __interrupt_handler106
+                0x060152a6                __interrupt_handler161
+                0x060150f0                __interrupt_handler88
+                0x060152be                __interrupt_handler165
+                0x060151ce                __interrupt_handler125
+                0x06014f04                __interrupt_handler6
+                0x06014fa0                __interrupt_handler32
+                0x0601535a                __interrupt_handler191
+                0x06015474                __interrupt_handler238
+                0x0601548c                __interrupt_handler242
+                0x06015294                __interrupt_handler158
+                0x060150fc                __interrupt_handler90
+                0x060152b8                __interrupt_handler164
+                0x06014fdc                __interrupt_handler42
+                0x0601531e                __interrupt_handler181
+                0x06015426                __interrupt_handler225
+                0x060154ce                __interrupt_handler253
+                0x060152e2                __interrupt_handler171
+                0x0601509c                __interrupt_handler74
+                0x06014ef2                __interrupt_handler3
+                0x06015036                __interrupt_handler57
+                0x06014f34                __interrupt_handler14
+                0x060153cc                __interrupt_handler210
+                0x060153fc                __interrupt_handler218
+                0x060153c0                __interrupt_handler208
+                0x06014fc4                __interrupt_handler38
+                0x06014ee0                __interrupt_handler0
+                0x06015150                __interrupt_handler104
+                0x0601528e                __interrupt_handler157
+                0x060153de                __interrupt_handler213
+                0x060152d0                __interrupt_handler168
+                0x060150de                __interrupt_handler85
+                0x0601517a                __interrupt_handler111
+                0x0601518c                __interrupt_handler114
+                0x06014ffa                __interrupt_handler47
+                0x06015450                __interrupt_handler232
+                0x0601541a                __interrupt_handler223
+                0x0601546e                __interrupt_handler237
+                0x0601505a                __interrupt_handler63
+                0x06014fe8                __interrupt_handler44
+                0x060152fa                __interrupt_handler175
+                0x06015324                __interrupt_handler182
+                0x0601533c                __interrupt_handler186
+                0x0601523a                __interrupt_handler143
+                0x06015162                __interrupt_handler107
+                0x060151c8                __interrupt_handler124
+                0x060152e8                __interrupt_handler172
+                0x0601549e                __interrupt_handler245
+                0x0601511a                __interrupt_handler95
+                0x060151f2                __interrupt_handler131
+                0x06015204                __interrupt_handler134
+                0x06015222                __interrupt_handler139
+                0x06015090                __interrupt_handler72
+                0x0601544a                __interrupt_handler231
+                0x060152a0                __interrupt_handler160
+                0x060151e6                __interrupt_handler129
+                0x06014f58                __interrupt_handler20
+                0x06015066                __interrupt_handler65
+                0x06015030                __interrupt_handler56
+                0x06014f2e                __interrupt_handler13
+                0x060153c6                __interrupt_handler209
+                0x06015180                __interrupt_handler112
+                0x06014f52                __interrupt_handler19
+                0x0601510e                __interrupt_handler93
+                0x06015378                __interrupt_handler196
+                0x0601526a                __interrupt_handler151
+                0x060152ca                __interrupt_handler167
+                0x060154e0                __trampoline
+                0x06014f46                __interrupt_handler17
+                0x06015438                __interrupt_handler228
+                0x060154da                __interrupt_handler255
+                0x06015498                __interrupt_handler244
+                0x06015132                __interrupt_handler99
+                0x0601532a                __interrupt_handler183
+                0x06015228                __interrupt_handler140
+                0x0601534e                __interrupt_handler189
+                0x0601524c                __interrupt_handler146
+                0x06015414                __interrupt_handler222
+                0x06015288                __interrupt_handler156
+                0x060151bc                __interrupt_handler122
+                0x060154b0                __interrupt_handler248
+                0x06015000                __interrupt_handler48
+                0x0601507e                __interrupt_handler69
+                0x06014f70                __interrupt_handler24
+                0x060150f6                __interrupt_handler89
+                0x060153ea                __interrupt_handler215
+                0x060154d4                __interrupt_handler254
+                0x060150ea                __interrupt_handler87
+                0x0601504e                __interrupt_handler61
+                0x06015372                __interrupt_handler195
+                0x06015264                __interrupt_handler150
+                0x06014fd6                __interrupt_handler41
+                0x06015174                __interrupt_handler110
+                0x060151da                __interrupt_handler127
+                0x06015168                __interrupt_handler108
+                0x06015186                __interrupt_handler113
+                0x06015198                __interrupt_handler116
+                0x060151b6                __interrupt_handler121
+                0x060150ae                __interrupt_handler77
+                0x06014fca                __interrupt_handler39
+                0x06014fe2                __interrupt_handler43
+                0x060154b6                __interrupt_handler249
+                0x060152f4                __interrupt_handler174
+                0x06015210                __interrupt_handler136
+                0x06015348                __interrupt_handler188
+                0x06015246                __interrupt_handler145
+                0x06014f16                __interrupt_handler9
+                0x060150ba                __interrupt_handler79
+                0x06015432                __interrupt_handler227
+                0x06014fac                __interrupt_handler34
+                0x060151ec                __interrupt_handler130
+                0x060154aa                __interrupt_handler247
+                0x060150a2                __interrupt_handler75
+                0x060152ee                __interrupt_handler173
+                0x0601501e                __interrupt_handler53
+                0x0601525e                __interrupt_handler149
+                0x060154c2                __interrupt_handler251
+                0x06015456                __interrupt_handler233
+                0x06014f1c                __interrupt_handler10
+                0x060153a8                __interrupt_handler204
+                0x060150cc                __interrupt_handler82
+                0x060150d2                __interrupt_handler83
+                0x06014f76                __interrupt_handler25
+                0x06015492                __interrupt_handler243
+                0x060152ac                __interrupt_handler162
+                0x06014ff4                __interrupt_handler46
+                0x0601530c                __interrupt_handler178
+                0x060150c0                __interrupt_handler80
+                0x06015054                __interrupt_handler62
+                0x06014eec                __interrupt_handler2
+                0x06014f8e                __interrupt_handler29
+                0x06015084                __interrupt_handler70
+                0x0601516e                __interrupt_handler109
+                0x06015258                __interrupt_handler148
+                0x06015114                __interrupt_handler94
+                0x06015420                __interrupt_handler224
+                0x0601514a                __interrupt_handler103
+                0x06014fb8                __interrupt_handler36
+                0x060151d4                __interrupt_handler126
+                0x060154a4                __interrupt_handler246
+                0x0601502a                __interrupt_handler55
+                0x06014f28                __interrupt_handler12
+                0x06015018                __interrupt_handler52
+                0x06015342                __interrupt_handler187
+                0x06015240                __interrupt_handler144
+                0x0601519e                __interrupt_handler117
+                0x06014f4c                __interrupt_handler18
+                0x0601537e                __interrupt_handler197
+                0x06015270                __interrupt_handler152
+                0x060151a4                __interrupt_handler118
+                0x060152dc                __interrupt_handler170
+                0x06015396                __interrupt_handler201
+                0x06015126                __interrupt_handler97
+                0x060152b2                __interrupt_handler163
+                0x06015318                __interrupt_handler180
+                0x06015360                __interrupt_handler192
+                0x06015480                __interrupt_handler240
+                0x060151c2                __interrupt_handler123
+                0x060153e4                __interrupt_handler214
+                0x06014f9a                __interrupt_handler31
+                0x06014f88                __interrupt_handler28
+                0x06015072                __interrupt_handler67
+                0x06015078                __interrupt_handler68
+                0x06014f64                __interrupt_handler22
+                0x06014f6a                __interrupt_handler23
+                0x06015300                __interrupt_handler176
+                0x06014f0a                __interrupt_handler7
+                0x0601540e                __interrupt_handler221
+                0x060153f6                __interrupt_handler217
+                0x0601543e                __interrupt_handler229
+                0x06015006                __interrupt_handler49
+                0x06014ef8                __interrupt_handler4
+                0x06014fd0                __interrupt_handler40
+                0x06015192                __interrupt_handler115
+                0x06015462                __interrupt_handler235
+                0x06015102                __interrupt_handler91
+                0x060153b4                __interrupt_handler206
+                0x06015306                __interrupt_handler177
+                0x06015252                __interrupt_handler147
+                0x06014fbe                __interrupt_handler37
+                0x060154bc                __interrupt_handler250
+                0x06014ee6                __interrupt_handler1
+                0x06015402                __interrupt_handler219
+                0x060150a8                __interrupt_handler76
+                0x06015138                __interrupt_handler100
+                0x0601503c                __interrupt_handler58
+                0x06014f3a                __interrupt_handler15
+                0x060153d8                __interrupt_handler212
+                0x06015486                __interrupt_handler241
+                0x0601539c                __interrupt_handler202
+                0x06015366                __interrupt_handler193
+                0x060150b4                __interrupt_handler78
+                0x0601500c                __interrupt_handler50
+                0x06014fa6                __interrupt_handler33
+                0x060152c4                __interrupt_handler166
+                0x0601521c                __interrupt_handler138
+                0x0601520a                __interrupt_handler135
+                0x06014f94                __interrupt_handler30
+                0x06015330                __interrupt_handler184
+                0x0601522e                __interrupt_handler141
+                0x06015444                __interrupt_handler230
+                0x06015468                __interrupt_handler236
+                0x060151aa                __interrupt_handler119
+                0x060150e4                __interrupt_handler86
+                0x06015156                __interrupt_handler105
+                0x060150c6                __interrupt_handler81
+                0x060151b0                __interrupt_handler120
+                0x060151e0                __interrupt_handler128
+                0x06015024                __interrupt_handler54
+                0x06014f22                __interrupt_handler11
+                0x0601538a                __interrupt_handler199
+                0x0601527c                __interrupt_handler154
+                0x06014fee                __interrupt_handler45
+                0x060153f0                __interrupt_handler216
+                0x060153a2                __interrupt_handler203
+                0x0601513e                __interrupt_handler101
+                0x060150d8                __interrupt_handler84
+                0x06015336                __interrupt_handler185
+                0x06015234                __interrupt_handler142
+                0x06014f7c                __interrupt_handler26
+                0x06015060                __interrupt_handler64
+                0x06015390                __interrupt_handler200
+                0x060153ba                __interrupt_handler207
+                0x0601536c                __interrupt_handler194
+                0x06015108                __interrupt_handler92
+                0x06015282                __interrupt_handler155
+                0x060153d2                __interrupt_handler211
+                0x060151fe                __interrupt_handler133
+                0x06014efe                __interrupt_handler5
+                0x06015096                __interrupt_handler73
+                0x06014f40                __interrupt_handler16
+                0x0601547a                __interrupt_handler239
+                0x0601545c                __interrupt_handler234
+                0x06014fb2                __interrupt_handler35
+                0x06015042                __interrupt_handler59
+                0x060152d6                __interrupt_handler169
+                0x0601512c                __interrupt_handler98
+                0x0601508a                __interrupt_handler71
+                0x06015012                __interrupt_handler51
+                0x0601529a                __interrupt_handler159
+                0x0601542c                __interrupt_handler226
+                0x06015120                __interrupt_handler96
+                0x06015354                __interrupt_handler190
+                0x06015408                __interrupt_handler220
+                0x06014f10                __interrupt_handler8
+                0x06015312                __interrupt_handler179
+                0x060154c8                __interrupt_handler252
+ *fill*         0x06015504        0xc 00
+ .text          0x06015510     0x12a0 ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
+                0x06016770                SlaveFlushDrawPrtyBlock
+                0x06015510                SPR_2Initial
+                0x06015d54                SPR_2SysClip
+                0x06015cf4                SPR_2LocalCoord
+                0x060165ec                SPR_2FlushDrawPrtyBlock
+                0x060162d8                SPR_2DistSpr
+                0x06015cdc                SPR_2FlushDrawPrty
+                0x060163fc                SPR_2Cmd
+                0x060159d8                SPR_2GourTblNoToVram
+                0x06015a38                SPR_2GetAreaSizeInfo
+                0x060157a0                SPR_2SetGourTbl
+                0x06015f8c                SPR_2Polygon
+                0x06015a14                SPR_2CharNoToVram
+                0x06015720                SPR_2SetTvMode
+                0x06015b7c                SPR_2CloseCommand
+                0x0601575c                SPR_2FrameEraseData
+                0x06015538                SPR_2Initial2
+                0x0601616c                SPR_2ScaleSpr
+                0x06015dfc                SPR_2Line
+                0x06015ac8                SPR_2OpenCommand
+                0x0601573c                SPR_2FrameChgIntr
+                0x06016048                SPR_2NormSpr
+                0x060157d0                SPR_2SetLookupTbl
+                0x06015804                SPR_2SetChar
+                0x060159fc                SPR_2LookupTblNoToVram
+                0x06015ed0                SPR_2PolyLine
+                0x06015970                SPR_2ClrAllChar
+                0x06015924                SPR_2ClrChar
+                0x06015da0                SPR_2UserClip
+ .text          0x060167b0      0x1e6 ../sbl6/segalib/lib/sega_spr.a(spr_slv.o)
+                0x06016914                SPR_WaitEndSlaveSH
+                0x060167b0                SPR_SMPC_SSHON
+                0x060168f0                SPR_RunSlaveSH
+                0x060167b4                SPR_InitSlaveSH
+                0x0601687c                SPR_SlaveSHmain
+                0x060167b1                SPR_SMPC_SSHOFF
+ *fill*         0x06016996        0xa 00
+ .text          0x060169a0      0x36a ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
+                0x06016c54                SPR_WaitDrawEnd
+                0x06016c6c                SPR_SetEosMode
+                0x06016b84                SPR_SetEraseData
+                0x060169a0                SPR_Initial
+                0x06016a78                SPR_SetTvMode
+                0x06016b10                SPR_GetStatus
+ *fill*         0x06016d0a        0x6 00
+ .text          0x06016d10      0x244 ../sbl6/segalib/lib/sega_spr.a(spr_2a.o)
+                0x06016d22                sprMemCpyW
+                0x06016d80                flushDrawPrtyBlock
+                0x06016d10                sprMemCpyL
+                0x06016d34                SPR_2SetDrawPrty
+ *fill*         0x06016f54        0xc 00
+ .text          0x06016f60      0x2fc ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
+                0x0601701c                SCL_DisplayFrame
+                0x06016f60                SCL_SetFrameInterval
+                0x06017050                SCL_VblInit
+                0x060170a0                SCL_VblankStart
+                0x060170e4                SCL_VblankEnd
+ *fill*         0x0601725c        0x4 00
+ .text          0x06017260      0x1f4 ../sbl6/segalib/lib/sega_scl.a(scl_pr12.o)
+                0x06017260                SCL_SetColOffset
+ *fill*         0x06017454        0xc 00
+ .text          0x06017460      0x214 ../sbl6/segalib/lib/sega_scl.a(scl_pr07.o)
+                0x06017460                SCL_SetPriority
+ *fill*         0x06017674        0xc 00
+ .text          0x06017680       0x9c ../sbl6/segalib/lib/sega_scl.a(scl_pr02.o)
+                0x06017680                SCL_SetColRam
+ *fill*         0x0601771c        0x4 00
+ .text          0x06017720      0x180 ../sbl6/segalib/lib/sega_scl.a(scl_pr11.o)
+                0x06017720                SCL_SetAutoColOffset
+ .text          0x060178a0     0x10a4 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
+                0x06017934                SCL_AbortAutoVe
+                0x060187e4                SCL_SetShadowBit
+                0x06017dac                SCL_AutoExec
+                0x060178a0                SCL_PriorityInit
+                0x060182c0                SCL_IncColOffset
+                0x06017948                SCL_SetColMixRate
+                0x06017918                SCL_GetColRamMode
+ *fill*         0x06018944        0xc 00
+ .text          0x06018950       0x98 ../sbl6/segalib/lib/sega_scl.a(scl_pr10.o)
+                0x06018950                SCL_SetAutoColMix
+ *fill*         0x060189e8        0x8 00
+ .text          0x060189f0      0x278 ../sbl6/segalib/lib/sega_scl.a(scl_fu05.o)
+                0x06018aac                SCL_SetLineParam
+                0x060189f8                SCL_InitLineParamTb
+ *fill*         0x06018c68        0x8 00
+ .text          0x06018c70      0xb9c ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
+                0x0601964c                SCL_Vdp2_SGLInit
+                0x0601955c                SCL_PriIntProc
+                0x060194d4                SCL_Memcpyw
+                0x060197ec                SCL_SglOff
+                0x060197cc                SCL_SglOn
+                0x06019440                SCL_ScrollShow
+                0x06018ee8                SCL_Close
+                0x060191e0                SCL_Scale
+                0x06018c70                SCL_Vdp2Init
+                0x06019054                SCL_Move
+                0x0601931c                SCL_CopyReg
+                0x06018ec4                SCL_Open
+                0x06018cf4                SCL_ParametersInit
+                0x06018f04                SCL_MoveTo
+                0x060194fc                SCL_SetColRamMode
+ *fill*         0x0601980c        0x4 00
+ .text          0x06019810      0x1ec ../sbl6/segalib/lib/sega_scl.a(scl_fu01.o)
+                0x06019810                SCL_SetDisplayMode
+ *fill*         0x060199fc        0x4 00
+ .text          0x06019a00       0x28 ../sbl6/segalib/lib/sega_scl.a(scl_fu04.o)
+                0x06019a00                SCL_SetCycleTable
+ *fill*         0x06019a28        0x8 00
+ .text          0x06019a30      0x138 ../sbl6/segalib/lib/sega_scl.a(scl_pr03.o)
+                0x06019a30                SCL_FreeColRam
+                0x06019a68                SCL_AllocColRam
+ *fill*         0x06019b68        0x8 00
+ .text          0x06019b70       0x84 ../sbl6/segalib/lib/sega_scl.a(scl_back.o)
+                0x06019b70                SCL_SetBack
+ *fill*         0x06019bf4        0xc 00
+ .text          0x06019c00      0x94c ../sbl6/segalib/lib/sega_scl.a(scl_fu03.o)
+                0x06019c5c                SCL_SetConfig
+                0x06019c00                SCL_InitConfigTb
+ *fill*         0x0601a54c        0x4 00
+ .text          0x0601a550      0x4f4 ../sbl6/segalib/lib/sega_scl.a(scl_fu02.o)
+                0x0601a588                SCL_SetVramConfig
+                0x0601a550                SCL_InitVramConfigTb
+ *fill*         0x0601aa44        0xc 00
+ .text          0x0601aa50       0x58 ../sbl6/segalib/lib/sega_scl.a(scl_pr01.o)
+                0x0601aa50                SCL_SetSpriteMode
+ *fill*         0x0601aaa8        0x8 00
+ .text          0x0601aab0       0xac ../sbl6/segalib/lib/sega_scl.a(scl_pr05.o)
+                0x0601aab0                SCL_GetColRamOffset
+ *fill*         0x0601ab5c        0x4 00
+ .text          0x0601ab60     0x1394 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
+                0x0601bd4c                SCL_RotateZD
+                0x0601b014                SCL_Rotate
+                0x0601ace8                SCL_InitRotateTable
+ *fill*         0x0601bef4        0xc 00
+ .text          0x0601bf00      0x1b4 ../sbl6/segalib/lib/sega_scl.a(scl_pr06.o)
+                0x0601bf00                SCL_SetColRamOffset
+ *fill*         0x0601c0b4        0xc 00
+ .text          0x0601c0c0       0x30 ../sbl6/segalib/lib/sega_mth.a(mth_rand.o)
+                0x0601c0d0                MTH_GetRand
+                0x0601c0c0                MTH_InitialRand
+ .text          0x0601c0f0       0xa4 ../sbl6/segalib/lib/sega_mth.a(mth_fixd.o)
+                0x0601c140                MTH_FixedToInt
+                0x0601c130                MTH_IntToFixed
+                0x0601c0f0                MTH_Mul
+                0x0601c150                MTH_Product
+                0x0601c110                MTH_Div
+ *fill*         0x0601c194        0xc 00
+ .text          0x0601c1a0      0x600 ../sbl6/segalib/lib/sega_mth.a(mth_tri.o)
+                0x0601c23c                fcos
+                0x0601c242                fsin
+                0x0601c1ec                MTH_Cos
+                0x0601c1a0                MTH_Sin
+                0x0601c3e0                MTH_Atan
+ .text          0x0601c7a0      0x130 ../sbl6/segalib/lib/sega_cdc.a(cdc_drv.o)
+                0x0601c7a0                CDC_CdPlay
+                0x0601c86c                CDC_CdSeek
+                0x0601c8a0                CDC_CdScan
+ .text          0x0601c8d0      0x3a0 ../sbl6/segalib/lib/sega_cdc.a(cdc_cmn.o)
+                0x0601ca74                CDC_TgetToc
+                0x0601cc18                CDC_DataEnd
+                0x0601c938                CDC_GetPeriStat
+                0x0601cbac                CDC_DataReady
+                0x0601cb84                CDC_CdOpen
+                0x0601cb00                CDC_CdInit
+                0x0601cac4                CDC_GetSes
+                0x0601c920                CDC_GetLastStat
+                0x0601c8d0                CDC_GetCurStat
+                0x0601ca0c                CDC_GetHwInfo
+ .text          0x0601cc70      0x152 ../sbl6/segalib/lib/sega_cdc.a(cdc_sub.o)
+                0x0601cd18                CDSUB_GetCdstat
+                0x0601cc88                CDSUB_UpdCdstat
+                0x0601cd58                CDSUB_RspToCdstat
+                0x0601cda0                CDSUB_SoftTimer
+                0x0601cc70                CDSUB_UpdStatus
+                0x0601cca8                CDSUB_CdCmd
+ *fill*         0x0601cdc2        0xe 00
+ .text          0x0601cdd0      0x2dc ../sbl6/segalib/lib/sega_cdc.a(cdc_reg.o)
+                0x0601ce24                CDREG_ClrHirqReq
+                0x0601cdf4                CDC_ClrHirqReq
+                0x0601cea4                CDREG_TgetData
+                0x0601ce94                CDC_GetMpegPtr
+                0x0601ce70                CDC_GetHirqMsk
+                0x0601cdd0                CDC_GetDataPtr
+                0x0601cde0                CDC_GetHirqReq
+                0x0601d000                CDREG_WaitHirq
+                0x0601ce84                CDC_SetHirqMsk
+                0x0601cf00                CDREG_CmdRsp
+                0x0601ce34                CDREG_InitHirqReq
+                0x0601ce5c                CDREG_SetHirqFlag
+                0x0601d070                CDREG_ReadRsp
+ *fill*         0x0601d0ac        0x4 00
+ .text          0x0601d0b0      0xf50 ../sbl6/segalib/lib/sega_per.a(per_prt.o)
+                0x0601d4d0                PER_IntFunc
+                0x0601d2c8                PER_LGetPer
+                0x0601d0b0                PER_LInit
+ .text          0x0601e000     0x1b04 ../sbl6/segalib/lib/sega_sat.a(gfs.o)
+                0x0601e000                gfs_version
+                0x0601f274                gfs_mngGetNumFile
+                0x0601f9f4                gfs_closeSub
+                0x0601ed90                GFS_SetGmode
+                0x0601f04c                GFS_SetErrFunc
+                0x0601f19c                gfs_mngSetupFuncTbl
+                0x0601e358                GFS_Reset
+                0x0601f0c4                gfs_chgRoot
+                0x0601f190                gfs_aborttrans
+                0x0601f474                gfs_svrAddHndl
+                0x0601f324                gfs_mngFreeGrp
+                0x0601f09c                GFS_ConvTno
+                0x0601f628                gfs_getRootDir
+                0x0601f078                GFS_GetErrStat
+                0x0601e4c8                GFS_Seek
+                0x0601eb34                GFS_NwStop
+                0x0601f330                gfs_mngTermAccess
+                0x0601e3dc                GFS_Open
+                0x0601f2dc                GFS_mngAllocGrp
+                0x0601fa3c                gfs_isTaskDone
+                0x0601e834                GFS_Fread
+                0x0601ef94                GFS_StartTrans
+                0x0601f990                gfs_GetFinfo
+                0x0601f1d0                gfs_mngInitWork
+                0x0601e620                GFS_ByteToSct
+                0x0601f434                gfs_svrSearchHndl
+                0x0601f724                gfs_loadRootDir
+                0x0601e27c                GFS_IdToName
+                0x0601e978                GFS_NwFread
+                0x0601eec4                GFS_SetTransPara
+                0x0601ea84                GFS_NwCdRead
+                0x0601f564                gfs_loadVol
+                0x0601ee60                GFS_SetReadPara
+                0x0601e57c                GFS_Tell
+                0x0601edf4                GFS_SetTmode
+                0x0601f8f8                GFS_GetFad
+                0x0601ef30                GFS_SetTrFunc
+                0x0601efe0                GFS_CdMovePickup
+                0x0601e218                GFS_NameToId
+                0x0601ec4c                GFS_NwExecOne
+                0x0601f7ac                gfs_flowIn
+                0x0601e6d4                GFS_GetFileInfo
+                0x0601f854                gfs_transData
+                0x0601f4b0                gfs_svrRemoveHndl
+                0x0601eafc                GFS_NwIsComplete
+                0x0601fa30                gfs_getGmode
+                0x0601eba0                GFS_NwGetStat
+                0x0601f50c                GFS_OpenSub
+                0x0601e1b0                GFS_SetDir
+                0x0601e67c                GFS_GetFileSize
+                0x0601e748                GFS_GetNumCdbuf
+                0x0601fa90                gfs_convFinStat
+                0x0601e770                GFS_Load
+                0x0601e8d0                gfs_waitRead
+                0x0601e108                GFS_LoadDir
+                0x0601e2e8                GFS_GetDirInfo
+                0x0601e490                GFS_Close
+                0x0601e020                GFS_Init
+                0x0601ec1c                gfs_recovRdErr
+                0x0601f3b4                gfs_mngSetErrCode
+                0x0601ed0c                GFS_NwExecServer
+                0x0601e5cc                GFS_IsEof
+                0x0601f950                gfs_SetSct
+ *fill*         0x0601fb04        0xc 00
+ .text          0x0601fb10       0x90 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU1.o)
+                0x0601fb10                DMA_CpuMemCopy1
+ .text          0x0601fba0       0x94 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU2.o)
+                0x0601fba0                DMA_CpuMemCopy2
+ *fill*         0x0601fc34        0xc 00
+ .text          0x0601fc40      0x1f4 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU1.o)
+                0x0601fd9c                DMA_ScuResult
+                0x0601fc40                DMA_ScuInit
+                0x0601fc90                DMA_ScuMemCopy
+ *fill*         0x0601fe34        0xc 00
+ .text          0x0601fe40      0x8d4 ../sbl6/segalib/lib/sega_sat.a(gfs_cdf.o)
+                0x06020334                GFCF_Seek
+                0x0602043c                GFCF_GetStat
+                0x0602031c                GFCF_Tell
+                0x0601fee0                GFCF_Setup
+                0x060203e8                GFCF_cnvIntlvOfs
+                0x0601fe40                GFCF_Init
+                0x060202d4                GFCF_Recover
+                0x06020028                GFCF_SetSct
+                0x0602034c                GFCF_MovePickup
+                0x06020510                gfcf_isCdOk
+                0x060200e0                GFCF_FlowInBuf
+                0x0602006c                GFCF_GetFileInfo
+                0x06020234                GFCF_StopInBuf
+                0x060204d4                gfcf_getSctSize
+                0x060205d0                gfcf_getPlayRange
+ *fill*         0x06020714        0xc 00
+ .text          0x06020720      0x928 ../sbl6/segalib/lib/sega_sat.a(gfs_dir.o)
+                0x06020c10                gfdr_setNextRec
+                0x0602100c                gfdr_setDirrecCd
+                0x06020a08                gfdr_open
+                0x0602081c                GFDR_GetAtrDirId
+                0x06020af0                gfdr_readByte
+                0x06020720                GFDR_SetupDirTbl
+                0x06020be8                gfdr_readLongNM
+                0x06020c94                gfdr_readDirEnt
+                0x0602084c                GFDR_ChgRoot
+                0x06020794                GFDR_NameToId
+                0x060208d8                gfdr_setupDirIdTbl
+                0x06020834                GFDR_GetAtrDirName
+                0x060207f4                GFDR_GetInfoDirId
+                0x06020b9c                gfdr_readLongNB
+                0x06020a30                gfdr_read
+                0x06020b1c                gfdr_readWord
+                0x0602095c                gfdr_setupDirNameTbl
+                0x06020808                GFDR_GetInfoDirName
+                0x06020864                GFDR_ChgDir
+                0x06020b48                gfdr_readWordNB
+ *fill*         0x06021048        0x8 00
+ .text          0x06021050      0xa46 ../sbl6/segalib/lib/sega_sat.a(gfs_trn.o)
+                0x06021130                GFTR_SetTransMax
+                0x06021500                gftr_execScu
+                0x06021a84                GFTR_SetTransFunc
+                0x0602194c                gftr_remTrn
+                0x06021a70                GFTR_SetData
+                0x06021770                gftr_execSdma1
+                0x060219c0                gftr_copyFrac
+                0x06021124                GFTR_GetNumTrans
+                0x060210c4                GFTR_SetMode
+                0x06021740                gftr_remDma0
+                0x060219e8                GFTR_GetLenData
+                0x060214f4                gftr_reqScu
+                0x06021758                gftr_reqDma1
+                0x06021410                gftr_getSrcPack
+                0x06021a40                GFTR_RtnDstPk
+                0x060215dc                gfdma_exec
+                0x06021874                gftr_execTrn
+                0x06021308                GFTR_ExecSvr
+                0x06021804                gftr_reqTrn
+                0x060216cc                gfdma_getBytecnt
+                0x060217ac                gftr_reqCpu
+                0x06021a0c                GFTR_GetDstPack
+                0x06021704                gftr_reqDma0
+                0x06021290                GFTR_Idle
+                0x06021148                GFTR_Pause
+                0x06021118                GFTR_GetTransPara
+                0x060217f8                gftr_remCpu
+                0x060210e4                GFTR_SetTransPara
+                0x06021794                gftr_remDma1
+                0x06021154                GFTR_Stop
+                0x0602171c                gftr_execSdma0
+                0x06021080                GFTR_Setup
+                0x0602159c                gftr_remScu
+                0x06021498                gftr_getDstPack
+                0x060215d0                gfdma_canUse
+                0x0602120c                GFTR_Exec
+                0x06021a5c                GFTR_GetData
+                0x0602113c                GFTR_Start
+                0x060210d8                GFTR_SetUnit
+                0x060217b8                gftr_execCpu
+                0x060219f4                GFTR_GetLenRoom
+ *fill*         0x06021a96        0xa 00
+ .text          0x06021aa0      0x106 ../sbl6/segalib/lib/sega_sat.a(gfs_buf.o)
+                0x06021af8                GFBF_GetNumData
+                0x06021b74                GFBF_RtnPk
+                0x06021b28                GFBF_GetSrcPk
+                0x06021b9c                gfbf_getSctDt
+                0x06021ad0                GFBF_GetTranData
+                0x06021b50                GFBF_GetSctData
+ *fill*         0x06021ba6        0xa 00
+ .text          0x06021bb0      0x600 ../sbl6/segalib/lib/sega_sat.a(gfs_cdb.o)
+                0x06022158                GFCB_GetPickup
+                0x06021cd0                GFCB_Close
+                0x06021f9c                GFCB_GetSrcPack
+                0x06022124                GFCB_SetCon
+                0x06021da4                GFCB_GetLenRoom
+                0x06022108                GFCB_MovePickup
+                0x0602207c                GFCB_GetSctData
+                0x06021db0                GFCB_SetFilt
+                0x06021cf8                GFCB_GetLenData
+                0x06022198                GFCB_UngetPickup
+                0x06021bb0                GFCB_Setup
+                0x06021e40                GFCB_Tell
+                0x06022180                GFCB_IsPuOwner
+                0x06021ea0                GFCB_Seek
+                0x06021e18                GFCB_DeleteAllData
+                0x060220b4                GFCB_GetDstPack
+                0x06021e50                gfcb_getSctNum
+                0x060220c0                GFCB_RtnPk
+ .text          0x060221b0     0x1a04 ../sbl6/segalib/lib/sega_sat.a(gfs_cdc.o)
+                0x0602244c                GFCD_AllocBuf
+                0x06023228                gfcd_doGetLenDataTsk
+                0x06023ac4                GFCD_SetCsctFunc
+                0x06022524                GFCD_GetBaseFad
+                0x060226a0                GFCD_GetFilt
+                0x060236b4                gfcd_doChgDirTsk
+                0x060239f4                gfcd_checkEflag
+                0x060229e8                GFCD_MovePickup
+                0x06022acc                GFCD_GetSctInfo
+                0x0602337c                gfcd_doReqDataTsk
+                0x06022b14                GFCD_ChgDir
+                0x06022808                GFCD_ReqData
+                0x06023ae0                GFCD_ChkScdqFlag
+                0x06022f98                GFCD_WaitServer
+                0x060228ac                GFCD_DelSctData
+                0x06022d84                GFCD_ExecServer
+                0x06023198                gfcd_doSetConTsk
+                0x060223e0                GFCD_AllocFilt
+                0x060225dc                GFCD_SetFilt
+                0x06022fd4                gfcd_doSetFiltTsk
+                0x06023b04                GFCD_ClrScdqFlag
+                0x0602341c                gfcd_doDelSctDataTsk
+                0x06022ee0                gfcd_doTask
+                0x06022558                GFCD_GetPickup
+                0x06022aa8                GFCD_CheckMove
+                0x06023b20                GFCD_WaitScdqFlag
+                0x06022740                GFCD_Play
+                0x06023550                gfcd_doMoveSctTsk
+                0x060226e8                GFCD_SetCon
+                0x06022b88                GFCD_SetFiltCon
+                0x06023b64                GFCD_WaitPause
+                0x06022d4c                GFCD_GetBufSiz
+                0x0602258c                GFCD_UngetPickup
+                0x06022c70                GFCD_GetFileInfo
+                0x06022864                GFCD_EndData
+                0x06022480                GFCD_FreeBuf
+                0x060227a0                GFCD_GetLenData
+                0x0602241c                GFCD_FreeFilt
+                0x06022e58                gfcd_isIdleTask
+                0x060221dc                GFCD_Init
+                0x060238b0                gfcd_doSetFiltConTsk
+                0x06022934                GFCD_GetStat
+                0x06022a34                GFCD_MoveSctData
+                0x060225b8                GFCD_IsPuOwner
+                0x06023a18                gfcd_initCdbMng
+                0x060221b0                GFCD_SetCdbfs
+                0x06022f84                GFCD_SetTimer
+                0x06023a98                gfcd_setStat
+                0x06022904                GFCD_CheckDelSctData
+ *fill*         0x06023bb4        0xc 00
+ .text          0x06023bc0      0x1b6 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU0.o)
+                0x06023c08                DMA_CpuSetPrm
+                0x06023d0c                DMA_CpuStart
+                0x06023d64                DMA_CpuGetStatus
+                0x06023d38                DMA_CpuAllStop
+                0x06023d4c                DMA_CpuGetComStatus
+                0x06023bc0                DMA_CpuSetComPrm
+                0x06023d20                DMA_CpuStop
+ *fill*         0x06023d76        0xa 00
+ .text          0x06023d80       0x50 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU5.o)
+                0x06023d80                DMA_CpuResult
+ .text          0x06023dd0      0x308 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU0.o)
+                0x06023e54                DMA_ScuStart
+                0x06023f88                DMA_ScuIntFunc0
+                0x06023ff8                DMA_ScuIntFunc1
+                0x06024068                DMA_ScuIntFunc2
+                0x06023f48                DMA_ScuGetStatus
+                0x06023dd0                DMA_ScuSetPrm
+ *fill*         0x060240d8        0x8 00
+ .text          0x060240e0       0xe8 ../sbl6/segalib/lib/sega_sat.a(csh_main.o)
+                0x060240e0                CSH_Init
+                0x06024148                CSH_AllClr
+                0x06024194                CSH_Purge
+ *fill*         0x060241c8        0x8 00
+ .text          0x060241d0      0x194 ../sbl6/segalib/lib/sega_sat.a(cdc_cfs.o)
+                0x060241d0                CDC_ChgDir
+                0x06024204                CDC_ReadDir
+                0x06024328                CDC_AbortFile
+                0x06024238                CDC_GetFileScope
+                0x06024298                CDC_TgetFileInfo
+                0x060242f4                CDC_ReadFile
+ *fill*         0x06024364        0xc 00
+ .text          0x06024370      0x1e4 ../sbl6/segalib/lib/sega_sat.a(cdc_bio.o)
+                0x0602441c                CDC_GetdelSctData
+                0x060243a4                CDC_GetSctData
+                0x06024458                CDC_PutSctData
+                0x060244d4                CDC_MoveSctData
+                0x06024518                CDC_GetCopyErr
+                0x060243e0                CDC_DelSctData
+                0x06024370                CDC_SetSctLen
+                0x06024490                CDC_CopySctData
+ *fill*         0x06024554        0xc 00
+ .text          0x06024560      0x2b8 ../sbl6/segalib/lib/sega_sat.a(cdc_sel.o)
+                0x06024790                CDC_GetFiltCon
+                0x0602470c                CDC_GetFiltMode
+                0x060247e4                CDC_ResetSelector
+                0x06024560                CDC_SetFiltRange
+                0x060245ec                CDC_SetFiltSubh
+                0x0602465c                CDC_GetFiltSubh
+                0x06024594                CDC_GetFiltRange
+                0x060246d8                CDC_SetFiltMode
+                0x06024750                CDC_SetFiltCon
+ *fill*         0x06024818        0x8 00
+ .text          0x06024820      0x270 ../sbl6/segalib/lib/sega_sat.a(cdc_bif.o)
+                0x0602487c                CDC_GetSctNum
+                0x060249fc                CDC_ExeFadSearch
+                0x0602497c                CDC_GetSctInfo
+                0x060248c0                CDC_CalActSiz
+                0x06024820                CDC_GetBufSiz
+                0x060248fc                CDC_GetActSiz
+                0x06024a34                CDC_GetFadSearch
+ .text          0x06024a90       0xa8 ../sbl6/segalib/lib/sega_sat.a(cdc_dev.o)
+                0x06024afc                CDC_CdGetLastBuf
+                0x06024a90                CDC_CdSetCon
+                0x06024ac0                CDC_CdGetCon
+ *fill*         0x06024b38        0x8 00
+ .text          0x06024b40       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftrt.o)
+                0x06024b4c                __ashiftrt_r4_27
+                0x06024b80                __ashiftrt_r4_6
+                0x06024b70                __ashiftrt_r4_14
+                0x06024b62                __ashiftrt_r4_19
+                0x06024b7a                __ashiftrt_r4_9
+                0x06024b8e                __ashiftrt_r4_0
+                0x06024b40                __ashiftrt_r4_31
+                0x06024b4e                __ashiftrt_r4_26
+                0x06024b5c                __ashiftrt_r4_22
+                0x06024b68                __ashiftrt_r4_16
+                0x06024b74                __ashiftrt_r4_12
+                0x06024b48                __ashiftrt_r4_29
+                0x06024b66                __ashiftrt_r4_17
+                0x06024b46                __ashiftrt_r4_30
+                0x06024b82                __ashiftrt_r4_5
+                0x06024b7c                __ashiftrt_r4_8
+                0x06024b40                __ashiftrt_r4_32
+                0x06024b50                __ashiftrt_r4_25
+                0x06024b88                __ashiftrt_r4_2
+                0x06024b52                __ashiftrt_r4_24
+                0x06024b6e                __ashiftrt_r4_15
+                0x06024b78                __ashiftrt_r4_10
+                0x06024b8a                __ashiftrt_r4_1
+                0x06024b4a                __ashiftrt_r4_28
+                0x06024b60                __ashiftrt_r4_20
+                0x06024b7e                __ashiftrt_r4_7
+                0x06024b72                __ashiftrt_r4_13
+                0x06024b76                __ashiftrt_r4_11
+                0x06024b84                __ashiftrt_r4_4
+                0x06024b5a                __ashiftrt_r4_23
+                0x06024b64                __ashiftrt_r4_18
+                0x06024b5e                __ashiftrt_r4_21
+                0x06024b86                __ashiftrt_r4_3
+ .text          0x06024ba0       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_si_to_df.o)
+                0x06024ba0                __floatsidf
+ .text          0x06024c50      0x2e0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mul_df.o)
+                0x06024c60                __muldf3
+ .text          0x06024f30       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_df_to_si.o)
+                0x06024f30                __fixdfsi
+ .text          0x06024fb0       0x70 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_udivsi3.o)
+                0x06024fd2                __udivsi3
+ .text          0x06025020       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_sdivsi3.o)
+                0x06025020                __sdivsi3
+ .text          0x060250c0       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftrt_n.o)
+                0x060250c0                __ashrsi3
+ .text          0x06025150       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashiftlt.o)
+                0x06025150                __ashlsi3
+ .text          0x060251e0       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_movstr.o)
+                0x06025220                __movstrSI16
+                0x060251f4                __movstrSI60
+                0x06025200                __movstrSI48
+                0x060251fc                __movstrSI52
+                0x060251f0                __movstrSI64
+                0x06025204                __movstrSI44
+                0x06025208                __movstrSI40
+                0x0602520c                __movstrSI36
+                0x06025240                __movstr
+                0x060251f8                __movstrSI56
+                0x06025214                __movstrSI28
+                0x06025210                __movstrSI32
+                0x06025224                __movstrSI12
+                0x06025228                __movstrSI8
+                0x06025230                __movstrSI0
+                0x06025218                __movstrSI24
+                0x0602521c                __movstrSI20
+                0x0602522c                __movstrSI4
+ .text          0x06025290       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
+                0x06025304                __main
+                0x06025290                __do_global_dtors
+                0x060252c4                __do_global_ctors
+ .text          0x06025330      0x220 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_pack_df.o)
+                0x06025340                __pack_d
+ .text          0x06025550      0x120 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_unpack_df.o)
+                0x06025560                __unpack_d
+ .text          0x06025670       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_thenan_df.o)
+                0x06025670                __thenan_df
+ .text          0x06025690       0xd0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_muldi3.o)
+                0x06025690                __muldi3
+ .text          0x06025760       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshrdi3.o)
+                0x06025760                __lshrdi3
+ .text          0x060257e0       0x80 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashldi3.o)
+                0x060257e0                __ashldi3
+ .text          0x06025860       0x30 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mulsi3.o)
+                0x06025860                __mulsi3
+ .text          0x06025890       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshiftrt.o)
+                0x06025890                __lshrsi3
+ .text          0x06025920       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memset.o)
+                0x06025920                memset
+ .text          0x06025960       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcmp.o)
+                0x06025960                memcmp
+ .text          0x060259c0       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcpy.o)
+                0x060259c0                memcpy
+ .text          0x06025a60       0xb0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncmp.o)
+                0x06025a60                strncmp
+ .text          0x06025b10       0xa0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncpy.o)
+                0x06025b10                strncpy
+ .text          0x06025bb0       0x90 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
+                0x06025bb0                atexit
+ .text          0x06025c40       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
+                0x06025c40                _global_impure_ptr
+ .text          0x06025c50       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(malloc.o)
+                0x06025c6c                free
+                0x06025c50                malloc
+ .text          0x06025c90      0x5b0 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
+                0x06025c90                _malloc_r
+ .text          0x06026240      0x340 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(freer.o)
+                0x06026240                _malloc_trim_r
+                0x06026334                _free_r
+ .text          0x06026580       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mlock.o)
+                0x06026580                __malloc_lock
+                0x0602658c                __malloc_unlock
+ .text          0x060265a0       0x50 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(sbrkr.o)
+                0x060265a0                _sbrk_r
+ .text          0x060265f0      0x380 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
+                0x0602675c                _exit
+                0x06026790                _getpid
+                0x060267f8                _utime
+                0x06026628                _write
+                0x060265f0                _read
+                0x06026744                _unlink
+                0x0602670c                _open
+                0x060267a8                _stat
+                0x06026750                isatty
+                0x06026828                _wait
+                0x06026774                _kill
+                0x060267c4                _chmod
+                0x06026858                _execv
+                0x0602683c                _execve
+                0x06026934                __setup_argv_and_call_main
+                0x06026890                _gettimeofday
+                0x0602665c                _link
+                0x0602679c                _raise
+                0x06026728                _creat
+                0x06026870                _pipe
+                0x060267dc                _chown
+                0x0602660c                _lseek
+                0x06026644                _close
+                0x06026884                _times
+                0x060266f8                _fstat
+                0x06026814                _fork
+                0x06026684                _sbrk
+ .text          0x06026970       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(trap.o)
+                0x06026970                __trap34
+ .text          0x06026990       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(abort.o)
+                0x06026990                abort
+ .text          0x060269b0      0x270 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signal.o)
+                0x06026a70                _raise_r
+                0x06026bf8                __sigtramp
+                0x06026ba4                raise
+                0x06026be0                _init_signal
+                0x06026b30                __sigtramp_r
+                0x06026bc0                signal
+                0x060269fc                _signal_r
+                0x060269b0                _init_signal_r
+ .text          0x06026c20       0x60 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signalr.o)
+                0x06026c68                _getpid_r
+                0x06026c20                _kill_r
  *(.strings)
 
-.tors           0x06026890        0x0
-                0x06026890                ___ctors = .
+.tors           0x06026c80        0x0
+                0x06026c80                ___ctors = .
  *(.ctors)
-                0x06026890                ___ctors_end = .
-                0x06026890                ___dtors = .
+                0x06026c80                ___ctors_end = .
+                0x06026c80                ___dtors = .
  *(.dtors)
-                0x06026890                ___dtors_end = .
+                0x06026c80                ___dtors_end = .
 
-.data           0x06026890     0x4380
-                0x06026890                STARTOF_R = .
+.data           0x06026c80     0x4410
+                0x06026c80                STARTOF_R = .
  *(.data)
- .data          0x06026890      0x400 smpclib/per_x1.o
- .data          0x06026c90       0x40 game.o
- .data          0x06026cd0     0x2ff0 graphics.o
-                0x06027ba8                cyberblock_name
-                0x0602908e                girl2_num
-                0x06027bf8                metalorange_name
-                0x06026d1e                ship_size
-                0x06027c06                metalorange_num
-                0x06026ee8                chipgame_pal
-                0x06028c82                girl3_num
-                0x06026e54                game_name
-                0x06027708                menufont_pal
-                0x06027756                menufont_num
-                0x0602949a                girl1_num
-                0x06027bb8                metalorange_pal
-                0x0602949c                roarframes_pal
-                0x06026ed8                gamestar_name
-                0x06026e84                starnear_name
-                0x06026e2c                gamefar_height
-                0x06026d20                ship_num
-                0x060298ac                roarbg_pal
-                0x06029cac                roarbg_name
-                0x06026e98                gamestar_pal
-                0x06026e50                gamenear_width
-                0x06026d76                starspr_num
-                0x06029490                girl1_name
-                0x060272f8                game_tiles_pal
-                0x06027c08                title_pal
-                0x06026dc2                font_height
-                0x0602989c                roarframes_name
-                0x06028c78                girl3_name
-                0x06026e2e                gamefar_width
-                0x06029090                girl1_pal
-                0x06027748                menufont_name
-                0x06027b66                chipframes_num
-                0x06026dcc                ball_pal
-                0x06028878                girl3_pal
-                0x060272f6                chipgame_num
-                0x06026d74                starspr_size
-                0x06026e40                gamenear_name
-                0x0602846a                girl5_num
-                0x06026e1c                ball_num
-                0x06028012                title_num
-                0x06026db8                font_name
-                0x06026d24                starspr_pal
-                0x06029cb8                roarbg_num
-                0x06026e18                ball_width
-                0x06027bb6                cyberblock_num
-                0x06028060                girl5_pal
-                0x06026d1a                ship_height
-                0x06027706                game_tiles_num
-                0x06026e16                ball_height
-                0x06026e4e                gamenear_height
-                0x06026dc4                font_width
-                0x0602805e                stars_num
-                0x06026e1a                ball_size
-                0x06026d1c                ship_width
-                0x06028008                title_name
-                0x06027b58                chipframes_name
-                0x06026e64                starfar_name
-                0x06028054                stars_name
-                0x06026ee6                gamestar_num
-                0x06026e3c                gamemid_height
-                0x06026cd0                ship_pal
-                0x06026e0c                ball_name
-                0x06026dc8                font_num
-                0x06026d78                font_pal
-                0x06026e82                starmid_width
-                0x06026e94                starnear_width
-                0x06026e30                gamemid_name
-                0x06026d72                starspr_width
-                0x06027758                chipframes_pal
-                0x06026e5e                game_height
-                0x06026e70                starfar_height
-                0x06028876                girl4_num
-                0x06026e3e                gamemid_width
-                0x06026dc6                font_size
-                0x06026d64                starspr_name
-                0x060298aa                roarframes_num
-                0x06027b68                cyberblock_pal
-                0x06026e92                starnear_height
-                0x06026e74                starmid_name
-                0x06026d10                ship_name
-                0x06028460                girl5_name
-                0x0602846c                girl4_pal
-                0x06026e80                starmid_height
-                0x06028014                stars_pal
-                0x06026e20                gamefar_name
-                0x060276f8                game_tiles_name
-                0x06026d70                starspr_height
-                0x0602886c                girl4_name
-                0x06026e60                game_width
-                0x06028c84                girl2_pal
-                0x06026e72                starfar_width
-                0x060272e8                chipgame_name
-                0x06029084                girl2_name
- .data          0x06029cc0      0x1a0 intro.o
- .data          0x06029e60       0x40 logo.o
- .data          0x06029ea0       0x80 menu.o
- .data          0x06029f20       0x10 pcmsys.o
-                0x06029f24                scsp_load
-                0x06029f28                m68k_com
-                0x06029f20                master_volume
- .data          0x06029f30       0x30 scroll.o
-                0x06029f40                CycleTbLoRes
-                0x06029f50                vram
-                0x06029f30                CycleTbHiRes
- .data          0x06029f60       0x30 sprite.o
- .data          0x06029f90      0x400 ../sbl6/segalib/lib/sega_int.a(int.o)
- .data          0x0602a390       0x1c ../sbl6/segalib/lib/sega_spr.a(spr_slv.o)
-                0x0602a398                SPR_SlaveParam
-                0x0602a3a8                SPR_SMPC_SF
-                0x0602a3a0                SPR_SMPC_COM
-                0x0602a39c                SPR_SlaveSHEntry
-                0x0602a394                SPR_SlaveState
-                0x0602a390                SPR_SlaveCommand
-                0x0602a3a4                SPR_SMPC_RET
- *fill*         0x0602a3ac        0x4 00
- .data          0x0602a3b0       0x34 ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
-                0x0602a3b0                SpInitialFlag
- *fill*         0x0602a3e4        0xc 00
- .data          0x0602a3f0       0x1c ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
-                0x0602a3f8                VBInterval
-                0x0602a400                ReqDisplayFlag
-                0x0602a3f0                SpFrameChgMode
-                0x0602a3fc                VBIntervalCounter
-                0x0602a3f4                SpFrameEraseMode
- *fill*         0x0602a40c        0x4 00
- .data          0x0602a410       0x18 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
-                0x0602a414                SclRealSpPriNum
-                0x0602a424                SclRealColOffset
-                0x0602a420                SclRealBgColMix
-                0x0602a41c                SclRealSpColMix
-                0x0602a418                SclRealBgPriNum
-                0x0602a410                SclRealOtherPri
- *fill*         0x0602a428        0x8 00
- .data          0x0602a430       0x36 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
-                0x0602a440                SclRotregBuff
-                0x0602a43c                SclDisplayY
-                0x0602a444                SclRotateTableMode
-                0x0602a438                SclProcess
-                0x0602a434                SclCurSclNum
-                0x0602a430                SclLengthLsTbl
-                0x0602a43a                SclDisplayX
-                0x0602a432                SclLengthCsTbl
- *fill*         0x0602a466        0xa 00
- .data          0x0602a470        0x4 ../sbl6/segalib/lib/sega_mth.a(mth_rand.o)
- *fill*         0x0602a474        0xc 00
- .data          0x0602a480      0x380 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
-                0x0602a7fc                _impure_ptr
- .data          0x0602a800      0x410 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
-                0x0602a808                __malloc_av_
-                0x0602a804                __malloc_trim_threshold
-                0x0602a800                __malloc_sbrk_base
-                0x0602ac10                SIZEOF_R = (. - STARTOF_R)
-                0x0602ac10                ENDOF_R = .
+ .data          0x06026c80      0x400 smpclib/per_x1.o
+ .data          0x06027080       0x70 game.o
+ .data          0x060270f0     0x3050 graphics.o
+                0x06028020                cyberblock_name
+                0x06029506                girl2_num
+                0x06028070                metalorange_name
+                0x06027196                ship_size
+                0x0602807e                metalorange_num
+                0x06027360                chipgame_pal
+                0x060290fa                girl3_num
+                0x060272cc                game_name
+                0x06027b80                menufont_pal
+                0x06027bce                menufont_num
+                0x06029912                girl1_num
+                0x06028030                metalorange_pal
+                0x06029914                roarframes_pal
+                0x06027350                gamestar_name
+                0x060272fc                starnear_name
+                0x060272a4                gamefar_height
+                0x06027198                ship_num
+                0x06029d24                roarbg_pal
+                0x0602a124                roarbg_name
+                0x060270f0                explosion_pal
+                0x06027310                gamestar_pal
+                0x060272c8                gamenear_width
+                0x06027130                explosion_name
+                0x060271ee                starspr_num
+                0x06029908                girl1_name
+                0x06027770                game_tiles_pal
+                0x06028080                title_pal
+                0x0602723a                font_height
+                0x06029d14                roarframes_name
+                0x060290f0                girl3_name
+                0x060272a6                gamefar_width
+                0x06029508                girl1_pal
+                0x06027bc0                menufont_name
+                0x06027fde                chipframes_num
+                0x06027244                ball_pal
+                0x06028cf0                girl3_pal
+                0x0602776e                chipgame_num
+                0x060271ec                starspr_size
+                0x060272b8                gamenear_name
+                0x06027140                explosion_width
+                0x060288e2                girl5_num
+                0x06027294                ball_num
+                0x0602848a                title_num
+                0x06027230                font_name
+                0x0602719c                starspr_pal
+                0x0602a130                roarbg_num
+                0x06027290                ball_width
+                0x0602802e                cyberblock_num
+                0x060284d8                girl5_pal
+                0x06027192                ship_height
+                0x06027b7e                game_tiles_num
+                0x0602728e                ball_height
+                0x060272c6                gamenear_height
+                0x0602723c                font_width
+                0x060284d6                stars_num
+                0x06027292                ball_size
+                0x06027194                ship_width
+                0x06028480                title_name
+                0x06027fd0                chipframes_name
+                0x060272dc                starfar_name
+                0x060284cc                stars_name
+                0x0602735e                gamestar_num
+                0x060272b4                gamemid_height
+                0x06027148                ship_pal
+                0x06027284                ball_name
+                0x06027240                font_num
+                0x060271f0                font_pal
+                0x060272fa                starmid_width
+                0x0602730c                starnear_width
+                0x060272a8                gamemid_name
+                0x060271ea                starspr_width
+                0x06027bd0                chipframes_pal
+                0x060272d6                game_height
+                0x060272e8                starfar_height
+                0x06027144                explosion_num
+                0x06028cee                girl4_num
+                0x060272b6                gamemid_width
+                0x0602723e                font_size
+                0x060271dc                starspr_name
+                0x06029d22                roarframes_num
+                0x06027fe0                cyberblock_pal
+                0x0602730a                starnear_height
+                0x060272ec                starmid_name
+                0x06027188                ship_name
+                0x060288d8                girl5_name
+                0x060288e4                girl4_pal
+                0x060272f8                starmid_height
+                0x0602848c                stars_pal
+                0x06027298                gamefar_name
+                0x06027b70                game_tiles_name
+                0x060271e8                starspr_height
+                0x06028ce4                girl4_name
+                0x060272d8                game_width
+                0x060290fc                girl2_pal
+                0x060272ea                starfar_width
+                0x06027142                explosion_size
+                0x0602713e                explosion_height
+                0x06027760                chipgame_name
+                0x060294fc                girl2_name
+ .data          0x0602a140      0x1a0 intro.o
+ .data          0x0602a2e0       0x40 logo.o
+ .data          0x0602a320       0x80 menu.o
+                0x0602a320                cutscene
+ .data          0x0602a3a0       0x10 pcmsys.o
+                0x0602a3a4                scsp_load
+                0x0602a3a8                m68k_com
+                0x0602a3a0                master_volume
+ .data          0x0602a3b0       0x30 scroll.o
+                0x0602a3c0                CycleTbLoRes
+                0x0602a3d0                vram
+                0x0602a3b0                CycleTbHiRes
+ .data          0x0602a3e0       0x30 sprite.o
+ .data          0x0602a410      0x400 ../sbl6/segalib/lib/sega_int.a(int.o)
+ .data          0x0602a810       0x1c ../sbl6/segalib/lib/sega_spr.a(spr_slv.o)
+                0x0602a818                SPR_SlaveParam
+                0x0602a828                SPR_SMPC_SF
+                0x0602a820                SPR_SMPC_COM
+                0x0602a81c                SPR_SlaveSHEntry
+                0x0602a814                SPR_SlaveState
+                0x0602a810                SPR_SlaveCommand
+                0x0602a824                SPR_SMPC_RET
+ *fill*         0x0602a82c        0x4 00
+ .data          0x0602a830       0x34 ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
+                0x0602a830                SpInitialFlag
+ *fill*         0x0602a864        0xc 00
+ .data          0x0602a870       0x1c ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
+                0x0602a878                VBInterval
+                0x0602a880                ReqDisplayFlag
+                0x0602a870                SpFrameChgMode
+                0x0602a87c                VBIntervalCounter
+                0x0602a874                SpFrameEraseMode
+ *fill*         0x0602a88c        0x4 00
+ .data          0x0602a890       0x18 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
+                0x0602a894                SclRealSpPriNum
+                0x0602a8a4                SclRealColOffset
+                0x0602a8a0                SclRealBgColMix
+                0x0602a89c                SclRealSpColMix
+                0x0602a898                SclRealBgPriNum
+                0x0602a890                SclRealOtherPri
+ *fill*         0x0602a8a8        0x8 00
+ .data          0x0602a8b0       0x36 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
+                0x0602a8c0                SclRotregBuff
+                0x0602a8bc                SclDisplayY
+                0x0602a8c4                SclRotateTableMode
+                0x0602a8b8                SclProcess
+                0x0602a8b4                SclCurSclNum
+                0x0602a8b0                SclLengthLsTbl
+                0x0602a8ba                SclDisplayX
+                0x0602a8b2                SclLengthCsTbl
+ *fill*         0x0602a8e6        0xa 00
+ .data          0x0602a8f0        0x4 ../sbl6/segalib/lib/sega_mth.a(mth_rand.o)
+ *fill*         0x0602a8f4        0xc 00
+ .data          0x0602a900      0x380 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
+                0x0602ac7c                _impure_ptr
+ .data          0x0602ac80      0x410 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
+                0x0602ac88                __malloc_av_
+                0x0602ac84                __malloc_trim_threshold
+                0x0602ac80                __malloc_sbrk_base
+                0x0602b090                SIZEOF_R = (. - STARTOF_R)
+                0x0602b090                ENDOF_R = .
 
-.bss            0x0602ac10     0xecf4
-                0x0602ac10                STARTOF_B = .
+.bss            0x0602b090     0xed34
+                0x0602b090                STARTOF_B = .
  *(.bss)
- .bss           0x0602ac10       0x10 vblank.o
-                0x0602ac14                PadData2E
-                0x0602ac1a                PadData1
-                0x0602ac16                PadData2
-                0x0602ac18                PadData1E
-                0x0602ac10                __port
- .bss           0x0602ac20       0xe0 smpclib/per_x2.o
- .bss           0x0602ad00       0x30 game.o
- .bss           0x0602ad30     0x1970 intro.o
- .bss           0x0602c6a0       0x10 logo.o
- .bss           0x0602c6b0       0x70 menu.o
-                0x0602c6b0                nudity
- .bss           0x0602c720       0x10 pcmsys.o
-                0x0602c720                numberPCMs
- .bss           0x0602c730       0x10 scroll.o
-                0x0602c730                scroll_res
- .bss           0x0602c740     0x3800 sprite.o
-                0x0602c740                num_sprites
- .bss           0x0602ff40       0x10 main.o
-                0x0602ff40                frame
- .bss           0x0602ff50       0x6e ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
- *fill*         0x0602ffbe        0x2 00
- .bss           0x0602ffc0        0x4 ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
- *fill*         0x0602ffc4        0xc 00
- .bss           0x0602ffd0     0x1900 ../sbl6/segalib/lib/sega_scl.a(scl_fu05.o)
- .bss           0x060318d0        0x4 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
- *fill*         0x060318d4        0xc 00
- .bss           0x060318e0       0x48 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
- *fill*         0x06031928        0x8 00
- .bss           0x06031930        0xc ../sbl6/segalib/lib/sega_cdc.a(cdc_sub.o)
- *fill*         0x0603193c        0x4 00
- .bss           0x06031940        0x2 ../sbl6/segalib/lib/sega_cdc.a(cdc_reg.o)
- *fill*         0x06031942        0xe 00
- .bss           0x06031950       0x9c ../sbl6/segalib/lib/sega_per.a(per_prt.o)
- *fill*         0x060319ec        0x4 00
- .bss           0x060319f0        0xc ../sbl6/segalib/lib/sega_sat.a(DMA_SCU1.o)
- *fill*         0x060319fc        0x4 00
- .bss           0x06031a00        0xc ../sbl6/segalib/lib/sega_sat.a(gfs_trn.o)
- *fill*         0x06031a0c        0x4 00
- .bss           0x06031a10       0x20 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU0.o)
- .bss           0x06031a30       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
- .bss           0x06031a40       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
- .bss           0x06031a50       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
-                0x06031a80                __malloc_top_pad
-                0x06031a50                __malloc_current_mallinfo
-                0x06031a7c                __malloc_max_sbrked_mem
-                0x06031a78                __malloc_max_total_mem
- .bss           0x06031a90       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
+ .bss           0x0602b090       0x10 vblank.o
+                0x0602b094                PadData2E
+                0x0602b09a                PadData1
+                0x0602b096                PadData2
+                0x0602b098                PadData1E
+                0x0602b090                __port
+ .bss           0x0602b0a0       0xe0 smpclib/per_x2.o
+ .bss           0x0602b180       0x80 game.o
+ .bss           0x0602b200     0x1970 intro.o
+ .bss           0x0602cb70       0x10 logo.o
+ .bss           0x0602cb80       0x60 menu.o
+ .bss           0x0602cbe0       0x10 pcmsys.o
+                0x0602cbe0                numberPCMs
+ .bss           0x0602cbf0       0x10 scroll.o
+                0x0602cbf0                scroll_res
+ .bss           0x0602cc00     0x3800 sprite.o
+                0x0602cc00                num_sprites
+ .bss           0x06030400       0x10 main.o
+                0x06030400                frame
+ .bss           0x06030410       0x6e ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
+ *fill*         0x0603047e        0x2 00
+ .bss           0x06030480        0x4 ../sbl6/segalib/lib/sega_scl.a(scl_vblv.o)
+ *fill*         0x06030484        0xc 00
+ .bss           0x06030490     0x1900 ../sbl6/segalib/lib/sega_scl.a(scl_fu05.o)
+ .bss           0x06031d90        0x4 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
+ *fill*         0x06031d94        0xc 00
+ .bss           0x06031da0       0x48 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
+ *fill*         0x06031de8        0x8 00
+ .bss           0x06031df0        0xc ../sbl6/segalib/lib/sega_cdc.a(cdc_sub.o)
+ *fill*         0x06031dfc        0x4 00
+ .bss           0x06031e00        0x2 ../sbl6/segalib/lib/sega_cdc.a(cdc_reg.o)
+ *fill*         0x06031e02        0xe 00
+ .bss           0x06031e10       0x9c ../sbl6/segalib/lib/sega_per.a(per_prt.o)
+ *fill*         0x06031eac        0x4 00
+ .bss           0x06031eb0        0xc ../sbl6/segalib/lib/sega_sat.a(DMA_SCU1.o)
+ *fill*         0x06031ebc        0x4 00
+ .bss           0x06031ec0        0xc ../sbl6/segalib/lib/sega_sat.a(gfs_trn.o)
+ *fill*         0x06031ecc        0x4 00
+ .bss           0x06031ed0       0x20 ../sbl6/segalib/lib/sega_sat.a(DMA_SCU0.o)
+ .bss           0x06031ef0       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
+ .bss           0x06031f00       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
+ .bss           0x06031f10       0x40 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
+                0x06031f40                __malloc_top_pad
+                0x06031f10                __malloc_current_mallinfo
+                0x06031f3c                __malloc_max_sbrked_mem
+                0x06031f38                __malloc_max_total_mem
+ .bss           0x06031f50       0x10 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
  *(COMMON)
- COMMON         0x06031aa0        0x8 vblank.o
+ COMMON         0x06031f60        0x8 vblank.o
                                   0x0 (size before relaxing)
-                0x06031aa0                PadAnalogR1
-                0x06031aa1                PadAnalogL1
-                0x06031aa2                PadAnalogY1
-                0x06031aa3                PadAnalogX1
-                0x06031aa4                PadID1
- *fill*         0x06031aa8        0x8 00
- COMMON         0x06031ab0     0x1674 cd.o
+                0x06031f60                PadAnalogR1
+                0x06031f61                PadAnalogL1
+                0x06031f62                PadAnalogY1
+                0x06031f63                PadAnalogX1
+                0x06031f64                PadID1
+ *fill*         0x06031f68        0x8 00
+ COMMON         0x06031f70     0x1674 cd.o
                                   0x0 (size before relaxing)
-                0x06031ab0                dirname
-                0x06032410                lib_work
-                0x06033118                directory_table
- *fill*         0x06033124        0xc 00
- COMMON         0x06033130     0x14a0 print.o
+                0x06031f70                dirname
+                0x060328d0                lib_work
+                0x060335d8                directory_table
+ *fill*         0x060335e4        0xc 00
+ COMMON         0x060335f0     0x14a0 print.o
                                   0x0 (size before relaxing)
-                0x06033130                text
- COMMON         0x060345d0      0x23c scroll.o
+                0x060335f0                text
+ COMMON         0x06034a90      0x23c scroll.o
                                   0x0 (size before relaxing)
-                0x060345d0                scfg3
-                0x06034660                scfg0
-                0x060346f0                scfg2
-                0x06034780                scfg1
- *fill*         0x0603480c        0x4 00
- COMMON         0x06034810     0x35e0 sprite.o
+                0x06034a90                scfg3
+                0x06034b20                scfg0
+                0x06034bb0                scfg2
+                0x06034c40                scfg1
+ *fill*         0x06034ccc        0x4 00
+ COMMON         0x06034cd0     0x35e0 sprite.o
                                   0x0 (size before relaxing)
-                0x06034810                sprites
-                0x06035df0                sprite_buf
- COMMON         0x06037df0       0x8c main.o
+                0x06034cd0                sprites
+                0x060362b0                sprite_buf
+ COMMON         0x060382b0       0x8c main.o
                                   0x0 (size before relaxing)
-                0x06037df0                off_config
- *fill*         0x06037e7c        0x4 00
- COMMON         0x06037e80      0x400 ../sbl6/segalib/lib/sega_int.a(int.o)
+                0x060382b0                off_config
+ *fill*         0x0603833c        0x4 00
+ COMMON         0x06038340      0x400 ../sbl6/segalib/lib/sega_int.a(int.o)
                                   0x0 (size before relaxing)
-                0x06037e80                __interrupt_vector
- COMMON         0x06038280       0x50 ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
+                0x06038340                __interrupt_vector
+ COMMON         0x06038740       0x50 ../sbl6/segalib/lib/sega_spr.a(spr_2c.o)
                                   0x0 (size before relaxing)
-                0x06038280                SpMstCmd
-                0x06038284                Sp2OpenFlag
-                0x06038288                SpGourTblMax
-                0x0603828c                SpDrawPrtyBlk
-                0x06038290                SpLCoordX
-                0x06038294                SpMstDrawPrtyBlk
-                0x06038298                SpGourTbl
-                0x0603829c                SpLookupTblR
-                0x060382a0                SpCmdTbl
-                0x060382a4                SpCharMax
-                0x060382a8                SpDrawPrtyProcFlag
-                0x060382ac                SpCmdNo
-                0x060382b0                SpDrawPrtyBlkMax
-                0x060382b4                SpSlvCmdPos
-                0x060382b8                SpSlvDrawPrtyBlk
-                0x060382bc                SpCharTbl
-                0x060382c0                SpCmdTblR
-                0x060382c4                SpMstCmdPos
-                0x060382c8                SpSlvCmd
-                0x060382cc                SpLCoordY
- COMMON         0x060382d0       0x10 ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
+                0x06038740                SpMstCmd
+                0x06038744                Sp2OpenFlag
+                0x06038748                SpGourTblMax
+                0x0603874c                SpDrawPrtyBlk
+                0x06038750                SpLCoordX
+                0x06038754                SpMstDrawPrtyBlk
+                0x06038758                SpGourTbl
+                0x0603875c                SpLookupTblR
+                0x06038760                SpCmdTbl
+                0x06038764                SpCharMax
+                0x06038768                SpDrawPrtyProcFlag
+                0x0603876c                SpCmdNo
+                0x06038770                SpDrawPrtyBlkMax
+                0x06038774                SpSlvCmdPos
+                0x06038778                SpSlvDrawPrtyBlk
+                0x0603877c                SpCharTbl
+                0x06038780                SpCmdTblR
+                0x06038784                SpMstCmdPos
+                0x06038788                SpSlvCmd
+                0x0603878c                SpLCoordY
+ COMMON         0x06038790       0x10 ../sbl6/segalib/lib/sega_spr.a(spr_1c.o)
                                   0x0 (size before relaxing)
-                0x060382d0                SpScreenY
-                0x060382d4                SpFbcrMode
-                0x060382d6                SpDil
-                0x060382d8                SpDie
-                0x060382da                SpTvMode
-                0x060382dc                SpScreenX
- COMMON         0x060382e0      0x6b0 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
+                0x06038790                SpScreenY
+                0x06038794                SpFbcrMode
+                0x06038796                SpDil
+                0x06038798                SpDie
+                0x0603879a                SpTvMode
+                0x0603879c                SpScreenX
+ COMMON         0x060387a0      0x6b0 ../sbl6/segalib/lib/sega_scl.a(scl_pri.o)
                                   0x0 (size before relaxing)
-                0x060382e0                SclAutoEndBlue2
-                0x060382f0                SclColOffset
-                0x06038300                SclPriBuffDirty
-                0x06038302                SclAutoEndRed
-                0x06038304                SclAutoSurface
-                0x06038308                SclAutoGreen
-                0x0603830a                SclAutoEndGreen
-                0x0603830c                SclAutoCount
-                0x06038310                SclColRamAlloc256
-                0x06038330                SclAutoCurRate
-                0x06038331                SclAutoPlusFlag
-                0x06038338                SclSpColMix
-                0x06038340                SclAutoMax
-                0x06038344                SclLineColRamOffset
-                0x06038348                SclColRamAlloc2048
-                0x0603834c                SclBgPriNum
-                0x06038352                SclAutoEndBlue
-                0x06038354                SclAutoEndGreen2
-                0x06038356                SclAutoVeFlag
-                0x06038358                SclBgColMix
-                0x06038360                SclAutoIndex
-                0x06038364                SclAutoEndRate
-                0x06038366                SclAutoBlue
-                0x06038368                SclAutoRed
-                0x0603836c                SclAutoInterval
-                0x06038370                SclOtherPri
-                0x06038380                SclAutoRGB
-                0x06038980                SclAutoEndRed2
-                0x06038988                SclSpPriNum
- COMMON         0x06038990      0xf00 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
+                0x060387a0                SclAutoEndBlue2
+                0x060387b0                SclColOffset
+                0x060387c0                SclPriBuffDirty
+                0x060387c2                SclAutoEndRed
+                0x060387c4                SclAutoSurface
+                0x060387c8                SclAutoGreen
+                0x060387ca                SclAutoEndGreen
+                0x060387cc                SclAutoCount
+                0x060387d0                SclColRamAlloc256
+                0x060387f0                SclAutoCurRate
+                0x060387f1                SclAutoPlusFlag
+                0x060387f8                SclSpColMix
+                0x06038800                SclAutoMax
+                0x06038804                SclLineColRamOffset
+                0x06038808                SclColRamAlloc2048
+                0x0603880c                SclBgPriNum
+                0x06038812                SclAutoEndBlue
+                0x06038814                SclAutoEndGreen2
+                0x06038816                SclAutoVeFlag
+                0x06038818                SclBgColMix
+                0x06038820                SclAutoIndex
+                0x06038824                SclAutoEndRate
+                0x06038826                SclAutoBlue
+                0x06038828                SclAutoRed
+                0x0603882c                SclAutoInterval
+                0x06038830                SclOtherPri
+                0x06038840                SclAutoRGB
+                0x06038e40                SclAutoEndRed2
+                0x06038e48                SclSpPriNum
+ COMMON         0x06038e50      0xf00 ../sbl6/segalib/lib/sega_scl.a(scl_func.o)
                                   0x0 (size before relaxing)
-                0x06038990                SclRbgKtbAddr
-                0x06038998                SclRb
-                0x0603899a                Scl_flag
-                0x060389a0                SclK_TableBuff
-                0x06039670                SclAddrCsTbl
-                0x06039680                Scl_s_reg
-                0x060396a8                SclRotateXy
-                0x060396b0                Scl_d_reg
-                0x060396f8                SclRotateDisp
-                0x06039700                SclRotateMoveZ
-                0x06039708                SclRotXySw
-                0x06039710                Scl_r_reg
-                0x06039720                SclRPMD
-                0x06039728                SclRbgKtbOffset
-                0x06039730                _SclRotregBuff
-                0x06039800                SclRa
-                0x06039808                SclRotateZ
-                0x06039810                SclAddrLsTbl
-                0x06039818                SclK_TableNum
-                0x06039820                SclRotateTableAddress
-                0x06039824                SclK_TableFlag
-                0x06039830                Scl_w_reg
-                0x06039850                Scl_n_reg
- COMMON         0x06039890       0x10 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
+                0x06038e50                SclRbgKtbAddr
+                0x06038e58                SclRb
+                0x06038e5a                Scl_flag
+                0x06038e60                SclK_TableBuff
+                0x06039b30                SclAddrCsTbl
+                0x06039b40                Scl_s_reg
+                0x06039b68                SclRotateXy
+                0x06039b70                Scl_d_reg
+                0x06039bb8                SclRotateDisp
+                0x06039bc0                SclRotateMoveZ
+                0x06039bc8                SclRotXySw
+                0x06039bd0                Scl_r_reg
+                0x06039be0                SclRPMD
+                0x06039be8                SclRbgKtbOffset
+                0x06039bf0                _SclRotregBuff
+                0x06039cc0                SclRa
+                0x06039cc8                SclRotateZ
+                0x06039cd0                SclAddrLsTbl
+                0x06039cd8                SclK_TableNum
+                0x06039ce0                SclRotateTableAddress
+                0x06039ce4                SclK_TableFlag
+                0x06039cf0                Scl_w_reg
+                0x06039d10                Scl_n_reg
+ COMMON         0x06039d50       0x10 ../sbl6/segalib/lib/sega_scl.a(scl_ro00.o)
                                   0x0 (size before relaxing)
-                0x06039890                SclCsx
-                0x06039898                SclCsy
- COMMON         0x060398a0       0x15 ../sbl6/segalib/lib/sega_per.a(per_prt.o)
+                0x06039d50                SclCsx
+                0x06039d58                SclCsy
+ COMMON         0x06039d60       0x15 ../sbl6/segalib/lib/sega_per.a(per_prt.o)
                                   0x0 (size before relaxing)
-                0x060398a0                per_get_time_flg
-                0x060398a1                per_hot_res
-                0x060398a2                per_set_sys_flg
-                0x060398a4                per_get_time_adr
-                0x060398a8                per_get_sys_data
-                0x060398b4                per_time_out_flg
- *fill*         0x060398b5        0xb 00
- COMMON         0x060398c0        0xc ../sbl6/segalib/lib/sega_sat.a(gfs.o)
+                0x06039d60                per_get_time_flg
+                0x06039d61                per_hot_res
+                0x06039d62                per_set_sys_flg
+                0x06039d64                per_get_time_adr
+                0x06039d68                per_get_sys_data
+                0x06039d74                per_time_out_flg
+ *fill*         0x06039d75        0xb 00
+ COMMON         0x06039d80        0xc ../sbl6/segalib/lib/sega_sat.a(gfs.o)
                                   0x0 (size before relaxing)
-                0x060398c0                GFMC_base
-                0x060398c4                gfs_mng_ptr
-                0x060398c8                gfs_use_scudma
- *fill*         0x060398cc        0x4 00
- COMMON         0x060398d0        0x8 ../sbl6/segalib/lib/sega_sat.a(gfs_cdf.o)
+                0x06039d80                GFMC_base
+                0x06039d84                gfs_mng_ptr
+                0x06039d88                gfs_use_scudma
+ *fill*         0x06039d8c        0x4 00
+ COMMON         0x06039d90        0x8 ../sbl6/segalib/lib/sega_sat.a(gfs_cdf.o)
                                   0x0 (size before relaxing)
-                0x060398d0                gfcf_fad
-                0x060398d4                gfcf_stat
- *fill*         0x060398d8        0x8 00
- COMMON         0x060398e0        0xc ../sbl6/segalib/lib/sega_sat.a(gfs_cdc.o)
+                0x06039d90                gfcf_fad
+                0x06039d94                gfcf_stat
+ *fill*         0x06039d98        0x8 00
+ COMMON         0x06039da0        0xc ../sbl6/segalib/lib/sega_sat.a(gfs_cdc.o)
                                   0x0 (size before relaxing)
-                0x060398e0                gfcd_fatal_err
-                0x060398e4                gfcd_work
-                0x060398e8                gfcd_playflag
- *fill*         0x060398ec        0x4 00
- COMMON         0x060398f0        0x8 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU5.o)
+                0x06039da0                gfcd_fatal_err
+                0x06039da4                gfcd_work
+                0x06039da8                gfcd_playflag
+ *fill*         0x06039dac        0x4 00
+ COMMON         0x06039db0        0x8 ../sbl6/segalib/lib/sega_sat.a(DMA_CPU5.o)
                                   0x0 (size before relaxing)
-                0x060398f0                dma_cpu_cnt
-                0x060398f4                dma_cpu_dis_adr
- *fill*         0x060398f8        0x8 00
- COMMON         0x06039900        0x4 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
+                0x06039db0                dma_cpu_cnt
+                0x06039db4                dma_cpu_dis_adr
+ *fill*         0x06039db8        0x8 00
+ COMMON         0x06039dc0        0x4 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
                                   0x0 (size before relaxing)
-                0x06039900                errno
-                0x06039904                SIZEOF_B = (. - STARTOF_B)
-                0x06039904                ENDOF_B = .
-                0x06039904                _end = .
+                0x06039dc0                errno
+                0x06039dc4                SIZEOF_B = (. - STARTOF_B)
+                0x06039dc4                ENDOF_B = .
+                0x06039dc4                _end = .
 OUTPUT(main.cof coff-sh)
 
-.comment        0x06039910      0x540
- .comment       0x06039910       0x20 ../sbl6/segasmp/lib/strt2_g.o
- .comment       0x06039930       0x20 vblank.o
- .comment       0x06039950       0x20 smpclib/per_x1.o
- .comment       0x06039970       0x20 smpclib/per_x2.o
- .comment       0x06039990       0x20 cd.o
- .comment       0x060399b0       0x20 crc.o
- .comment       0x060399d0       0x20 devcart.o
- .comment       0x060399f0       0x20 game.o
- .comment       0x06039a10       0x20 graphics.o
- .comment       0x06039a30       0x20 intro.o
- .comment       0x06039a50       0x20 logo.o
- .comment       0x06039a70       0x20 menu.o
- .comment       0x06039a90       0x20 pcmsys.o
- .comment       0x06039ab0       0x20 print.o
- .comment       0x06039ad0       0x20 scroll.o
- .comment       0x06039af0       0x20 sound.o
- .comment       0x06039b10       0x20 sprite.o
- .comment       0x06039b30       0x20 main.o
- .comment       0x06039b50       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_si_to_df.o)
- .comment       0x06039b70       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mul_df.o)
- .comment       0x06039b90       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_df_to_si.o)
- .comment       0x06039bb0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
- .comment       0x06039bd0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_pack_df.o)
- .comment       0x06039bf0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_unpack_df.o)
- .comment       0x06039c10       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_thenan_df.o)
- .comment       0x06039c30       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_muldi3.o)
- .comment       0x06039c50       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshrdi3.o)
- .comment       0x06039c70       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashldi3.o)
- .comment       0x06039c90       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcmp.o)
- .comment       0x06039cb0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncmp.o)
- .comment       0x06039cd0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncpy.o)
- .comment       0x06039cf0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
- .comment       0x06039d10       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
- .comment       0x06039d30       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(malloc.o)
- .comment       0x06039d50       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
- .comment       0x06039d70       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(freer.o)
- .comment       0x06039d90       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mlock.o)
- .comment       0x06039db0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(sbrkr.o)
- .comment       0x06039dd0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
- .comment       0x06039df0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(abort.o)
- .comment       0x06039e10       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signal.o)
- .comment       0x06039e30       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signalr.o)
+.comment        0x06039dd0      0x560
+ .comment       0x06039dd0       0x20 ../sbl6/segasmp/lib/strt2_g.o
+ .comment       0x06039df0       0x20 vblank.o
+ .comment       0x06039e10       0x20 smpclib/per_x1.o
+ .comment       0x06039e30       0x20 smpclib/per_x2.o
+ .comment       0x06039e50       0x20 spritecode/explosion.o
+ .comment       0x06039e70       0x20 cd.o
+ .comment       0x06039e90       0x20 crc.o
+ .comment       0x06039eb0       0x20 devcart.o
+ .comment       0x06039ed0       0x20 game.o
+ .comment       0x06039ef0       0x20 graphics.o
+ .comment       0x06039f10       0x20 intro.o
+ .comment       0x06039f30       0x20 logo.o
+ .comment       0x06039f50       0x20 menu.o
+ .comment       0x06039f70       0x20 pcmsys.o
+ .comment       0x06039f90       0x20 print.o
+ .comment       0x06039fb0       0x20 scroll.o
+ .comment       0x06039fd0       0x20 sound.o
+ .comment       0x06039ff0       0x20 sprite.o
+ .comment       0x0603a010       0x20 main.o
+ .comment       0x0603a030       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_si_to_df.o)
+ .comment       0x0603a050       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_mul_df.o)
+ .comment       0x0603a070       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_df_to_si.o)
+ .comment       0x0603a090       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(__main.o)
+ .comment       0x0603a0b0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_pack_df.o)
+ .comment       0x0603a0d0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_unpack_df.o)
+ .comment       0x0603a0f0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_thenan_df.o)
+ .comment       0x0603a110       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_muldi3.o)
+ .comment       0x0603a130       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_lshrdi3.o)
+ .comment       0x0603a150       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501\libgcc.a(_ashldi3.o)
+ .comment       0x0603a170       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(memcmp.o)
+ .comment       0x0603a190       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncmp.o)
+ .comment       0x0603a1b0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(strncpy.o)
+ .comment       0x0603a1d0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(atexit.o)
+ .comment       0x0603a1f0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(impure.o)
+ .comment       0x0603a210       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(malloc.o)
+ .comment       0x0603a230       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mallocr.o)
+ .comment       0x0603a250       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(freer.o)
+ .comment       0x0603a270       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(mlock.o)
+ .comment       0x0603a290       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(sbrkr.o)
+ .comment       0x0603a2b0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(syscalls.o)
+ .comment       0x0603a2d0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(abort.o)
+ .comment       0x0603a2f0       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signal.o)
+ .comment       0x0603a310       0x20 C:/saturn/SH_COFF/sh-coff/bin/../lib/gcc/sh-coff/3.4-GNUSH_v0501/../../../../sh-coff/lib\libc.a(signalr.o)
