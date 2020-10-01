@@ -11,7 +11,7 @@
 #include "scroll.h"
 #include "sprite.h"
 
-Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x2000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x2000}; //where in VRAM each tilemap is
+Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x8000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x8000}; //where in VRAM each tilemap is
 int scroll_res = SCROLL_RES_LOW;
 
 /*
@@ -68,10 +68,7 @@ Uint16	CycleTbHiRes[]={
 	0x756f,0xffff
 };
 
-SclConfig scfg0;
-SclConfig scfg1;
-SclConfig scfg2;
-SclConfig scfg3;
+SclConfig scfg[4];
 
 void scroll_init(void) {
 	int i;
@@ -96,36 +93,36 @@ void scroll_init(void) {
 	BackCol = 0x0000; //set the background color to black
 	SCL_SetBack(SCL_VDP2_VRAM+0x80000-2,1,&BackCol);
 
-	SCL_InitConfigTb(&scfg0);
-		scfg0.dispenbl      = ON;
-		scfg0.charsize      = SCL_CHAR_SIZE_2X2;
-		scfg0.pnamesize     = SCL_PN1WORD;
-		scfg0.flip          = SCL_PN_10BIT;
-		scfg0.platesize     = SCL_PL_SIZE_2X1; //they meant "plane size"
-		scfg0.coltype       = SCL_COL_TYPE_256;
-		scfg0.datatype      = SCL_CELL;
-		scfg0.patnamecontrl = 0x0004; //vram A1 offset
-		scfg0.plate_addr[0] = vram[0];
-		scfg0.plate_addr[1] = vram[0] + 0x800;
-	SCL_SetConfig(SCL_NBG0, &scfg0);
+	SCL_InitConfigTb(&scfg[0]);
+		scfg[0].dispenbl      = ON;
+		scfg[0].charsize      = SCL_CHAR_SIZE_2X2;
+		scfg[0].pnamesize     = SCL_PN1WORD;
+		scfg[0].flip          = SCL_PN_10BIT;
+		scfg[0].platesize     = SCL_PL_SIZE_2X1; //they meant "plane size"
+		scfg[0].coltype       = SCL_COL_TYPE_256;
+		scfg[0].datatype      = SCL_CELL;
+		scfg[0].patnamecontrl = 0x0004; //vram A1 offset
+		scfg[0].plate_addr[0] = vram[0];
+		scfg[0].plate_addr[1] = vram[0] + 0x800;
+	SCL_SetConfig(SCL_NBG0, &scfg[0]);
 
-	memcpy((void *)&scfg1, (void *)&scfg0, sizeof(SclConfig));
-	scfg1.dispenbl = ON;
-	scfg1.platesize = SCL_PL_SIZE_1X1;
-	scfg1.coltype = SCL_COL_TYPE_16;
-	scfg1.patnamecontrl = 0x000c;
-	for(i=0;i<4;i++)   scfg1.plate_addr[i] = vram[1];
-	SCL_SetConfig(SCL_NBG1, &scfg1);
+	memcpy((void *)&scfg[1], (void *)&scfg[0], sizeof(SclConfig));
+	scfg[1].dispenbl = ON;
+	scfg[1].platesize = SCL_PL_SIZE_1X1;
+	scfg[1].coltype = SCL_COL_TYPE_16;
+	scfg[1].patnamecontrl = 0x000c;
+	for(i=0;i<4;i++)   scfg[1].plate_addr[i] = vram[1];
+	SCL_SetConfig(SCL_NBG1, &scfg[1]);
 
-	memcpy((void *)&scfg2, (void *)&scfg1, sizeof(SclConfig));
-	scfg2.dispenbl = ON;
-	for(i=0;i<4;i++)   scfg2.plate_addr[i] = vram[2];
-	SCL_SetConfig(SCL_NBG2, &scfg2);
+	memcpy((void *)&scfg[2], (void *)&scfg[1], sizeof(SclConfig));
+	scfg[2].dispenbl = ON;
+	for(i=0;i<4;i++)   scfg[2].plate_addr[i] = vram[2];
+	SCL_SetConfig(SCL_NBG2, &scfg[2]);
 
-	memcpy((void *)&scfg3, (void *)&scfg2, sizeof(SclConfig));
-	scfg3.dispenbl = ON;
-	for(i=0;i<4;i++)   scfg3.plate_addr[i] = vram[3];
-	SCL_SetConfig(SCL_NBG3, &scfg3);
+	memcpy((void *)&scfg[3], (void *)&scfg[2], sizeof(SclConfig));
+	scfg[3].dispenbl = ON;
+	for(i=0;i<4;i++)   scfg[3].plate_addr[i] = vram[3];
+	SCL_SetConfig(SCL_NBG3, &scfg[3]);
 	
 	//setup VRAM configuration
 	SCL_InitVramConfigTb(&vram_cfg);
@@ -219,4 +216,15 @@ void scroll_clearmaps(void) {
 	memset(MAP_PTR(1), 0, 0x2000);
 	memset(MAP_PTR(2), 0, 0x2000);
 	memset(MAP_PTR(3), 0, 0x2000);
+}
+
+void scroll_charsize(int num, int size) {
+	if (size == 8) {
+		scfg[num].charsize = SCL_CHAR_SIZE_1X1;
+	}
+	else {
+		scfg[num].charsize = SCL_CHAR_SIZE_2X2;
+	}
+
+	SCL_SetConfig(1 << (num + 2), &scfg[num]);
 }

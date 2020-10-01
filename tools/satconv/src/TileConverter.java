@@ -14,8 +14,9 @@ public class TileConverter {
     private ArrayList<Integer> palettes;
     private int width;
     private int height;
+    private int size;
 
-    public TileConverter(File bmpFile, int bpp) {
+    public TileConverter(File bmpFile, int bpp, int tileSize) {
         tileData = new ArrayList<>();
         palettes = new ArrayList<>();
         try {
@@ -30,64 +31,84 @@ public class TileConverter {
             }
             width = image.getWidth();
             height = image.getHeight();
-            //split image up into 16x16 tiles
-            int[] imageData = new int[8 * 8];
-            for (int i = 0; i < height; i += 16) {
-                for (int j = 0; j < width; j += 16) {
-                    //top left
-                    imageData = image.getData().getPixels(j, i, 8, 8, imageData);
-                    if (bpp == 8) {
-                        for (int k = 0; k < imageData.length; k++) {
+            size = tileSize;
+
+            if (tileSize == 8) {
+                //split image up into 8x8 tiles
+                int[] imageData = new int[8 * 8];
+                for (int i = 0; i < height; i += 8) {
+                    for (int j = 0; j < width; j+= 8) {
+                        imageData = image.getData().getPixels(j, i, 8, 8, imageData);
+                        if (bpp == 8) {
+                            for (int k = 0; k < imageData.length; k++) {
 //                            System.out.println(imageData[k] + " " + k);
-                            tileData.add((byte) (imageData[k] & 0xFF));
+                                tileData.add((byte) (imageData[k] & 0xFF));
+                            }
+                        } else if (bpp == 4) {
+                            for (int k = 0; k < imageData.length; k += 2) {
+                                byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k + 1] & 0xF));
+                                tileData.add(pixels);
+                            }
                         }
                     }
-                    else if (bpp == 4) {
-                        for (int k = 0; k < imageData.length; k += 2) {
-                            byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k+1] & 0xF));
-                            tileData.add(pixels);
-                        }
-                    }
-                    //top right
-                    imageData = image.getData().getPixels(j + 8, i, 8, 8, imageData);
-                    if (bpp == 8) {
-                        for (int k = 0; k < imageData.length; k++) {
+                }
+            }
+            else if (tileSize == 16) {
+                //split image up into 16x16 tiles
+                int[] imageData = new int[8 * 8];
+                for (int i = 0; i < height; i += 16) {
+                    for (int j = 0; j < width; j += 16) {
+                        //top left
+                        imageData = image.getData().getPixels(j, i, 8, 8, imageData);
+                        if (bpp == 8) {
+                            for (int k = 0; k < imageData.length; k++) {
 //                            System.out.println(imageData[k] + " " + k);
-                            tileData.add((byte) (imageData[k] & 0xFF));
+                                tileData.add((byte) (imageData[k] & 0xFF));
+                            }
+                        } else if (bpp == 4) {
+                            for (int k = 0; k < imageData.length; k += 2) {
+                                byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k + 1] & 0xF));
+                                tileData.add(pixels);
+                            }
                         }
-                    }
-                    else if (bpp == 4) {
-                        for (int k = 0; k < imageData.length; k += 2) {
-                            byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k+1] & 0xF));
-                            tileData.add(pixels);
-                        }
-                    }
-                    //bottom left
-                    imageData = image.getData().getPixels(j, i + 8, 8, 8, imageData);
-                    if (bpp == 8) {
-                        for (int k = 0; k < imageData.length; k++) {
+                        //top right
+                        imageData = image.getData().getPixels(j + 8, i, 8, 8, imageData);
+                        if (bpp == 8) {
+                            for (int k = 0; k < imageData.length; k++) {
 //                            System.out.println(imageData[k] + " " + k);
-                            tileData.add((byte) (imageData[k] & 0xFF));
+                                tileData.add((byte) (imageData[k] & 0xFF));
+                            }
+                        } else if (bpp == 4) {
+                            for (int k = 0; k < imageData.length; k += 2) {
+                                byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k + 1] & 0xF));
+                                tileData.add(pixels);
+                            }
                         }
-                    }
-                    else if (bpp == 4) {
-                        for (int k = 0; k < imageData.length; k += 2) {
-                            byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k+1] & 0xF));
-                            tileData.add(pixels);
-                        }
-                    }
-                    //bottom right
-                    imageData = image.getData().getPixels(j + 8, i + 8, 8, 8, imageData);
-                    if (bpp == 8) {
-                        for (int k = 0; k < imageData.length; k++) {
+                        //bottom left
+                        imageData = image.getData().getPixels(j, i + 8, 8, 8, imageData);
+                        if (bpp == 8) {
+                            for (int k = 0; k < imageData.length; k++) {
 //                            System.out.println(imageData[k] + " " + k);
-                            tileData.add((byte) (imageData[k] & 0xFF));
+                                tileData.add((byte) (imageData[k] & 0xFF));
+                            }
+                        } else if (bpp == 4) {
+                            for (int k = 0; k < imageData.length; k += 2) {
+                                byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k + 1] & 0xF));
+                                tileData.add(pixels);
+                            }
                         }
-                    }
-                    else if (bpp == 4) {
-                        for (int k = 0; k < imageData.length; k += 2) {
-                            byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k+1] & 0xF));
-                            tileData.add(pixels);
+                        //bottom right
+                        imageData = image.getData().getPixels(j + 8, i + 8, 8, 8, imageData);
+                        if (bpp == 8) {
+                            for (int k = 0; k < imageData.length; k++) {
+//                            System.out.println(imageData[k] + " " + k);
+                                tileData.add((byte) (imageData[k] & 0xFF));
+                            }
+                        } else if (bpp == 4) {
+                            for (int k = 0; k < imageData.length; k += 2) {
+                                byte pixels = (byte) (((imageData[k] & 0xF) << 4) | (imageData[k + 1] & 0xF));
+                                tileData.add(pixels);
+                            }
                         }
                     }
                 }
@@ -132,7 +153,12 @@ public class TileConverter {
         try {
             PrintWriter writer = new PrintWriter(outFile, "UTF-8");
             String substring = outFile.substring(outFile.lastIndexOf('/') + 1, outFile.indexOf('.'));
-            writer.println("Uint16 " + substring + "_num = " + (width / 16) * (height / 16) + ";");
+            if (size == 8) {
+                writer.println("Uint16 " + substring + "_num = " + (width / 8) * (height / 8) + ";");
+            }
+            else if (size == 16) {
+                writer.println("Uint16 " + substring + "_num = " + (width / 16) * (height / 16) + ";");
+            }
             writer.println("char " + substring + "_name[] = \"" + substring.toUpperCase().substring(0, Math.min(substring.length(), 8)) + ".TLE\";");
             writer.print("Uint32 " + substring + "_pal[] = {");
             for (int i = 0; i < palettes.size(); i += 8) {

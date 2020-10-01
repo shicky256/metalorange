@@ -30,4 +30,6 @@ void scroll_set(int num, Fixed32 x, Fixed32 y);
 void scroll_move(int num, Fixed32 x, Fixed32 y);
 //zeroes out all tilemap vram
 void scroll_clearmaps(void);
+//sets bg #num's character size. either 8x8 (size = 8) or 16x16 (size = 16)
+void scroll_charsize(int num, int size);
 #endif

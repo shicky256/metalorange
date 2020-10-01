@@ -28,21 +28,20 @@ public class SatConv {
                     spriteConverter.writeInfo(fileList[0], line.substring(2) + ".c");
                     spriteConverter.writeImages(line.substring(2, Math.min(line.length(), 10)) + ".spr");
                 }
-                //4bpp tiles
+                //tiles
                 if (line.charAt(0) == 't') {
-                    if (line.charAt(1) == '4') {
-                        File tiles = new File(line.substring(3));
-                        TileConverter tileConverter = new TileConverter(tiles, 4);
-                        tileConverter.writeInfo(line.substring(3, line.indexOf('.')) + ".c");
-                        tileConverter.writeTiles(line.substring(3, Math.min(line.indexOf('.'), 11)) + ".tle");
+                    char bppChar = line.charAt(1);
+                    int bpp = Character.getNumericValue(bppChar);
+                    char sizeChar = line.charAt(2);
+                    int size = Character.getNumericValue(sizeChar);
+                    //allow size to be 1 character
+                    if (size == 6) {
+                        size = 16;
                     }
-                    //8bpp tiles
-                    else if (line.charAt(1) == '8') {
-                        File tiles = new File(line.substring(3));
-                        TileConverter tileConverter = new TileConverter(tiles, 8);
-                        tileConverter.writeInfo(line.substring(3, line.indexOf('.')) + ".c");
-                        tileConverter.writeTiles(line.substring(3, Math.min(line.indexOf('.'), 11)) + ".tle");
-                    }
+                    File tiles = new File(line.substring(4));
+                    TileConverter tileConverter = new TileConverter(tiles, bpp, size);
+                    tileConverter.writeInfo(line.substring(4, line.indexOf('.')) + ".c");
+                    tileConverter.writeTiles(line.substring(4, Math.min(line.indexOf('.'), 12)) + ".tle");
                 }
                 //tiled level (scrolls horizontally, so format is a bunch of columns)
                 else if (line.charAt(0) == 'l') {

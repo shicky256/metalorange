@@ -37,9 +37,9 @@ static int chip_cursor;
 
 #define CHIP_XPIXELS (96)
 #define CHIP_YPIXELS (80)
-#define CHIP_XTILES (CHIP_XPIXELS / 16)
-#define CHIP_YTILES (CHIP_YPIXELS / 16)
-#define IMAGE_XTILES (9)
+#define CHIP_XTILES (CHIP_XPIXELS / 8)
+#define CHIP_YTILES (CHIP_YPIXELS / 8)
+#define IMAGE_XTILES (18)
 
 #define CHIPFRAME_SIZE (96 * 80)
 #define CHIP_HAND_NUMFRAMES (4)
@@ -112,11 +112,13 @@ static inline void game_init() {
     scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(2, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(3, MTH_FIXED(0), MTH_FIXED(0));
+    //set nbg0 to a 8x8 tilemap
+    scroll_charsize(0, 8);
     //load tiles for hud
     cd_load_nosize(game_tiles_name, game_buf);
     //write them to the screen
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
-    DMA_CpuMemCopy1(tile_ptr, game_buf, game_tiles_num * 256);
+    DMA_CpuMemCopy1(tile_ptr, game_buf, game_tiles_num * 64);
     //load palette for hud
     SCL_SetColRam(SCL_NBG0, 0, 256, game_tiles_pal);
     //load map
@@ -126,10 +128,10 @@ static inline void game_init() {
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 64; j++) {
             if (i < game_height && j < game_width) {
-                game_map[i * 32 + j] = map_buf[i * game_width + j];
+                game_map[i * 64 + j] = map_buf[i * game_width + j];
             } 
             else {
-                game_map[i * 32 + j] = 0;
+                game_map[i * 64 + j] = 0;
             }
         }
     }
@@ -180,13 +182,13 @@ static inline void game_init() {
 
 static void game_loadchip(int num) {
     char *frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * CHIP_YPIXELS));
-    char *tile_ptr = (char *)SCL_VDP2_VRAM_A1 + ((256 * IMAGE_XTILES) * 2) + (256 * 2); //start at 3 rows + 3 tiles in
+    char *tile_ptr = (char *)SCL_VDP2_VRAM_A1 + ((64 * IMAGE_XTILES) * 4) + (64 * 4); //start at 6 rows + 6 tiles in
 
     int offset;
     for (int i = 0; i < CHIP_YTILES; i++) {
-        offset = i * (256 * IMAGE_XTILES);
-        for (int j = 0; j < 256 * CHIP_XTILES; j++) {
-            tile_ptr[offset++] = frame_ptr[j + (i * 256 * CHIP_XTILES)];
+        offset = i * (64 * IMAGE_XTILES);
+        for (int j = 0; j < 64 * CHIP_XTILES; j++) {
+            tile_ptr[offset++] = frame_ptr[j + (i * 64 * CHIP_XTILES)];
         }
     }
 }
