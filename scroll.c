@@ -11,8 +11,16 @@
 #include "scroll.h"
 #include "sprite.h"
 
-Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x8000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x8000}; //where in VRAM each tilemap is
+Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x10000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x10000}; //where in VRAM each tilemap is
 int scroll_res = SCROLL_RES_LOW;
+
+
+Uint32 char_offsets[] = {
+	SCL_VDP2_VRAM_A1 - SCL_VDP2_VRAM, //NBG0
+	SCL_VDP2_VRAM_B1 - SCL_VDP2_VRAM, //NBG1
+	SCL_VDP2_VRAM_B1 - SCL_VDP2_VRAM, //NBG2
+	SCL_VDP2_VRAM_B1 - SCL_VDP2_VRAM, //NBG3
+};
 
 /*
  * 0: NBG0 Pattern Name
@@ -218,13 +226,12 @@ void scroll_clearmaps(void) {
 	memset(MAP_PTR(3), 0, 0x2000);
 }
 
-void scroll_charsize(int num, int size) {
-	if (size == 8) {
-		scfg[num].charsize = SCL_CHAR_SIZE_1X1;
-	}
-	else {
-		scfg[num].charsize = SCL_CHAR_SIZE_2X2;
-	}
+void scroll_charsize(int num, Uint8 size) {
+	scfg[num].charsize = size;
+	SCL_SetConfig(1 << (num + 2), &scfg[num]);
+}
 
+void scroll_mapsize(int num, Uint8 size) {
+	scfg[num].pnamesize = size;
 	SCL_SetConfig(1 << (num + 2), &scfg[num]);
 }

@@ -12,14 +12,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+//saturn map format: YXPC00000CCCCCCC0AAAAAAAAAAAAAAA
+
 public class MapReader {
     //palettes used for each tile
     private int[] palettes = new int[]{0x100, 0x100};
     private int[][] mapArr;
     private int bpp;
+    private int size;
 
-    public MapReader(String filename, int bpp) {
+    public MapReader(String filename, int bpp, int size) {
         this.bpp = bpp;
+        this.size = size;
         File mapFile = new File(filename);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -61,50 +65,17 @@ public class MapReader {
                 break;
             }
         }
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                System.out.print(mapArr[i][j] + " ");
-            }
-            System.out.println();
-        }
+//        for (int i = 0; i < height; i++) {
+//            for (int j = 0; j < width; j++) {
+//                System.out.print(mapArr[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
         scanner.close();
     }
 
-    public void outputLevel(String filename) {
-        try {
-            Path path = Paths.get(filename);
-            byte[] byteArr = new byte[mapArr[0].length * mapArr.length * 2];
-            for (int i = 0; i < mapArr[0].length; i++) {
-                for (int j = 0; j < mapArr.length; j++) {
-                    short mapVal = 0;
-                    if (bpp == 8) {
-                        mapVal = (short)(((mapArr[j][i] & 0x3ff) * 2) & 0xffff);
-                    }
-                    else if (bpp == 4) {
-                        mapVal = (short)((mapArr[j][i] & 0x3ff) & 0xffff);
-                    }
-                    //is tile horizontally flipped?
-                    if ((mapArr[j][i] & 0x80000000) == 0x80000000) {
-                        mapVal |= 0x400;
-                    }
-                    //is tile vertically flipped?
-                    if ((mapArr[j][i] & 0x40000000) == 0x40000000) {
-                        mapVal |= 0x800;
-                    }
-                    byteArr[(i * mapArr.length * 2) + (j * 2)] = (byte)(((mapVal & 0xFF00) >> 8) & 0xff);
-                    byteArr[(i * mapArr.length * 2) + (j * 2 + 1)] = (byte)(mapVal & 0xff);
-                }
-                System.out.println();
-            }
-            Files.write(path, byteArr);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-    }
-
-    public void outputMap(String filename) {
+    //outputs 1 word maps
+    private void outputMap1(String filename) {
         try {
             Path path = Paths.get(filename);
             byte[] byteArr = new byte[mapArr[0].length * mapArr.length * 2];
@@ -135,6 +106,50 @@ public class MapReader {
         catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    //outputs 2 word maps
+    private void outputMap2(String filename) {
+        try {
+            Path path = Paths.get(filename);
+            byte[] byteArr = new byte[mapArr[0].length * mapArr.length * 4];
+            for (int i = 0; i < mapArr.length; i++) {
+                for (int j = 0; j < mapArr[0].length; j++) {
+                    int mapVal = (((mapArr[i][j] & 0x7fff) * 2) & 0x7fff);
+                    //is tile horizontally flipped?
+                    if ((mapArr[i][j] & 0x80000000) == 0x80000000) {
+                        mapVal |= 0x40000000;
+                    }
+                    //is tile vertically flipped?
+                    if ((mapArr[i][j] & 0x40000000) == 0x40000000) {
+                        mapVal |= 0x80000000;
+                    }
+                    //reverse endianness
+                    mapVal = Integer.reverseBytes(mapVal);
+                    System.out.print(mapVal + " ");
+                    //write to byte array
+                    byteArr[(i * mapArr[0].length * 4) + (j * 4)] = (byte)(mapVal & 0xff);
+                    byteArr[(i * mapArr[0].length * 4) + (j * 4 + 1)] = (byte)(((mapVal & 0xff00) >> 8) & 0xff);
+                    byteArr[(i * mapArr[0].length * 4) + (j * 4 + 2)] = (byte)(((mapVal & 0xff0000) >> 16) & 0xff);
+                    byteArr[(i * mapArr[0].length * 4) + (j * 4 + 3)] = (byte)(((mapVal & 0xff000000) >> 24) & 0xff);
+                }
+                System.out.println();
+            }
+            Files.write(path, byteArr);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void outputMap(String filename) {
+        if (size == 1) {
+            outputMap1(filename);
+        }
+        else {
+            outputMap2(filename);
         }
     }
 

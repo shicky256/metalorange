@@ -48,9 +48,6 @@ static inline void logo_init() {
     //put the image in a good location
     scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
     cd_load_nosize(roarbg_name, logo_buf);
-    // for (int i = 0; i < 256 * roarbg_num; i++) {
-    //     tile_ptr[i] = logo_buf[i];
-    // }
     DMA_CpuMemCopy1(tile_ptr, logo_buf, 256 * roarbg_num);
     SCL_SetColRam(SCL_NBG0, 0, 256, roarbg_pal);
 
@@ -65,7 +62,6 @@ static inline void logo_init() {
             ynum++;
         }
     }
-
     //load rest of frames into LWRAM to prepare for loading to VRAM
     cd_load_nosize(roarframes_name, logo_buf);
 }

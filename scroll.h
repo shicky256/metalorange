@@ -2,7 +2,13 @@
 #define SCROLL_H
 
 #define MAP_PTR(bg) ((Uint16 *)vram[bg])
+#define MAP_PTR32(bg) ((Uint32 *)vram[bg])
 extern Uint32 vram[];
+
+//number of tiles between A0 and A1
+#define SCROLL_A1_OFFSET (0x1000)
+//number of tiles between A0 and B1
+#define SCROLL_B1_OFFSET (0x3000)
 
 #define SCROLL_HIRES_X (704)
 #define SCROLL_HIRES_Y (480)
@@ -30,6 +36,8 @@ void scroll_set(int num, Fixed32 x, Fixed32 y);
 void scroll_move(int num, Fixed32 x, Fixed32 y);
 //zeroes out all tilemap vram
 void scroll_clearmaps(void);
-//sets bg #num's character size. either 8x8 (size = 8) or 16x16 (size = 16)
-void scroll_charsize(int num, int size);
+//sets bg #num's character size
+void scroll_charsize(int num, Uint8 size);
+//sets bg #num's map size (either 1 word or 2 word)
+void scroll_mapsize(int num, Uint8 size);
 #endif

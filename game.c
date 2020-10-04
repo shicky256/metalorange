@@ -23,6 +23,20 @@ typedef enum {
 
 static int state = STATE_GAME_INIT;
 
+static int score = 0;
+//character number for score text
+#define SCORE_CHARNO ((542 * 2) + SCROLL_A1_OFFSET)
+//where score is on HUD
+#define SCORE_AREA ((2 * 64) + 33)
+#define SCORE_DIGITS (7)
+
+#define START_LIVES (5)
+static int lives = START_LIVES; //how many extra lives you have
+//character num for life icon
+#define LIFE_CHARNO ((540 * 2) + SCROLL_A1_OFFSET)
+//where life area is on HUD
+#define LIFE_AREA ((26 * 64) + 34)
+
 typedef enum {
     STATE_CHIP_NONE = 0,
     STATE_CHIP_HAND,
@@ -102,18 +116,20 @@ static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
     //blank display
     scroll_lores();
+    //set nbg0 to a 8x8 tilemap
+    scroll_charsize(0, SCL_CHAR_SIZE_1X1);
+    scroll_mapsize(0, SCL_PN2WORD);
+    //fade out game
     SCL_SetColOffset(SCL_OFFSET_A, SCL_SPR | SCL_NBG0 | SCL_NBG1 | SCL_NBG2 | SCL_NBG3, -255, -255, -255);
     //set sprite priority
     SCL_SetPriority(SCL_SPR,  7);
     //wipe tilemaps
     scroll_clearmaps();
-    //reset nbg0
+    //reset bg positions
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(2, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(3, MTH_FIXED(0), MTH_FIXED(0));
-    //set nbg0 to a 8x8 tilemap
-    scroll_charsize(0, 8);
     //load tiles for hud
     cd_load_nosize(game_tiles_name, game_buf);
     //write them to the screen
@@ -123,12 +139,12 @@ static inline void game_init() {
     SCL_SetColRam(SCL_NBG0, 0, 256, game_tiles_pal);
     //load map
     cd_load_nosize(game_name, game_buf);
-    Uint16 *game_map = MAP_PTR(0);
-    Uint16 *map_buf = (Uint16 *)LWRAM;
+    Uint32 *game_map = MAP_PTR32(0);
+    Uint32 *map_buf = (Uint32 *)LWRAM;
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 64; j++) {
             if (i < game_height && j < game_width) {
-                game_map[i * 64 + j] = map_buf[i * game_width + j];
+                game_map[i * 64 + j] = SCROLL_A1_OFFSET + map_buf[i * game_width + j];
             } 
             else {
                 game_map[i * 64 + j] = 0;
@@ -321,6 +337,10 @@ int game_run() {
             game_chipset(STATE_CHIP_NONE);
             chip_blinktimer = game_setblinktimer();
             frames = 0;
+            //init lives
+            lives = START_LIVES;
+            //init score
+            score = 42069;
             //init the ship sprite
             ship_sprite = sprite_next();
             sprite_make(SHIP_CHARNO, SHIP_STARTX, SHIP_STARTY, ship_sprite);
@@ -452,6 +472,7 @@ int game_run() {
                                 game_chipset(STATE_CHIP_BURNT);
                                 frames = 0;
                                 state = STATE_GAME_LOSS;
+                                lives--;
                                 explosion_make(EXPLOSION_CHARNO, ship_sprite->x, ship_sprite->y);
                                 ship_sprite->x = SHIP_STARTX;
                                 ship_sprite->y = SHIP_STARTY;
@@ -475,6 +496,33 @@ int game_run() {
             }
         break;
 
+    }
+    //update score
+    Uint32 *score_ptr = MAP_PTR32(0) + SCORE_AREA;
+    int temp_score = score;
+    for (int i = 0; i < SCORE_DIGITS; i++) {
+        score_ptr[SCORE_DIGITS - i] = ((temp_score % 10) << 1) + SCORE_CHARNO;
+        temp_score /= 10;
+    }
+
+    //update lives count
+    Uint32 *life_ptr = MAP_PTR32(0) + LIFE_AREA;
+    for (int i = 0; i < 16; i += 2) {
+        Uint32 *curr_ptr = life_ptr;
+        //move to second row if we've passed the first row
+        if (i >= 8) {
+            curr_ptr += (64 - 8);
+        }
+        //show life icon
+        if ((i >> 1) < lives) {
+            curr_ptr[i] = LIFE_CHARNO;
+            curr_ptr[i + 1] = LIFE_CHARNO + 2;
+        }
+        //clear life icon
+        else {
+            curr_ptr[i] = SCROLL_A1_OFFSET;
+            curr_ptr[i + 1] = SCROLL_A1_OFFSET;
+        }
     }
 
     game_chipanim();

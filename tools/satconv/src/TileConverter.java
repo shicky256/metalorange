@@ -33,7 +33,7 @@ public class TileConverter {
             height = image.getHeight();
             size = tileSize;
 
-            if (tileSize == 8) {
+            if (tileSize == 1) {
                 //split image up into 8x8 tiles
                 int[] imageData = new int[8 * 8];
                 for (int i = 0; i < height; i += 8) {
@@ -53,7 +53,7 @@ public class TileConverter {
                     }
                 }
             }
-            else if (tileSize == 16) {
+            else if (tileSize == 2) {
                 //split image up into 16x16 tiles
                 int[] imageData = new int[8 * 8];
                 for (int i = 0; i < height; i += 16) {
@@ -153,10 +153,10 @@ public class TileConverter {
         try {
             PrintWriter writer = new PrintWriter(outFile, "UTF-8");
             String substring = outFile.substring(outFile.lastIndexOf('/') + 1, outFile.indexOf('.'));
-            if (size == 8) {
+            if (size == 1) {
                 writer.println("Uint16 " + substring + "_num = " + (width / 8) * (height / 8) + ";");
             }
-            else if (size == 16) {
+            else if (size == 2) {
                 writer.println("Uint16 " + substring + "_num = " + (width / 16) * (height / 16) + ";");
             }
             writer.println("char " + substring + "_name[] = \"" + substring.toUpperCase().substring(0, Math.min(substring.length(), 8)) + ".TLE\";");

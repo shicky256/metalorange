@@ -1,4 +1,4 @@
-Uint16 game_tiles_num = 540;
+Uint16 game_tiles_num = 558;
 char game_tiles_name[] = "GAME_TIL.TLE";
 Uint32 game_tiles_pal[] = {
 	0x0000,0x80808,0x181818,0x343434,0x7C0404,0x584800,0x2858,0x0060,

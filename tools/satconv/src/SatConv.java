@@ -5,7 +5,7 @@ import java.io.FileReader;
 public class SatConv {
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("Usage: neoconv [list].txt");
+            System.out.println("Usage: satconv [list].txt");
             return;
         }
         System.out.println(args[0]);
@@ -34,37 +34,28 @@ public class SatConv {
                     int bpp = Character.getNumericValue(bppChar);
                     char sizeChar = line.charAt(2);
                     int size = Character.getNumericValue(sizeChar);
-                    //allow size to be 1 character
-                    if (size == 6) {
-                        size = 16;
+                    if (size < 1 || size > 2) {
+                        System.out.println("Error: Invalid size " + size);
+                        return;
                     }
                     File tiles = new File(line.substring(4));
                     TileConverter tileConverter = new TileConverter(tiles, bpp, size);
                     tileConverter.writeInfo(line.substring(4, line.indexOf('.')) + ".c");
                     tileConverter.writeTiles(line.substring(4, Math.min(line.indexOf('.'), 12)) + ".tle");
                 }
-                //tiled level (scrolls horizontally, so format is a bunch of columns)
-                else if (line.charAt(0) == 'l') {
-                    LevelReader levelReader = new LevelReader(8);
-                    String levelFilename = line.substring(3, Math.min(line.indexOf('.'), 11)) + ".map";
-                    String infoFilename = line.substring(3, line.indexOf('.')) + ".c";
-                    File levelFile = new File(line.substring(3));
-                    levelReader.addLevel(levelFile);
-                    levelReader.outputLevel(levelFilename);
-                    levelReader.writeInfo(infoFilename);
-                }
                 //tiled map (standard saturn tilemap format)
                 else if (line.charAt(0) == 'm') {
-                    if (line.charAt(1) == '4') {
-                        MapReader mapReader = new MapReader(line.substring(3), 4);
-                        mapReader.outputMap(line.substring(3, Math.min(line.indexOf('.'), 11)) + ".map");
-                        mapReader.writeInfo(line.substring(3, line.indexOf('.')) + ".c");
+                    char bppChar = line.charAt(1);
+                    int bpp = Character.getNumericValue(bppChar);
+                    char sizeChar = line.charAt(2);
+                    int size = Character.getNumericValue(sizeChar);
+                    if (size < 1 || size > 2) {
+                        System.out.println("Error: Invalid size " + size);
+                        return;
                     }
-                    else if (line.charAt(1) == '8') {
-                        MapReader mapReader = new MapReader(line.substring(3), 8);
-                        mapReader.outputMap(line.substring(3, Math.min(line.indexOf('.'), 11)) + ".map");
-                        mapReader.writeInfo(line.substring(3, line.indexOf('.')) + ".c");
-                    }
+                    MapReader mapReader = new MapReader(line.substring(4), bpp, size);
+                    mapReader.outputMap(line.substring(4, Math.min(line.indexOf('.'), 12)) + ".map");
+                    mapReader.writeInfo(line.substring(4, line.indexOf('.')) + ".c");
                 }
                 line = reader.readLine();
             }
