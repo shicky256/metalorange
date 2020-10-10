@@ -158,4 +158,20 @@ extern Uint16 explosion_width;
 extern Uint16 explosion_height;
 extern char explosion_name[];
 extern Uint32 explosion_pal[];
+
+//blocks1.c
+extern Uint16 blocks1_num;
+extern Uint16 blocks1_size;
+extern Uint16 blocks1_width;
+extern Uint16 blocks1_height;
+extern char blocks1_name[];
+extern Uint32 blocks1_pal[];
+
+//blocks2.c
+extern Uint16 blocks2_num;
+extern Uint16 blocks2_size;
+extern Uint16 blocks2_width;
+extern Uint16 blocks2_height;
+extern char blocks2_name[];
+extern Uint32 blocks2_pal[];
 #endif

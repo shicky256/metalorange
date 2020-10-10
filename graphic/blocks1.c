@@ -1,0 +1,9 @@
+Uint16 blocks1_num = 5;
+Uint16 blocks1_size = 64;
+Uint16 blocks1_width = 16;
+Uint16 blocks1_height = 8;
+char blocks1_name[] = "BLOCKS1.SPR";
+Uint32 blocks1_pal[] = {
+	0x0000,0x313131,0x424242,0xA58452,0x7B7B7B,0xFFCE84,0x5A8C8C,0x6B94,
+	0x3939A5,0xFFDEAD,0x7BBDC6,0xA5D6,0x9CCED6,0x2929EF,0x8484FF,0x8DEFF,
+};

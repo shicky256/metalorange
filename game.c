@@ -23,11 +23,14 @@ typedef enum {
 
 static int state = STATE_GAME_INIT;
 
+//nbg0 tilemap width
+#define MAP_WIDTH (64)
+
 static int score = 0;
 //character number for score text
 #define SCORE_CHARNO ((542 * 2) + SCROLL_A1_OFFSET)
 //where score is on HUD
-#define SCORE_AREA ((2 * 64) + 33)
+#define SCORE_AREA ((2 * MAP_WIDTH) + 33)
 #define SCORE_DIGITS (7)
 
 #define START_LIVES (5)
@@ -35,7 +38,7 @@ static int lives = START_LIVES; //how many extra lives you have
 //character num for life icon
 #define LIFE_CHARNO ((540 * 2) + SCROLL_A1_OFFSET)
 //where life area is on HUD
-#define LIFE_AREA ((26 * 64) + 34)
+#define LIFE_AREA ((26 * MAP_WIDTH) + 34)
 
 typedef enum {
     STATE_CHIP_NONE = 0,
@@ -111,6 +114,7 @@ static int num_balls;
 
 
 #define EXPLOSION_CHARNO (BALL_CHARNO + ball_num)
+#define BLOCK_CHARNO (EXPLOSION_CHARNO + explosion_num)
 
 static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
@@ -144,10 +148,10 @@ static inline void game_init() {
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 64; j++) {
             if (i < game_height && j < game_width) {
-                game_map[i * 64 + j] = SCROLL_A1_OFFSET + map_buf[i * game_width + j];
+                game_map[i * MAP_WIDTH + j] = SCROLL_A1_OFFSET + map_buf[i * game_width + j];
             } 
             else {
-                game_map[i * 64 + j] = 0;
+                game_map[i * MAP_WIDTH + j] = 0;
             }
         }
     }
@@ -176,21 +180,40 @@ static inline void game_init() {
     SPR_2ClrAllChar();
     //load font
     print_load();
+
+    Uint16 spr_charno = SHIP_CHARNO;
+    //load ship sprites
     for (int i = 0; i < ship_num; i++) {
-        SPR_2SetChar(i + SHIP_CHARNO, COLOR_0, 16, ship_width, ship_height, (char *)game_buf + (i * ship_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 16, ship_width, ship_height, (char *)game_buf + (i * ship_size));
     }
+    spr_charno += ship_num;
     //load ball
     cd_load_nosize(ball_name, game_buf);
     SCL_SetColRam(SCL_SPR, 32, 16, ball_pal);
     for (int i = 0; i < ball_num; i++) {
-        SPR_2SetChar(i + BALL_CHARNO, COLOR_0, 32, ball_width, ball_height, (char *)game_buf + (i * ball_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 32, ball_width, ball_height, (char *)game_buf + (i * ball_size));
     }
+    spr_charno += ball_num;
     //load ship explosion frames
     cd_load_nosize(explosion_name, game_buf);
     SCL_SetColRam(SCL_SPR, 48, 16, explosion_pal);
     for (int i = 0; i < explosion_num; i++) {
-        SPR_2SetChar(i + EXPLOSION_CHARNO, COLOR_0, 48, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 48, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
     }
+    spr_charno += explosion_num;
+    //load blocks
+    cd_load_nosize(blocks1_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 64, 16, blocks1_pal);
+    for (int i = 0; i < blocks1_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, 64, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
+    }
+    spr_charno += blocks1_num;
+    cd_load_nosize(blocks2_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 80, 16, blocks2_pal);
+    for (int i = 0; i < blocks2_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, 80, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
+    }
+    spr_charno += blocks2_num;
     //load chip's animation frames into lwram
     cd_load_nosize(chipgame_name, game_buf);
     sound_cdda(5, 1);
@@ -353,6 +376,9 @@ int game_run() {
             //add first ball
             game_addball();
 
+            SPRITE_INFO *test_block = sprite_next();
+            sprite_make(BLOCK_CHARNO + blocks1_num + 2, MTH_FIXED(50), MTH_FIXED(50), test_block);
+
             state = STATE_GAME_FADEIN;
             break;
         
@@ -472,7 +498,6 @@ int game_run() {
                                 game_chipset(STATE_CHIP_BURNT);
                                 frames = 0;
                                 state = STATE_GAME_LOSS;
-                                lives--;
                                 explosion_make(EXPLOSION_CHARNO, ship_sprite->x, ship_sprite->y);
                                 ship_sprite->x = SHIP_STARTX;
                                 ship_sprite->y = SHIP_STARTY;
@@ -489,6 +514,8 @@ int game_run() {
         case STATE_GAME_LOSS:
             frames++;
             if (frames >= 60) {
+                lives--;
+                //TODO add game over code here
                 game_chipset(STATE_CHIP_NONE);
                 ship_sprite->char_num = SHIP_CHARNO;
                 game_addball();
@@ -500,6 +527,9 @@ int game_run() {
     //update score
     Uint32 *score_ptr = MAP_PTR32(0) + SCORE_AREA;
     int temp_score = score;
+    if (temp_score > 9999999) {
+        temp_score = 9999999;
+    }
     for (int i = 0; i < SCORE_DIGITS; i++) {
         score_ptr[SCORE_DIGITS - i] = ((temp_score % 10) << 1) + SCORE_CHARNO;
         temp_score /= 10;
@@ -511,7 +541,7 @@ int game_run() {
         Uint32 *curr_ptr = life_ptr;
         //move to second row if we've passed the first row
         if (i >= 8) {
-            curr_ptr += (64 - 8);
+            curr_ptr += (MAP_WIDTH - 8);
         }
         //show life icon
         if ((i >> 1) < lives) {

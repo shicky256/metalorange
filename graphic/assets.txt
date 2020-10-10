@@ -24,3 +24,5 @@ m41 gamenear.tmx
 s ship
 s ball
 s explosion
+s blocks1
+s blocks2

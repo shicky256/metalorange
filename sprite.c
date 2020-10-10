@@ -20,7 +20,7 @@ SPRITE_INFO sprites[SPRITE_LIST_SIZE];
 #define CommandMax    300
 #define GourTblMax    300
 #define LookupTblMax  100
-#define CharMax       128 //CHANGE WHEN YOU INCREASE TILES BEYOND THIS POINT
+#define CharMax       256 //CHANGE WHEN YOU INCREASE TILES BEYOND THIS POINT
 #define DrawPrtyMax   256
 SPR_2DefineWork(work2D, CommandMax, GourTblMax, LookupTblMax, CharMax, DrawPrtyMax)
 
