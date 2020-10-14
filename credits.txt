@@ -1,9 +1,11 @@
 Font: Dwedit on nesdev
 
+Extra special thanks:
+fafling
+
 Special thanks:
 Sik
 Flygon
-fafling
 vbt
 mrkotfw
 Emerald Nova

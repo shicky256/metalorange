@@ -7,6 +7,7 @@
 #include "cd.h"
 #include "game.h"
 #include "graphicrefs.h"
+#include "level.h"
 #include "print.h"
 #include "scroll.h"
 #include "sound.h"
@@ -376,8 +377,7 @@ int game_run() {
             //add first ball
             game_addball();
 
-            SPRITE_INFO *test_block = sprite_next();
-            sprite_make(BLOCK_CHARNO + blocks1_num + 2, MTH_FIXED(50), MTH_FIXED(50), test_block);
+            level_load(BLOCK_CHARNO, 0);
 
             state = STATE_GAME_FADEIN;
             break;
@@ -556,6 +556,7 @@ int game_run() {
     }
 
     game_chipanim();
+    level_disp();
 
     scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));
     scroll_move(2, MTH_FIXED(0), MTH_FIXED(-2));

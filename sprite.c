@@ -23,6 +23,7 @@ SPRITE_INFO sprites[SPRITE_LIST_SIZE];
 #define CharMax       256 //CHANGE WHEN YOU INCREASE TILES BEYOND THIS POINT
 #define DrawPrtyMax   256
 SPR_2DefineWork(work2D, CommandMax, GourTblMax, LookupTblMax, CharMax, DrawPrtyMax)
+#define ENDCODE_DISABLE (1 << 7)
 
 Uint8 sprite_buf[SPRITE_BUF_SIZE];
 
@@ -79,17 +80,17 @@ void sprite_draw(SPRITE_INFO *info) {
 	if (info->scale == MTH_FIXED(1) && info->angle == 0) {
 		xy[0].x = (Sint16)MTH_FixedToInt(info->x);
 		xy[0].y = (Sint16)MTH_FixedToInt(info->y);
-		SPR_2NormSpr(0, info->mirror, 0, 0xffff, info->char_num, xy, NO_GOUR); //4bpp normal sprite
+		SPR_2NormSpr(0, info->mirror, ENDCODE_DISABLE, 0xffff, info->char_num, xy, NO_GOUR); //4bpp normal sprite
 	}
 	
-	else if (info->angle == 0){
+	else if (info->angle == 0){	
 		xy[0].x = (Sint16)MTH_FixedToInt(info->x);
 		xy[0].y = (Sint16)MTH_FixedToInt(info->y);
 		//the way scale works is by giving the x/y coordinates of the top left and
 		//bottom right corner of the sprite
 		xy[1].x = (Sint16)(MTH_FixedToInt(MTH_Mul(info->x_size, info->scale) + info->x));
 		xy[1].y = (Sint16)(MTH_FixedToInt(MTH_Mul(info->y_size, info->scale) + info->y));
-		SPR_2ScaleSpr(0, info->mirror, 0, 0xffff, info->char_num, xy, NO_GOUR); //4bpp scaled sprite
+		SPR_2ScaleSpr(0, info->mirror, ENDCODE_DISABLE, 0xffff, info->char_num, xy, NO_GOUR); //4bpp scaled sprite
 	}
 	
 	else {
@@ -111,7 +112,7 @@ void sprite_draw(SPRITE_INFO *info) {
 			xy[i].y = (Sint16)MTH_FixedToInt(MTH_Mul(xOffset, sin) +
 				MTH_Mul(yOffset, cos) + scaledY);
 		}
-		SPR_2DistSpr(0, info->mirror, 0, 0xffff, info->char_num, xy, NO_GOUR); //4bpp distorted sprite
+		SPR_2DistSpr(0, info->mirror, ENDCODE_DISABLE, 0xffff, info->char_num, xy, NO_GOUR); //4bpp distorted sprite
 	}
 }
 
