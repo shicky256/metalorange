@@ -4,6 +4,7 @@
 #define _SPR2_
 #include <SEGA_SPR.H>
 
+#include "ball.h"
 #include "cd.h"
 #include "game.h"
 #include "graphicrefs.h"
@@ -23,6 +24,7 @@ typedef enum {
 } GAME_STATE;
 
 static int state = STATE_GAME_INIT;
+static int frames = 0;
 
 //nbg0 tilemap width
 #define MAP_WIDTH (64)
@@ -76,44 +78,18 @@ static int chip_blinktimer;
 #define SHIP_CHARNO (font_num)
 //start of ship's idle animation
 #define SHIP_IDLE (SHIP_CHARNO + 13)
-static SPRITE_INFO *ship_sprite;
+SPRITE_INFO *ship_sprite;
 //ship's y pos during normal gameplay
 #define SHIP_POS (MTH_FIXED(200))
 #define SHIP_SPEED (MTH_FIXED(4))
 //all the ship's animations take 6 frames
 #define SHIP_TIMING (6)
 static int ship_frames;
-//the area between where the sprite is and where the actual pixel graphics start
-#define SHIP_XMARGIN (MTH_FIXED(4))
-#define SHIP_YMARGIN (MTH_FIXED(8))
-#define SHIP_WIDTH (MTH_FIXED(40))
-#define SHIP_HEIGHT (MTH_FIXED(24))
 //where ship starts a new life
 #define SHIP_STARTX (MTH_FIXED(102))
 #define SHIP_STARTY (MTH_FIXED(240))
 
-//leftmost area of the playfield
-#define LEFT_WALL (MTH_FIXED(16))
-#define RIGHT_WALL (MTH_FIXED(224))
-#define LEFT_BOUND (LEFT_WALL - SHIP_XMARGIN)
-#define RIGHT_BOUND (RIGHT_WALL - MTH_FIXED(ship_width) + SHIP_XMARGIN)
-
 #define BALL_CHARNO (SHIP_CHARNO + ship_num)
-#define MAX_BALLS (20)
-static SPRITE_INFO *ball_sprites[MAX_BALLS];
-static int num_balls;
-#define BALL_MARGIN (MTH_FIXED(2))
-#define BALL_WIDTH (MTH_FIXED(8))
-#define BALL_HEIGHT (MTH_FIXED(8))
-#define BALL_SPEED (MTH_FIXED(3))
-#define BALL_LBOUND (LEFT_WALL - BALL_MARGIN)
-#define BALL_RBOUND (RIGHT_WALL - BALL_WIDTH + BALL_MARGIN)
-#define BALL_STATE_INIT (0)
-#define BALL_STATE_NORMAL (1)
-#define BALL_SPAWN_XOFFSET (MTH_FIXED(16))
-#define BALL_SPAWN_YOFFSET (MTH_FIXED(-2))
-
-
 #define EXPLOSION_CHARNO (BALL_CHARNO + ball_num)
 #define BLOCK_CHARNO (EXPLOSION_CHARNO + explosion_num)
 
@@ -327,34 +303,21 @@ static void game_shipanim() {
         // reset to idle animation
         if (ship_sprite->char_num == SHIP_CHARNO + ship_num) {
             ship_sprite->char_num = SHIP_IDLE;
+            ship_sprite->state = SHIP_STATE_NORM;
         }
     }
 }
 
-static inline void game_addball() {
-    for (int i = 0; i < MAX_BALLS; i++) {
-        if (ball_sprites[i] == NULL) {
-            ball_sprites[i] = sprite_next();
-            num_balls++;
-            //if spawning the first ball, attach it to the ship
-            if (num_balls == 1) {
-                //spawn ball offscreen
-                sprite_make(BALL_CHARNO, MTH_FIXED(-80), MTH_FIXED(-80), ball_sprites[i]);
-                ball_sprites[i]->state = BALL_STATE_INIT; //ball attached to ship
-            }
-            else {
-                sprite_make(BALL_CHARNO, ship_sprite->x, ship_sprite->y, ball_sprites[i]);
-                ball_sprites[i]->dx = BALL_SPEED;
-                ball_sprites[i]->dy = -BALL_SPEED;
-                ball_sprites[i]->state = BALL_STATE_NORMAL; //ball comes out of ship
-            }
-            break;
-        }
-    }
+void game_loss() {
+    game_chipset(STATE_CHIP_BURNT);
+    frames = 0;
+    state = STATE_GAME_LOSS;
+    explosion_make(EXPLOSION_CHARNO, ship_sprite->x, ship_sprite->y);
+    ship_sprite->x = SHIP_STARTX;
+    ship_sprite->y = SHIP_STARTY;
 }
 
 int game_run() {
-    static int frames;
     switch (state) {
         case STATE_GAME_INIT:
             game_init();
@@ -369,13 +332,11 @@ int game_run() {
             ship_sprite = sprite_next();
             sprite_make(SHIP_CHARNO, SHIP_STARTX, SHIP_STARTY, ship_sprite);
             ship_frames = 0;
-            //init the ball array
-            num_balls = 0;
-            for (int i = 0; i < MAX_BALLS; i++) {
-                ball_sprites[i] = NULL;
-            }
+            ship_sprite->state = SHIP_STATE_INIT;
+            //init the ball handler
+            ball_init(BALL_CHARNO);
             //add first ball
-            game_addball();
+            ball_add(ship_sprite->x, ship_sprite->y);
 
             level_load(BLOCK_CHARNO, 0);
 
@@ -445,67 +406,7 @@ int game_run() {
             }
             
             //move all balls on screen
-            for (int i = 0; i < MAX_BALLS; i++) {
-                if (ball_sprites[i] != NULL) {
-                    //when the player spawns, keep the ball attached to his ship
-                    //until he presses A
-                    if (ball_sprites[i]->state == BALL_STATE_INIT) {
-                        ball_sprites[i]->x = ship_sprite->x + BALL_SPAWN_XOFFSET;
-                        ball_sprites[i]->y = ship_sprite->y + BALL_SPAWN_YOFFSET;
-                        if (ship_sprite->dx < 0) {
-                            ball_sprites[i]->dx = -BALL_SPEED;
-                            ball_sprites[i]->dy = -BALL_SPEED;
-                        }
-                        else {
-                            ball_sprites[i]->dx = BALL_SPEED;
-                            ball_sprites[i]->dy = -BALL_SPEED;
-                        }
-
-                        if (PadData1E & PAD_A) {
-                            ball_sprites[i]->state = BALL_STATE_NORMAL;
-                        }
-                    }
-                    else if (ball_sprites[i]->state == BALL_STATE_NORMAL) {
-                        ball_sprites[i]->x += ball_sprites[i]->dx;
-                        ball_sprites[i]->y += ball_sprites[i]->dy;
-                        //left/right wall
-                        if ((ball_sprites[i]->x <= BALL_LBOUND) || ball_sprites[i]->x >= BALL_RBOUND) {
-                            ball_sprites[i]->dx = -ball_sprites[i]->dx;
-                        }
-                        //top of screen
-                        if (ball_sprites[i]->y <= BALL_MARGIN) {
-                            ball_sprites[i]->dy = -ball_sprites[i]->dy;
-                        }
-                        //bottom
-                        if ((ball_sprites[i]->x + BALL_MARGIN >= ship_sprite->x + SHIP_XMARGIN) &&
-                            (ball_sprites[i]->x + BALL_WIDTH - BALL_MARGIN <= ship_sprite->x + SHIP_WIDTH - SHIP_XMARGIN) && 
-                            (ball_sprites[i]->y + BALL_HEIGHT - BALL_MARGIN >= ship_sprite->y + SHIP_YMARGIN) &&
-                            (ball_sprites[i]->y + BALL_MARGIN < ship_sprite->y + SHIP_HEIGHT)) {
-                            //calculate ball's offset from paddle center
-                            Fixed32 ball_offset = (ball_sprites[i]->x + (BALL_WIDTH >> 1)) - (ship_sprite->x + (SHIP_WIDTH >> 1));
-                            Fixed32 normalized_offset = MTH_Div(ball_offset, (SHIP_WIDTH >> 1));
-                            Fixed32 ball_angle = MTH_Mul(normalized_offset, MTH_FIXED(75));
-                            ball_sprites[i]->dx = MTH_Mul(MTH_Sin(ball_angle), BALL_SPEED);
-                            ball_sprites[i]->dy = MTH_Mul(MTH_Cos(ball_angle), -BALL_SPEED);
-                        }
-
-                        if (ball_sprites[i]->y > MTH_FIXED(SCROLL_LORES_Y)) {
-                            sprite_delete(ball_sprites[i]);
-                            ball_sprites[i] = NULL;
-                            num_balls--;
-
-                             if (num_balls == 0) {
-                                game_chipset(STATE_CHIP_BURNT);
-                                frames = 0;
-                                state = STATE_GAME_LOSS;
-                                explosion_make(EXPLOSION_CHARNO, ship_sprite->x, ship_sprite->y);
-                                ship_sprite->x = SHIP_STARTX;
-                                ship_sprite->y = SHIP_STARTY;
-                            }
-                        }
-                    }
-                }
-            }
+            ball_move();
             game_shipanim();
             break;
         
@@ -518,7 +419,8 @@ int game_run() {
                 //TODO add game over code here
                 game_chipset(STATE_CHIP_NONE);
                 ship_sprite->char_num = SHIP_CHARNO;
-                game_addball();
+                ship_sprite->state = SHIP_STATE_INIT;
+                ball_add(ship_sprite->x, ship_sprite->y);
                 state = STATE_GAME_PLAY;
             }
         break;

@@ -3,6 +3,6 @@
 //Options for building the game
 
 //If we should load files off the usb devcart or off the CD
-#define DEVCART_LOAD (0)
+#define DEVCART_LOAD (1)
 
 #endif

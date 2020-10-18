@@ -1,4 +1,6 @@
 #include <SEGA_MTH.H>
+
+#include "ball.h"
 #include "game.h"
 #include "level.h"
 #include "print.h"
@@ -17,9 +19,10 @@ typedef enum {
 } BLOCK;
 
 typedef struct {
-    Fixed32 x;
-    Fixed32 y;
-    Uint16 tile_no;
+    Fixed32 x; //x position onscreen
+    Fixed32 y; //y position onscreen
+    Uint16 tile_no; //tile number
+    int index; //where it is in the block array
 } BLOCK_SPR;
 
 //first block tile number in vdp1 memory
@@ -69,6 +72,61 @@ void level_load(Uint16 base, int num) {
     block_cursor = 0;
 }
 
+static void level_addblock(BLOCK_SPR *block) {
+    BLOCK_SPR *curr_block = &(block_arr[block_cursor]);
+    curr_block->x = block->x;
+    curr_block->y = block->y;
+    curr_block->tile_no = block->tile_no;
+    curr_block->index = block_cursor++;
+}
+
+//removes a block from the level block array by swapping the last block and the one to remove
+static void level_removeblock(BLOCK_SPR *block) {
+    int index = block->index;
+    block_cursor--;
+    //if we're not removing the last block and  we have multiple blocks
+    if ((block_cursor != index) && (block_cursor > 0)) {
+        block_arr[index] = block_arr[block_cursor];
+        block_arr[index].index = index;
+    }
+}
+
+// checks if a given pixel is inside a block or not
+static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pixel_x, Fixed32 pixel_y) {
+    if ((pixel_x >= block_x) && (pixel_x < block_x + BLOCK_WIDTH) &&
+        (pixel_y >= block_y) && (pixel_y < block_y + BLOCK_HEIGHT)) {
+
+        return 1;
+    }
+    return 0;
+}
+
+//routine run every frame by normal block
+static void level_normalblock(BLOCK_SPR *block) {
+    for (int i = 0; i < ball_count; i++) {
+        //left collision
+        if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_LSENSORX, ball_sprites[i]->y + BALL_LSENSORY)) {
+            ball_bounce(ball_sprites[i], DIR_LEFT);
+            level_removeblock(block);
+        }
+        //right collision
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_RSENSORX, ball_sprites[i]->y + BALL_RSENSORY)) {
+            ball_bounce(ball_sprites[i], DIR_RIGHT);
+            level_removeblock(block);
+        }
+        //top collision
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_TSENSORX, ball_sprites[i]->y + BALL_TSENSORY)) {
+            ball_bounce(ball_sprites[i], DIR_UP);
+            level_removeblock(block);
+        }
+        //bottom collision
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_TSENSORX, ball_sprites[i]->y + BALL_TSENSORY)) {
+            ball_bounce(ball_sprites[i], DIR_DOWN);
+            level_removeblock(block);
+        }
+    }
+}
+
 void level_disp() {
     SPRITE_INFO spr;
 
@@ -81,7 +139,7 @@ void level_disp() {
                 Sint8 tile_num = level0_blocks[row_num * LEVEL_WIDTH + i];
                 if (tile_num >= 0) {
                     BLOCK_SPR *block = &anim_row[anim_cursor++];
-                    block->x = MTH_Mul(MTH_FIXED(i), BLOCK_WIDTH) + LEFT_WALL;
+                    block->x = MTH_Mul(MTH_FIXED(i), BLOCK_WIDTH) + LEFT_WALL + MTH_FIXED(1);
                     block->y = 0;
                     block->tile_no = tile_num + block_base;
                 }
@@ -95,7 +153,7 @@ void level_disp() {
             //copy from row arr to main arr
             for (int i = 0; i < anim_cursor; i++) {
                 anim_row[i].y = row_y;
-                block_arr[block_cursor++] = anim_row[i];
+                level_addblock(&anim_row[i]);
             }
             row_num--;
             anim_cursor = -1;
@@ -112,6 +170,8 @@ void level_disp() {
 
     //draw all the blocks in the block arr
     for (int i = 0; i < block_cursor; i++) {
+        level_normalblock(&block_arr[i]);
+
         sprite_make(block_arr[i].tile_no, block_arr[i].x, block_arr[i].y, &spr);
         sprite_draw(&spr);
     }
