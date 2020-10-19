@@ -39,7 +39,7 @@ typedef struct SpriteInfo {
 	IterateFunc iterate;
 } SPRITE_INFO;
 
-#define SPRITE_LIST_SIZE (160)
+#define SPRITE_LIST_SIZE (80)
 extern SPRITE_INFO sprites[];
 //buffer in HWRAM to load sprite graphics in since you can't dma from LWRAM
 #define SPRITE_BUF_SIZE (8192)

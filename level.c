@@ -84,7 +84,7 @@ static void level_addblock(BLOCK_SPR *block) {
 static void level_removeblock(BLOCK_SPR *block) {
     int index = block->index;
     block_cursor--;
-    //if we're not removing the last block and  we have multiple blocks
+    //if we're not removing the last block and we have multiple blocks
     if ((block_cursor != index) && (block_cursor > 0)) {
         block_arr[index] = block_arr[block_cursor];
         block_arr[index].index = index;
@@ -105,23 +105,23 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
 static void level_normalblock(BLOCK_SPR *block) {
     for (int i = 0; i < ball_count; i++) {
         //left collision
-        if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_LSENSORX, ball_sprites[i]->y + BALL_LSENSORY)) {
-            ball_bounce(ball_sprites[i], DIR_LEFT);
+        if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
+            ball_bounce(&ball_sprites[i], DIR_LEFT);
             level_removeblock(block);
         }
         //right collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_RSENSORX, ball_sprites[i]->y + BALL_RSENSORY)) {
-            ball_bounce(ball_sprites[i], DIR_RIGHT);
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
+            ball_bounce(&ball_sprites[i], DIR_RIGHT);
             level_removeblock(block);
         }
         //top collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_TSENSORX, ball_sprites[i]->y + BALL_TSENSORY)) {
-            ball_bounce(ball_sprites[i], DIR_UP);
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
+            ball_bounce(&ball_sprites[i], DIR_UP);
             level_removeblock(block);
         }
         //bottom collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i]->x + BALL_TSENSORX, ball_sprites[i]->y + BALL_TSENSORY)) {
-            ball_bounce(ball_sprites[i], DIR_DOWN);
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
+            ball_bounce(&ball_sprites[i], DIR_DOWN);
             level_removeblock(block);
         }
     }

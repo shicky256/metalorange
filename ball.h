@@ -19,6 +19,7 @@
 #define BALL_RSENSORY (BALL_MARGIN + (BALL_HEIGHT >> 1))
 
 #define BALL_SPEED (MTH_FIXED(3))
+#define BALL_MAXANGLE (MTH_FIXED(65))
 #define BALL_LBOUND (LEFT_WALL - BALL_MARGIN)
 #define BALL_RBOUND (RIGHT_WALL - BALL_WIDTH + BALL_MARGIN)
 #define BALL_STATE_INIT (0)
@@ -26,8 +27,18 @@
 #define BALL_SPAWN_XOFFSET (MTH_FIXED(16))
 #define BALL_SPAWN_YOFFSET (MTH_FIXED(-2))
 
+typedef struct {
+    Fixed32 x; //x pos onscreen
+    Fixed32 y; //y pos onscreen
+    Fixed32 dx; //x delta
+    Fixed32 dy; //y delta
+    int state; //state variable
+    int index; //index in ball arr
+} BALL_SPRITE;
+
 #define MAX_BALLS (20)
-extern SPRITE_INFO *ball_sprites[MAX_BALLS];
+
+extern BALL_SPRITE ball_sprites[MAX_BALLS];
 extern int ball_count; //number of balls being displayed
 
 void ball_init(int charno);
@@ -37,7 +48,7 @@ void ball_add(Fixed32 x_pos, Fixed32 y_pos);
 #define DIR_DOWN (1)
 #define DIR_LEFT (2)
 #define DIR_RIGHT (3)
-void ball_bounce(SPRITE_INFO *ball, int direction);
+void ball_bounce(BALL_SPRITE *ball, int direction);
 void ball_move();
 
 #endif
