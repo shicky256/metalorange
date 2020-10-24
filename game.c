@@ -178,17 +178,24 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, 48, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
     }
     spr_charno += explosion_num;
+    //load block effects (explosion & shine)
+    cd_load_nosize(beffect_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 64, 16, beffect_pal);
+    for (int i = 0; i < beffect_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, 64, beffect_width, beffect_height, (char *)game_buf + (i * beffect_size));
+    }
+    spr_charno += beffect_num;
     //load blocks
     cd_load_nosize(blocks1_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 64, 16, blocks1_pal);
+    SCL_SetColRam(SCL_SPR, 80, 16, blocks1_pal);
     for (int i = 0; i < blocks1_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 64, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 80, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
     }
     spr_charno += blocks1_num;
     cd_load_nosize(blocks2_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 80, 16, blocks2_pal);
+    SCL_SetColRam(SCL_SPR, 96, 16, blocks2_pal);
     for (int i = 0; i < blocks2_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 80, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 96, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
     }
     spr_charno += blocks2_num;
     //load chip's animation frames into lwram

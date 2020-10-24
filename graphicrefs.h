@@ -159,6 +159,14 @@ extern Uint16 explosion_height;
 extern char explosion_name[];
 extern Uint32 explosion_pal[];
 
+//beffect.c
+extern Uint16 beffect_num;
+extern Uint16 beffect_size;
+extern Uint16 beffect_width;
+extern Uint16 beffect_height;
+extern char beffect_name[];
+extern Uint32 beffect_pal[];
+
 //blocks1.c
 extern Uint16 blocks1_num;
 extern Uint16 blocks1_size;

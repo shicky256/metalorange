@@ -1,0 +1,9 @@
+Uint16 beffect_num = 3;
+Uint16 beffect_size = 64;
+Uint16 beffect_width = 16;
+Uint16 beffect_height = 8;
+char beffect_name[] = "BEFFECT.SPR";
+Uint32 beffect_pal[] = {
+	0x0000,0xDEBDBD,0xF7D6D6,0xFFF7F7,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
+	0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
+};

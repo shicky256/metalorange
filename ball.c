@@ -67,12 +67,12 @@ void ball_move() {
             ball_sprites[i].x = ship_sprite->x + BALL_SPAWN_XOFFSET;
             ball_sprites[i].y = ship_sprite->y + BALL_SPAWN_YOFFSET;
             if (ship_sprite->dx < 0) {
-                ball_sprites[i].dx = MTH_Mul(MTH_Sin(MTH_FIXED(-45)), BALL_SPEED);
-                ball_sprites[i].dy = MTH_Mul(MTH_Cos(MTH_FIXED(-45)), BALL_SPEED);
+                ball_sprites[i].dx = MTH_Mul(MTH_Sin(MTH_FIXED(-135)), BALL_SPEED);
+                ball_sprites[i].dy = MTH_Mul(MTH_Cos(MTH_FIXED(-135)), BALL_SPEED);
             }
             else {
-                ball_sprites[i].dx = MTH_Mul(MTH_Sin(MTH_FIXED(45)), BALL_SPEED);
-                ball_sprites[i].dy = MTH_Mul(MTH_Cos(MTH_FIXED(45)), BALL_SPEED);
+                ball_sprites[i].dx = MTH_Mul(MTH_Sin(MTH_FIXED(135)), BALL_SPEED);
+                ball_sprites[i].dy = MTH_Mul(MTH_Cos(MTH_FIXED(135)), BALL_SPEED);
             }
 
             //don't allow ball launch until ship is done

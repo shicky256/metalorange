@@ -6,23 +6,36 @@
 #include "print.h"
 #include "sprite.h"
 
+#define EXPLOSION_NUM (block_base)
+#define EXPLOSION_CHARS (3)
+//number of frames between each explosion frame 
+#define EXPLOSION_TIMING (6)
+
+#define BLOCK_START (EXPLOSION_CHARS)
 typedef enum {
     NON = -1,
-    RED = 0, //red
-    BGE = 1, //beige
-    GRY = 2, //gray
-    GLD = 3, //gold
-    BLU = 4, //blue
-    ORN = 5, //orange
-    WHT = 6, //white
-    PUR = 7, //purple
+    RED = BLOCK_START, //red
+    BGE, //beige
+    GRY, //gray
+    GLD, //gold
+    BLU, //blue
+    ORN, //orange
+    WHT, //white
+    PUR, //purple
 } BLOCK;
+
+typedef enum {
+    STATE_NORM = 0,
+    STATE_EXPLODE = 1
+} BLOCK_STATE;
 
 typedef struct {
     Fixed32 x; //x position onscreen
     Fixed32 y; //y position onscreen
     Uint16 tile_no; //tile number
     int index; //where it is in the block array
+    int anim_timer;
+    int state;
 } BLOCK_SPR;
 
 //first block tile number in vdp1 memory
@@ -78,6 +91,7 @@ static void level_addblock(BLOCK_SPR *block) {
     curr_block->y = block->y;
     curr_block->tile_no = block->tile_no;
     curr_block->index = block_cursor++;
+    curr_block->state = STATE_NORM;
 }
 
 //removes a block from the level block array by swapping the last block and the one to remove
@@ -104,24 +118,43 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
 //routine run every frame by normal block
 static void level_normalblock(BLOCK_SPR *block) {
     for (int i = 0; i < ball_count; i++) {
+        int collision = 0;
         //left collision
         if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_LEFT);
-            level_removeblock(block);
+            collision = 1;
         }
         //right collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_RIGHT);
-            level_removeblock(block);
+            collision = 1;
         }
         //top collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_UP);
-            level_removeblock(block);
+            collision = 1;
         }
         //bottom collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
+        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_BSENSORX, ball_sprites[i].y + BALL_BSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_DOWN);
+            collision = 1;
+        }
+        // if there's a collision, make the block explode
+        if (collision) {
+            block->state = STATE_EXPLODE;
+            block->tile_no = EXPLOSION_NUM;
+            block->anim_timer = 0;
+        }
+    }
+}
+
+//routine run when a block explodes
+static void level_explodeblock(BLOCK_SPR *block) {
+    block->anim_timer++;
+    if (block->anim_timer > EXPLOSION_TIMING) {
+        block->tile_no++;
+        block->anim_timer = 0;
+        if (block->tile_no - block_base >= EXPLOSION_CHARS) {
             level_removeblock(block);
         }
     }
@@ -170,7 +203,15 @@ void level_disp() {
 
     //draw all the blocks in the block arr
     for (int i = 0; i < block_cursor; i++) {
-        level_normalblock(&block_arr[i]);
+        switch(block_arr[i].state) {
+            case STATE_NORM:
+                level_normalblock(&block_arr[i]);
+                break;
+    
+            case STATE_EXPLODE:
+                level_explodeblock(&block_arr[i]);
+                break;
+        }
 
         sprite_make(block_arr[i].tile_no, block_arr[i].x, block_arr[i].y, &spr);
         sprite_draw(&spr);
