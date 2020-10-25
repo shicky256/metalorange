@@ -1,4 +1,4 @@
-Uint16 beffect_num = 3;
+Uint16 beffect_num = 8;
 Uint16 beffect_size = 64;
 Uint16 beffect_width = 16;
 Uint16 beffect_height = 8;

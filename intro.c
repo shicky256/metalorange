@@ -463,6 +463,7 @@ int intro_run() {
         end.red = -255; end.green = -255; end.blue = -255;
         SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
         frames = 0;
+        print_init();
         state = STATE_INTRO_FADEOUT;
     }
     return 0;

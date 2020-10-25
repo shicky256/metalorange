@@ -375,12 +375,12 @@ int game_run() {
             }
             //handle input
             if (PadID1 == ANALOGPAD_ID) {
-                Fixed32 dx = 0;
+                ship_sprite->dx = 0;
                 //shoulder trigger controls
                 Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, SHIP_SPEED);
-                dx -= left_trigger;
+                ship_sprite->dx -= left_trigger;
                 Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, SHIP_SPEED);
-                dx += right_trigger;
+                ship_sprite->dx += right_trigger;
 
                 //analog stick controls
                 //transform x pos by converting the 0-255 range of the analog x pos to be
@@ -388,19 +388,15 @@ int game_run() {
                 //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
                 //(range: -SHIP_SPEED to SHIP_SPEED)
                 Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (SHIP_SPEED + MTH_FIXED(0.15)) << 1) - (SHIP_SPEED + MTH_FIXED(0.15));
-                dx += movement;
+                ship_sprite->dx += movement;
                 //limit speed
-                if (dx > SHIP_SPEED) dx = SHIP_SPEED;
-                if (dx < -SHIP_SPEED) dx = -SHIP_SPEED;
+                if (ship_sprite->dx > SHIP_SPEED) ship_sprite->dx = SHIP_SPEED;
+                if (ship_sprite->dx < -SHIP_SPEED) ship_sprite->dx = -SHIP_SPEED;
             }
             else {
                 ship_sprite->dx = 0;
-                if (PadData1 & PAD_L) {
-                    ship_sprite->dx -= SHIP_SPEED;
-                }
-                if (PadData1 & PAD_R) {
-                    ship_sprite->dx += SHIP_SPEED;
-                }
+                if (PadData1 & PAD_L) ship_sprite->dx -= SHIP_SPEED;
+                if (PadData1 & PAD_R) ship_sprite->dx += SHIP_SPEED;
             }
             ship_sprite->x += ship_sprite->dx;
 

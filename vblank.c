@@ -19,7 +19,6 @@
 #include 	<sega_int.h>
 #include    "pcmsys.h"
 #include	"per_x.h"
-#include    "print.h"
 
 typedef	struct {
 	Uint8	type;
@@ -78,11 +77,6 @@ void UsrVblankOut(void) {
 
 			if (id == ANALOGPAD_ID) {
 				const AnalogPadData *analog = (const AnalogPadData *)device;
-				print_num(analog->ax, 6, 2);
-				print_num(analog->ay, 7, 2);
-				print_num(analog->al, 8, 2);
-				print_num(analog->ar, 9, 2);
-
 				PadAnalogX1 = analog->ax;
 				PadAnalogY1 = analog->ay;
 				PadAnalogL1 = analog->al;

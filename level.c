@@ -6,12 +6,17 @@
 #include "print.h"
 #include "sprite.h"
 
-#define EXPLOSION_NUM (block_base)
-#define EXPLOSION_CHARS (3)
+#define EXPLOSION_CHARNO (0)
+#define EXPLOSION_NUM (3)
 //number of frames between each explosion frame 
 #define EXPLOSION_TIMING (6)
 
-#define BLOCK_START (EXPLOSION_CHARS)
+#define SHINE_CHARNO (EXPLOSION_NUM)
+#define SHINE_NUM (5)
+#define SHINE_TIMING (6)
+
+
+#define BLOCK_START (EXPLOSION_NUM + SHINE_NUM)
 typedef enum {
     NON = -1,
     RED = BLOCK_START, //red
@@ -26,13 +31,16 @@ typedef enum {
 
 typedef enum {
     STATE_NORM = 0,
-    STATE_EXPLODE = 1
+    STATE_EXPLODE,
+    STATE_SHINEON, //shine flickers so use two states to represent this
+    STATE_SHINEOFF
 } BLOCK_STATE;
 
 typedef struct {
     Fixed32 x; //x position onscreen
     Fixed32 y; //y position onscreen
     Uint16 tile_no; //tile number
+    Uint16 overlay_no; //tile number of overlay sprite
     int index; //where it is in the block array
     int anim_timer;
     int state;
@@ -91,7 +99,15 @@ static void level_addblock(BLOCK_SPR *block) {
     curr_block->y = block->y;
     curr_block->tile_no = block->tile_no;
     curr_block->index = block_cursor++;
-    curr_block->state = STATE_NORM;
+    curr_block->anim_timer = 0;
+    //golden blocks shine when they're added
+    if (block->tile_no == GLD) {
+        curr_block->state = STATE_SHINEON;
+    }
+    else {
+        curr_block->state = STATE_NORM;
+        curr_block->overlay_no = 0;
+    }
 }
 
 //removes a block from the level block array by swapping the last block and the one to remove
@@ -141,9 +157,16 @@ static void level_normalblock(BLOCK_SPR *block) {
         }
         // if there's a collision, make the block explode
         if (collision) {
-            block->state = STATE_EXPLODE;
-            block->tile_no = EXPLOSION_NUM;
-            block->anim_timer = 0;
+            //gold blocks can't be broken
+            if (block->tile_no == GLD) {
+                block->state = STATE_SHINEON;
+                block->anim_timer = 0;
+            }
+            else {
+                block->state = STATE_EXPLODE;
+                block->tile_no = EXPLOSION_CHARNO;
+                block->anim_timer = 0;
+            }
         }
     }
 }
@@ -151,12 +174,26 @@ static void level_normalblock(BLOCK_SPR *block) {
 //routine run when a block explodes
 static void level_explodeblock(BLOCK_SPR *block) {
     block->anim_timer++;
-    if (block->anim_timer > EXPLOSION_TIMING) {
+    if (block->anim_timer >= EXPLOSION_TIMING) {
         block->tile_no++;
         block->anim_timer = 0;
-        if (block->tile_no - block_base >= EXPLOSION_CHARS) {
+        if (block->tile_no - EXPLOSION_CHARNO >= EXPLOSION_NUM) {
             level_removeblock(block);
         }
+    }
+}
+
+//routine run to do the shine effect on a block
+static void level_shineblock(BLOCK_SPR *block) {
+    block->anim_timer++;
+    block->overlay_no = block->anim_timer / SHINE_TIMING + SHINE_CHARNO;
+    if (block->overlay_no - SHINE_CHARNO >= SHINE_NUM) {
+        block->state = STATE_NORM;
+        block->overlay_no = 0;
+        block->anim_timer = 0;
+    }
+    else {
+        block->state = STATE_SHINEOFF;
     }
 }
 
@@ -174,7 +211,7 @@ void level_disp() {
                     BLOCK_SPR *block = &anim_row[anim_cursor++];
                     block->x = MTH_Mul(MTH_FIXED(i), BLOCK_WIDTH) + LEFT_WALL + MTH_FIXED(1);
                     block->y = 0;
-                    block->tile_no = tile_num + block_base;
+                    block->tile_no = tile_num;
                 }
             }
             row_y = 0;
@@ -194,16 +231,21 @@ void level_disp() {
         else {
             for (int i = 0; i < anim_cursor; i++) {
                 anim_row[i].y = row_y;
-                sprite_make(anim_row[i].tile_no, anim_row[i].x, anim_row[i].y, &spr);
+                sprite_make(anim_row[i].tile_no + (Uint16)block_base, anim_row[i].x, anim_row[i].y, &spr);
                 sprite_draw(&spr);
             }
         }
     }
-    print_num(block_cursor, 0, 0);
+    // print_num(block_cursor, 0, 0);
 
     //draw all the blocks in the block arr
     for (int i = 0; i < block_cursor; i++) {
         switch(block_arr[i].state) {
+            case STATE_SHINEOFF:
+                block_arr[i].overlay_no = 0;
+                block_arr[i].anim_timer++;
+                block_arr[i].state = STATE_SHINEON;
+                //fall through
             case STATE_NORM:
                 level_normalblock(&block_arr[i]);
                 break;
@@ -211,9 +253,18 @@ void level_disp() {
             case STATE_EXPLODE:
                 level_explodeblock(&block_arr[i]);
                 break;
+
+            case STATE_SHINEON:
+                level_shineblock(&block_arr[i]);
+                level_normalblock(&block_arr[i]);
+                break;
         }
 
-        sprite_make(block_arr[i].tile_no, block_arr[i].x, block_arr[i].y, &spr);
+        sprite_make(block_arr[i].tile_no + (Uint16)block_base, block_arr[i].x, block_arr[i].y, &spr);
         sprite_draw(&spr);
+        if (block_arr[i].overlay_no != 0) {
+            sprite_make(block_arr[i].overlay_no + (Uint16)block_base, block_arr[i].x, block_arr[i].y, &spr);
+            sprite_draw(&spr);
+        }
     }
 }
