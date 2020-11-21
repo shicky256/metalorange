@@ -38,4 +38,5 @@ typedef unsigned long Uint32;
 #include "graphic/beffect.c"
 #include "graphic/blocks1.c"
 #include "graphic/blocks2.c"
+#include "graphic/capsule.c"
 

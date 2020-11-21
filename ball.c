@@ -115,6 +115,9 @@ void ball_move() {
                 if (ball_count == 0) {
                     game_loss();
                 }
+                else { //rerun the ball code for the ball that's been swapped into this one's place
+                    i--;
+                }
             }
         }
         sprite_make(ball_charno, ball_sprites[i].x, ball_sprites[i].y, &ball_sprite);

@@ -28,18 +28,28 @@
 #               （ファイルのプライマリネームになります）
 #  OBJS         リンクするオブジェクトファイルを指定します。
 #
+ROOT_DIR = c:/saturn
+SATURN  = $(ROOT_DIR)/sbl6
+GCC     = $(ROOT_DIR)/SH_COFF/sh-coff
+CDTOOLS = $(ROOT_DIR)/cdtools
+MEDNAFEN = $(ROOT_DIR)/mednafen/mednafen.exe
+SATBUG = $(ROOT_DIR)/orange/tools/satbug/bin/Debug/satbug.exe
 
-CC = sh-coff-gcc
-AS = gasm
+CDDIR = cd
+OUTDIR = out
+SEGASMP = $(SATURN)/segasmp
+SEGALIB = $(SATURN)/segalib
+
+CC = $(GCC)/bin/sh-coff-gcc
+AS = $(GCC)/bin/gasm
+OBJCOPY = $(GCC)/bin/sh-coff-objcopy
+ISO = $(CDTOOLS)/mkisofs
 
 CFLAGS  = -g -O2 -Wall -std=gnu99 -m2 -DMODEL_S -I$(GCC)/include -I$(SEGALIB)/include -I./smpclib
 ASFLAGS =
 LDFLAGS = -T $(LOCATE_FILE) -e $(ENTRY_POINT) -nostartfiles
-
-SATURN  = ../sbl6
-GCC     = c:/saturn/SH_COFF/sh-coff
-SEGASMP = $(SATURN)/segasmp
-SEGALIB = $(SATURN)/segalib
+ISOFLAGS = -sysid "SEGA SATURN" -volid "SaturnApp" -volset "SaturnApp" -publisher "SEGA ENTERPRISES, LTD." -preparer "SEGA ENTERPRISES, LTD." \
+ -appid "SaturnApp" -abstract "$(CDTOOLS)/ABS.TXT" -copyright "$(CDTOOLS)/CPY.TXT" -biblio "$(CDTOOLS)/BIB.TXT" -generic-boot "$(CDTOOLS)/ip_gnu.bin" -full-iso9660-filenames
 
 LOCATE_FILE = saturn.lnk
 ENTRY_POINT = START
@@ -59,13 +69,28 @@ include	$(CONFIG_FILE)
 .SUFFIXES:
 .SUFFIXES: .cof .o .src .c
 
-all: $(TARGET).cof $(TARGET).bin
+all: $(OUTDIR)/$(TARGET).iso
+
+run: $(OUTDIR)/$(TARGET).iso
+	$(MEDNAFEN) $(OUTDIR)/$(TARGET).cue
+
+devcart: $(OUTDIR)/$(TARGET).iso
+	$(SATBUG) -x $(TARGET).bin 0x6010000 -s $(CDDIR)\\
+
+clean:
+	rm *.o
+	rm *.cof
+	rm *.bin
+
+$(OUTDIR)/$(TARGET).iso: $(TARGET).bin
+	cp $< $(CDDIR)/0.bin
+	$(ISO) $(ISOFLAGS) -o $@ $(CDDIR)
+
+$(TARGET).bin: $(TARGET).cof
+	$(OBJCOPY) -O binary $< $@
 
 $(TARGET).cof:	$(OBJS)
 	$(CC) $(LDFLAGS) $(_LDFLAGS) -o $(TARGET).cof -Xlinker -Map -Xlinker $(TARGET).map $(OBJS) $(LIBS)
-
-$(TARGET).bin:	$(OBJS)
-	sh-coff-objcopy -O binary $(TARGET).cof out.bin
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(_CFLAGS) -o $@ $<

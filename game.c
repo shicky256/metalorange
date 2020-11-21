@@ -5,6 +5,7 @@
 #include <SEGA_SPR.H>
 
 #include "ball.h"
+#include "capsule.h"
 #include "cd.h"
 #include "game.h"
 #include "graphicrefs.h"
@@ -29,9 +30,12 @@ static int frames = 0;
 //nbg0 tilemap width
 #define MAP_WIDTH (64)
 
+//# tiles per row in the 
+#define TILES_WIDTH (18)
+
 static int score = 0;
 //character number for score text
-#define SCORE_CHARNO ((542 * 2) + SCROLL_A1_OFFSET)
+#define SCORE_CHARNO ((((30 * TILES_WIDTH) + 2) * 2) + SCROLL_A1_OFFSET)
 //where score is on HUD
 #define SCORE_AREA ((2 * MAP_WIDTH) + 33)
 #define SCORE_DIGITS (7)
@@ -39,9 +43,41 @@ static int score = 0;
 #define START_LIVES (5)
 static int lives = START_LIVES; //how many extra lives you have
 //character num for life icon
-#define LIFE_CHARNO ((540 * 2) + SCROLL_A1_OFFSET)
+#define LIFE_CHARNO (((30 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET)
 //where life area is on HUD
 #define LIFE_AREA ((26 * MAP_WIDTH) + 34)
+
+typedef enum {
+    P_NONE = 0,
+    P_TURBO,
+    P_BIT,
+    P_DISRUPTION,
+    P_LASER,
+    P_ILLUSION,
+    P_GIGABALL,
+    P_BARRIER
+} POWERUP;
+
+#define NUM_POWERUPS (P_BARRIER)
+
+#define POWERUP_EMPTY_CHARNO ((((21 * TILES_WIDTH) + 4) * 2) + SCROLL_A1_OFFSET)
+#define POWERUP_FULL_CHARNO ((((26 * TILES_WIDTH) + 4) * 2) + SCROLL_A1_OFFSET)
+#define POWERUP_AREA ((21 * MAP_WIDTH) + 30)
+
+int powerup = P_NONE;
+//tile numbers for the powerup names
+Uint32 powerup_names[] = {
+    ((31 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
+    (((31 * TILES_WIDTH) + 7) * 2) + SCROLL_A1_OFFSET,
+    ((32 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
+    (((32 * TILES_WIDTH) + 7) * 2) + SCROLL_A1_OFFSET,
+    ((33 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
+    (((33 * TILES_WIDTH) + 7) * 2) + SCROLL_A1_OFFSET,
+    ((34 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
+};
+
+#define POWERUP_NAME_AREA ((23 * MAP_WIDTH) + 35)
+#define POWERUP_NAME_LEN (7)
 
 typedef enum {
     STATE_CHIP_NONE = 0,
@@ -89,9 +125,10 @@ static int ship_frames;
 #define SHIP_STARTX (MTH_FIXED(102))
 #define SHIP_STARTY (MTH_FIXED(240))
 
-#define BALL_CHARNO (SHIP_CHARNO + ship_num)
-#define EXPLOSION_CHARNO (BALL_CHARNO + ball_num)
-#define BLOCK_CHARNO (EXPLOSION_CHARNO + explosion_num)
+int ball_charno; //ball's character number
+int explosion_charno;
+int block_charno;
+int capsule_charno;
 
 static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
@@ -165,6 +202,7 @@ static inline void game_init() {
     }
     spr_charno += ship_num;
     //load ball
+    ball_charno = spr_charno;
     cd_load_nosize(ball_name, game_buf);
     SCL_SetColRam(SCL_SPR, 32, 16, ball_pal);
     for (int i = 0; i < ball_num; i++) {
@@ -172,6 +210,7 @@ static inline void game_init() {
     }
     spr_charno += ball_num;
     //load ship explosion frames
+    explosion_charno = spr_charno;
     cd_load_nosize(explosion_name, game_buf);
     SCL_SetColRam(SCL_SPR, 48, 16, explosion_pal);
     for (int i = 0; i < explosion_num; i++) {
@@ -179,6 +218,7 @@ static inline void game_init() {
     }
     spr_charno += explosion_num;
     //load block effects (explosion & shine)
+    block_charno = spr_charno;
     cd_load_nosize(beffect_name, game_buf);
     SCL_SetColRam(SCL_SPR, 64, 16, beffect_pal);
     for (int i = 0; i < beffect_num; i++) {
@@ -198,6 +238,14 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, 96, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
     }
     spr_charno += blocks2_num;
+    //load powerup capsule
+    capsule_charno = spr_charno;
+    cd_load_nosize(capsule_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 112, 16, capsule_pal);
+    for (int i = 0; i < capsule_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, 112, capsule_width, capsule_height, (char *)game_buf + (i * capsule_size));
+    }
+
     //load chip's animation frames into lwram
     cd_load_nosize(chipgame_name, game_buf);
     sound_cdda(5, 1);
@@ -319,9 +367,16 @@ void game_loss() {
     game_chipset(STATE_CHIP_BURNT);
     frames = 0;
     state = STATE_GAME_LOSS;
-    explosion_make(EXPLOSION_CHARNO, ship_sprite->x, ship_sprite->y);
+    explosion_make(explosion_charno, ship_sprite->x, ship_sprite->y);
     ship_sprite->x = SHIP_STARTX;
     ship_sprite->y = SHIP_STARTY;
+}
+
+void game_incpowerup() {
+    powerup++;
+    if (powerup > NUM_POWERUPS) {
+        powerup = P_TURBO;
+    }
 }
 
 int game_run() {
@@ -341,11 +396,13 @@ int game_run() {
             ship_frames = 0;
             ship_sprite->state = SHIP_STATE_INIT;
             //init the ball handler
-            ball_init(BALL_CHARNO);
+            ball_init(ball_charno);
+            //init the capsule handler
+            capsule_init(capsule_charno);
             //add first ball
             ball_add(ship_sprite->x, ship_sprite->y);
 
-            level_load(BLOCK_CHARNO, 0);
+            level_load(block_charno, 0);
 
             state = STATE_GAME_FADEIN;
             break;
@@ -460,7 +517,39 @@ int game_run() {
         }
     }
 
+    //update powerups
+    if (PadData1E & PAD_X) {
+        powerup++;
+    }
+    //reset powerup if player collects too many
+    if (powerup > NUM_POWERUPS) {
+        powerup = P_TURBO;
+    }
+
+    Uint32 *powerup_ptr = MAP_PTR32(0) + POWERUP_AREA;
+    for (int i = 0; i < NUM_POWERUPS; i++) {
+        if ((powerup - 1) == i) {
+            powerup_ptr[(NUM_POWERUPS - 1 - i) * MAP_WIDTH] = POWERUP_FULL_CHARNO;
+            powerup_ptr[((NUM_POWERUPS -1 - i) * MAP_WIDTH) + 1] = POWERUP_FULL_CHARNO + 2;
+
+        }
+        else {
+            powerup_ptr[(NUM_POWERUPS - 1 - i) * MAP_WIDTH] = POWERUP_EMPTY_CHARNO;
+            powerup_ptr[((NUM_POWERUPS - 1 - i) * MAP_WIDTH) + 1] = POWERUP_EMPTY_CHARNO + 2;
+        }
+    }
+    powerup_ptr = MAP_PTR32(0) + POWERUP_NAME_AREA;
+    for (int i = 0; i < POWERUP_NAME_LEN; i++) {
+        if (powerup == 0) {
+            powerup_ptr[i] = SCROLL_A1_OFFSET;
+        }
+        else {
+            powerup_ptr[i] = powerup_names[powerup - 1] + (i << 1);
+        }
+    }
+
     game_chipanim();
+    capsule_run();
     level_disp();
 
     scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));

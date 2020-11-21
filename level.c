@@ -1,6 +1,7 @@
 #include <SEGA_MTH.H>
 
 #include "ball.h"
+#include "capsule.h"
 #include "game.h"
 #include "level.h"
 #include "print.h"
@@ -157,6 +158,8 @@ static void level_normalblock(BLOCK_SPR *block) {
         }
         // if there's a collision, make the block explode
         if (collision) {
+            capsule_add(block->x, block->y);
+
             //gold blocks can't be broken
             if (block->tile_no == GLD) {
                 block->state = STATE_SHINEON;

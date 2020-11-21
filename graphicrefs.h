@@ -182,4 +182,12 @@ extern Uint16 blocks2_width;
 extern Uint16 blocks2_height;
 extern char blocks2_name[];
 extern Uint32 blocks2_pal[];
+
+//capsule.c
+extern Uint16 capsule_num;
+extern Uint16 capsule_size;
+extern Uint16 capsule_width;
+extern Uint16 capsule_height;
+extern char capsule_name[];
+extern Uint32 capsule_pal[];
 #endif

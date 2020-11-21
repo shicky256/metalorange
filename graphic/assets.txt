@@ -27,3 +27,4 @@ s explosion
 s beffect
 s blocks1
 s blocks2
+s capsule

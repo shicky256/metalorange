@@ -20,6 +20,8 @@
 extern SPRITE_INFO *ship_sprite;
 
 int game_run();
+//gives the player a powerup
+void game_incpowerup();
 //running this kills the player (in the game, not real life)
 void game_loss();
 

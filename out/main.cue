@@ -1,4 +1,4 @@
-FILE "out.iso" BINARY
+FILE "main.iso" BINARY
   TRACK 01 MODE1/2048
     INDEX 01 00:00:00
 FILE "track2.wav" WAVE

@@ -6,28 +6,28 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "C:/saturn/orange/build.bat",
+            "command": "make",
             "group": "build",
             "problemMatcher": "$gcc"
         },
         {
             "label": "Run",
             "type": "shell",
-            "command": "C:/saturn/orange/run.bat",
+            "command": "make run",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "Clean",
             "type": "shell",
-            "command": "C:/saturn/orange/clean.bat",
+            "command": "make clean",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "Devcart",
             "type": "shell",
-            "command": "C:/saturn/orange/tools/satbug/bin/Debug/satbug.exe -x C:\\saturn\\orange\\out.bin 0x6010000 -s C:\\saturn\\orange\\cd\\",
+            "command": "make devcart",
             "group": "build",
             "problemMatcher": []            
         }
