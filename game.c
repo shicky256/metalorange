@@ -64,7 +64,15 @@ typedef enum {
 #define POWERUP_FULL_CHARNO ((((26 * TILES_WIDTH) + 4) * 2) + SCROLL_A1_OFFSET)
 #define POWERUP_AREA ((21 * MAP_WIDTH) + 30)
 
-int powerup = P_NONE;
+//which powerup you have selected in the HUD
+int powerup_cursor = P_NONE;
+
+#define MAX_TURBO (3)
+int turbo = 0; // turbo speed
+#define TURBO_CHARNO ((((34 * TILES_WIDTH) + 7) * 2) + SCROLL_A1_OFFSET)
+//number of characters in the "TURBO" hud text
+#define TURBO_TEXTLEN (5)
+#define TURBO_AREA ((27 * MAP_WIDTH) + 2)
 //tile numbers for the powerup names
 Uint32 powerup_names[] = {
     ((31 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
@@ -373,9 +381,9 @@ void game_loss() {
 }
 
 void game_incpowerup() {
-    powerup++;
-    if (powerup > NUM_POWERUPS) {
-        powerup = P_TURBO;
+    powerup_cursor++;
+    if (powerup_cursor > NUM_POWERUPS) {
+        powerup_cursor = P_TURBO;
     }
 }
 
@@ -431,12 +439,17 @@ int game_run() {
                 }
             }
             //handle input
+            Fixed32 speed = SHIP_SPEED;
+            if (PadData1 & PAD_C) {
+                speed += MTH_IntToFixed(turbo);
+            }
+
             if (PadID1 == ANALOGPAD_ID) {
                 ship_sprite->dx = 0;
                 //shoulder trigger controls
-                Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, SHIP_SPEED);
+                Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, speed);
                 ship_sprite->dx -= left_trigger;
-                Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, SHIP_SPEED);
+                Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, speed);
                 ship_sprite->dx += right_trigger;
 
                 //analog stick controls
@@ -444,16 +457,16 @@ int game_run() {
                 //MTH_FIXED(0) to MTH_FIXED(1), multiplying it by twice the max ship speed
                 //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
                 //(range: -SHIP_SPEED to SHIP_SPEED)
-                Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (SHIP_SPEED + MTH_FIXED(0.15)) << 1) - (SHIP_SPEED + MTH_FIXED(0.15));
+                Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (speed + MTH_FIXED(0.15)) << 1) - (speed + MTH_FIXED(0.15));
                 ship_sprite->dx += movement;
                 //limit speed
-                if (ship_sprite->dx > SHIP_SPEED) ship_sprite->dx = SHIP_SPEED;
-                if (ship_sprite->dx < -SHIP_SPEED) ship_sprite->dx = -SHIP_SPEED;
+                if (ship_sprite->dx > speed) ship_sprite->dx = speed;
+                if (ship_sprite->dx < -speed) ship_sprite->dx = -speed;
             }
             else {
                 ship_sprite->dx = 0;
-                if (PadData1 & PAD_L) ship_sprite->dx -= SHIP_SPEED;
-                if (PadData1 & PAD_R) ship_sprite->dx += SHIP_SPEED;
+                if (PadData1 & PAD_L) ship_sprite->dx -= speed;
+                if (PadData1 & PAD_R) ship_sprite->dx += speed;
             }
             ship_sprite->x += ship_sprite->dx;
 
@@ -519,16 +532,22 @@ int game_run() {
 
     //update powerups
     if (PadData1E & PAD_X) {
-        powerup++;
+        game_incpowerup();
     }
-    //reset powerup if player collects too many
-    if (powerup > NUM_POWERUPS) {
-        powerup = P_TURBO;
+    if (PadData1E & PAD_B) {
+        switch (powerup_cursor) {
+            case P_TURBO:
+                if (turbo < MAX_TURBO) {
+                    turbo++;
+                    powerup_cursor = P_NONE;
+                }
+                break;
+        }
     }
-
+    // draw powerup on HUD
     Uint32 *powerup_ptr = MAP_PTR32(0) + POWERUP_AREA;
     for (int i = 0; i < NUM_POWERUPS; i++) {
-        if ((powerup - 1) == i) {
+        if ((powerup_cursor - 1) == i) {
             powerup_ptr[(NUM_POWERUPS - 1 - i) * MAP_WIDTH] = POWERUP_FULL_CHARNO;
             powerup_ptr[((NUM_POWERUPS -1 - i) * MAP_WIDTH) + 1] = POWERUP_FULL_CHARNO + 2;
 
@@ -540,17 +559,30 @@ int game_run() {
     }
     powerup_ptr = MAP_PTR32(0) + POWERUP_NAME_AREA;
     for (int i = 0; i < POWERUP_NAME_LEN; i++) {
-        if (powerup == 0) {
+        if (powerup_cursor == P_NONE) {
             powerup_ptr[i] = SCROLL_A1_OFFSET;
         }
         else {
-            powerup_ptr[i] = powerup_names[powerup - 1] + (i << 1);
+            powerup_ptr[i] = powerup_names[powerup_cursor - 1] + (i << 1);
+        }
+    }
+    // make powerups impact game state
+    Uint32 *turbo_ptr = MAP_PTR32(0) + TURBO_AREA;
+    if (turbo) {
+        for (int i = 0; i < TURBO_TEXTLEN + turbo; i++) {
+            turbo_ptr[i] = TURBO_CHARNO + ((i < TURBO_TEXTLEN ? i : TURBO_TEXTLEN) << 1);
+        }
+
+    }
+    else { // clear the text and graphics otherwise
+        for (int i = 0; i < TURBO_TEXTLEN + MAX_TURBO; i++) {
+            turbo_ptr[i] = SCROLL_A1_OFFSET;
         }
     }
 
     game_chipanim();
-    capsule_run();
     level_disp();
+    capsule_run();
 
     scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));
     scroll_move(2, MTH_FIXED(0), MTH_FIXED(-2));
