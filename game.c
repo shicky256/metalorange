@@ -395,15 +395,6 @@ static void game_shipanim() {
     }
 }
 
-void game_loss() {
-    game_chipset(STATE_CHIP_BURNT);
-    frames = 0;
-    state = STATE_GAME_LOSS;
-    explosion_make(explosion_charno, ship_sprite->x, ship_sprite->y);
-    ship_sprite->x = SHIP_STARTX;
-    ship_sprite->y = SHIP_STARTY;
-}
-
 void game_incpowerup() {
     powerup_cursor++;
     if (powerup_cursor > NUM_POWERUPS) { // handle wraparound
@@ -433,6 +424,16 @@ void game_powerupreset() {
     
 }
 
+void game_loss() {
+    game_chipset(STATE_CHIP_BURNT);
+    frames = 0;
+    state = STATE_GAME_LOSS;
+    explosion_make(explosion_charno, ship_sprite->x, ship_sprite->y);
+    game_powerupreset();
+    ship_sprite->x = SHIP_STARTX;
+    ship_sprite->y = SHIP_STARTY;
+}
+
 int game_run() {
     switch (state) {
         case STATE_GAME_INIT:
@@ -454,7 +455,7 @@ int game_run() {
             //init the capsule handler
             capsule_init(capsule_charno);
             //add first ball
-            ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(135));
+            ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(45));
             //init powerup state
             game_powerupreset();
             level_load(block_charno, 0);
@@ -560,7 +561,6 @@ int game_run() {
                 ship_sprite->char_num = SHIP_CHARNO;
                 ship_sprite->state = SHIP_STATE_INIT;
                 ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(135));
-                game_powerupreset();
                 state = STATE_GAME_PLAY;
             }
         break;
@@ -622,6 +622,16 @@ int game_run() {
                     sprite_make(bit_charno, MTH_FIXED(-80), MTH_FIXED(-80), bit_right);
                     powerup_cursor = P_NONE;
                 }
+                break;
+
+            case P_DISRUPTION:
+                for (int i = 0; i < 5; i++) {
+                    // range from 60 to 120 degrees
+                    Fixed32 angle = MTH_GetRand() % MTH_FIXED(60);
+                    angle += MTH_FIXED(60);
+                    ball_add(ship_sprite->x + (SHIP_WIDTH >> 1), ship_sprite->y, angle);
+                }
+                powerup_cursor = P_NONE;
                 break;
         }
     }
