@@ -86,7 +86,7 @@ void scroll_init(void) {
 	//wipe out vram
 	memset((void *)SCL_VDP2_VRAM, 0, 0x80000);
 
-	SCL_SetColRamMode(SCL_CRM24_1024);
+	// SCL_SetColRamMode(SCL_CRM24_1024);
 	SCL_AllocColRam(SCL_NBG0, 256, OFF);
 	SCL_AllocColRam(SCL_NBG1 | SCL_NBG2 | SCL_NBG3, 64, OFF);
 		// SCL_AllocColRam(SCL_NBG2, 256, OFF);
@@ -166,6 +166,7 @@ void scroll_init(void) {
 void scroll_lores() {
 	SCL_DisplayFrame();
 	SCL_DisplayFrame();
+	SCL_SetSpriteMode(SCL_TYPE0, SCL_PALETTE, SCL_SP_WINDOW);
 	SCL_SetDisplayMode(SCL_NON_INTER, SCL_240LINE, SCL_NORMAL_B);
 	SPR_2SetTvMode(SPR_TV_NORMAL, SPR_TV_352X240, OFF);
 	SCL_SetCycleTable(CycleTbLoRes);
@@ -175,6 +176,7 @@ void scroll_lores() {
 void scroll_hires() {
 	SCL_DisplayFrame();
 	SCL_DisplayFrame();
+	SCL_SetSpriteMode(SCL_TYPE8, SCL_PALETTE, SCL_SP_WINDOW);
 	SCL_SetDisplayMode(SCL_DOUBLE_INTER, SCL_240LINE, SCL_HIRESO_B);
 	SPR_2SetTvMode(SPR_TV_HIRESO, SPR_TV_704X240, ON);
 	SCL_SetCycleTable(CycleTbHiRes);

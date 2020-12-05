@@ -42,7 +42,7 @@ extern BALL_SPRITE ball_sprites[MAX_BALLS];
 extern int ball_count; //number of balls being displayed
 
 void ball_init(int charno);
-void ball_add(Fixed32 x_pos, Fixed32 y_pos);
+void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle);
 //makes a ball bounce from a collision in the given direction
 #define DIR_UP (0)
 #define DIR_DOWN (1)

@@ -11,6 +11,7 @@
 #include "graphicrefs.h"
 #include "level.h"
 #include "print.h"
+#include "release.h"
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
@@ -67,12 +68,20 @@ typedef enum {
 //which powerup you have selected in the HUD
 int powerup_cursor = P_NONE;
 
+// --- turbo powerup ---
 #define MAX_TURBO (3)
 int turbo = 0; // turbo speed
 #define TURBO_CHARNO ((((34 * TILES_WIDTH) + 7) * 2) + SCROLL_A1_OFFSET)
-//number of characters in the "TURBO" hud text
+// number of characters in the "TURBO" hud text
 #define TURBO_TEXTLEN (5)
 #define TURBO_AREA ((27 * MAP_WIDTH) + 2)
+
+// --- bit powerup ---
+#define BIT_WIDTH (MTH_FIXED(9))
+int bit_ship = 0; // 1 if bit is enabled
+SPRITE_INFO *bit_left = NULL;
+SPRITE_INFO *bit_right = NULL;
+
 //tile numbers for the powerup names
 Uint32 powerup_names[] = {
     ((31 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
@@ -123,6 +132,10 @@ static int chip_blinktimer;
 //start of ship's idle animation
 #define SHIP_IDLE (SHIP_CHARNO + 13)
 SPRITE_INFO *ship_sprite;
+//ship's leftmost pixel
+Fixed32 ship_left;
+//ship's rightmost pixel
+Fixed32 ship_right;
 //ship's y pos during normal gameplay
 #define SHIP_POS (MTH_FIXED(200))
 #define SHIP_SPEED (MTH_FIXED(4))
@@ -133,6 +146,7 @@ static int ship_frames;
 #define SHIP_STARTX (MTH_FIXED(102))
 #define SHIP_STARTY (MTH_FIXED(240))
 
+int bit_charno;
 int ball_charno; //ball's character number
 int explosion_charno;
 int block_charno;
@@ -209,49 +223,59 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, 16, ship_width, ship_height, (char *)game_buf + (i * ship_size));
     }
     spr_charno += ship_num;
+
+    //load bit (powerup for ship width)
+    bit_charno = spr_charno;
+    cd_load_nosize(bit_name, game_buf);
+    SCL_SetColRam(SCL_SPR, 32, 16, bit_pal);
+    for (int i = 0; i < bit_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, 32, bit_width, bit_height, (char *)game_buf + (i * bit_size));
+    }
+    spr_charno += bit_num;
+
     //load ball
     ball_charno = spr_charno;
     cd_load_nosize(ball_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 32, 16, ball_pal);
+    SCL_SetColRam(SCL_SPR, 48, 16, ball_pal);
     for (int i = 0; i < ball_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 32, ball_width, ball_height, (char *)game_buf + (i * ball_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 48, ball_width, ball_height, (char *)game_buf + (i * ball_size));
     }
     spr_charno += ball_num;
     //load ship explosion frames
     explosion_charno = spr_charno;
     cd_load_nosize(explosion_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 48, 16, explosion_pal);
+    SCL_SetColRam(SCL_SPR, 64, 16, explosion_pal);
     for (int i = 0; i < explosion_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 48, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 64, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
     }
     spr_charno += explosion_num;
     //load block effects (explosion & shine)
     block_charno = spr_charno;
     cd_load_nosize(beffect_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 64, 16, beffect_pal);
+    SCL_SetColRam(SCL_SPR, 80, 16, beffect_pal);
     for (int i = 0; i < beffect_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 64, beffect_width, beffect_height, (char *)game_buf + (i * beffect_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 80, beffect_width, beffect_height, (char *)game_buf + (i * beffect_size));
     }
     spr_charno += beffect_num;
     //load blocks
     cd_load_nosize(blocks1_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 80, 16, blocks1_pal);
+    SCL_SetColRam(SCL_SPR, 96, 16, blocks1_pal);
     for (int i = 0; i < blocks1_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 80, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 96, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
     }
     spr_charno += blocks1_num;
     cd_load_nosize(blocks2_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 96, 16, blocks2_pal);
+    SCL_SetColRam(SCL_SPR, 112, 16, blocks2_pal);
     for (int i = 0; i < blocks2_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 96, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 112, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
     }
     spr_charno += blocks2_num;
     //load powerup capsule
     capsule_charno = spr_charno;
     cd_load_nosize(capsule_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 112, 16, capsule_pal);
+    SCL_SetColRam(SCL_SPR, 128, 16, capsule_pal);
     for (int i = 0; i < capsule_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, 112, capsule_width, capsule_height, (char *)game_buf + (i * capsule_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, 128, capsule_width, capsule_height, (char *)game_buf + (i * capsule_size));
     }
 
     //load chip's animation frames into lwram
@@ -382,9 +406,31 @@ void game_loss() {
 
 void game_incpowerup() {
     powerup_cursor++;
-    if (powerup_cursor > NUM_POWERUPS) {
+    if (powerup_cursor > NUM_POWERUPS) { // handle wraparound
         powerup_cursor = P_TURBO;
     }
+}
+
+// reset powerup state
+void game_powerupreset() {
+    // reset powerup meter
+    powerup_cursor = 0;
+
+    // no turbo
+    turbo = 0;
+
+    // no bit
+    bit_ship = 0;
+    // remove bit sprites
+    if (bit_left != NULL) {
+        sprite_delete(bit_left);
+        bit_left = NULL;
+    }
+    if (bit_right != NULL) {
+        sprite_delete(bit_right);
+        bit_right = NULL;
+    }
+    
 }
 
 int game_run() {
@@ -408,8 +454,9 @@ int game_run() {
             //init the capsule handler
             capsule_init(capsule_charno);
             //add first ball
-            ball_add(ship_sprite->x, ship_sprite->y);
-
+            ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(135));
+            //init powerup state
+            game_powerupreset();
             level_load(block_charno, 0);
 
             state = STATE_GAME_FADEIN;
@@ -470,14 +517,33 @@ int game_run() {
             }
             ship_sprite->x += ship_sprite->dx;
 
-            //ship boundaries
-            if (ship_sprite->x < LEFT_BOUND) {
-                ship_sprite->x = LEFT_BOUND;
+            while (1) {
+                // bit powerup gives ship extra width
+                if (bit_ship) {
+                    bit_left->x = ship_sprite->x - BIT_WIDTH;
+                    bit_left->y = ship_sprite->y + SHIP_YMARGIN;
+                    bit_right->x = ship_sprite->x + SHIP_WIDTH;
+                    bit_right->y = ship_sprite->y + SHIP_YMARGIN;
+                    ship_left = bit_left->x;
+                    ship_right = bit_right->x + BIT_WIDTH;
+                }
+                else {
+                    ship_left = ship_sprite->x + SHIP_XMARGIN;
+                    ship_right = ship_sprite->x + SHIP_WIDTH;
+                }
+
+                //ship boundaries
+                if (ship_left < LEFT_WALL) {
+                    ship_sprite->x += MTH_FIXED(1);
+                }
+                else if (ship_right > RIGHT_WALL) {
+                    ship_sprite->x -= MTH_FIXED(1);
+                }
+                else {
+                    break;
+                }
             }
-            if (ship_sprite->x > RIGHT_BOUND) {
-                ship_sprite->x = RIGHT_BOUND;
-            }
-            
+
             //move all balls on screen
             ball_move();
             game_shipanim();
@@ -493,7 +559,8 @@ int game_run() {
                 game_chipset(STATE_CHIP_NONE);
                 ship_sprite->char_num = SHIP_CHARNO;
                 ship_sprite->state = SHIP_STATE_INIT;
-                ball_add(ship_sprite->x, ship_sprite->y);
+                ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(135));
+                game_powerupreset();
                 state = STATE_GAME_PLAY;
             }
         break;
@@ -531,14 +598,28 @@ int game_run() {
     }
 
     //update powerups
+    #if DEBUG
     if (PadData1E & PAD_X) {
         game_incpowerup();
     }
+    #endif
+
     if (PadData1E & PAD_B) {
         switch (powerup_cursor) {
             case P_TURBO:
                 if (turbo < MAX_TURBO) {
                     turbo++;
+                    powerup_cursor = P_NONE;
+                }
+                break;
+            
+            case P_BIT:
+                if (bit_ship == 0) {
+                    bit_ship = 1;
+                    bit_left = sprite_next();
+                    sprite_make(bit_charno, MTH_FIXED(-80), MTH_FIXED(-80), bit_left);
+                    bit_right = sprite_next();
+                    sprite_make(bit_charno, MTH_FIXED(-80), MTH_FIXED(-80), bit_right);
                     powerup_cursor = P_NONE;
                 }
                 break;

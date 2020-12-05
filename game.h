@@ -18,6 +18,9 @@
 #define SHIP_STATE_NORM (1)
 
 extern SPRITE_INFO *ship_sprite;
+// left & right pixel of ship
+extern Fixed32 ship_left;
+extern Fixed32 ship_right;
 
 int game_run();
 //gives the player a powerup

@@ -40,7 +40,6 @@ int main() {
 	scroll_hires();
 	print_init();
 	print_load();
-	SCL_SetSpriteMode(SCL_TYPE8, SCL_PALETTE, SCL_SP_WINDOW);
 	sound_init();
 	//init RNG
 	Uint8 *time = PER_GET_TIM();
@@ -49,7 +48,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_GAME;
+	int state = STATE_MENU;
 	while(1) {
 		sprite_startdraw();
 		

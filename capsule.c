@@ -55,8 +55,8 @@ void capsule_run() {
             }
         }
         int collision = 0;
-        if ((capsule->x + CAPSULE_WIDTH >= ship_sprite->x + SHIP_XMARGIN) &&
-            (capsule->x <= ship_sprite->x + SHIP_WIDTH - SHIP_XMARGIN) && 
+        if ((capsule->x + CAPSULE_WIDTH >= ship_left) &&
+            (capsule->x <= ship_right) && 
             (capsule->y + CAPSULE_BOTTOM >= ship_sprite->y + SHIP_YMARGIN) &&
             (capsule->y < ship_sprite->y + SHIP_HEIGHT)) {
             collision = 1;

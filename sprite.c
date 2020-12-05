@@ -43,7 +43,7 @@ void sprite_init() {
 	SPR_2FrameEraseData(RGB16_COLOR(0, 0, 0)); //zero out frame
 	SCL_DisplayFrame();
 
-	SCL_AllocColRam(SCL_SPR, 256, OFF);
+	// SCL_AllocColRam(SCL_SPR, 256, OFF);
 	sprite_deleteall();
 	SCL_DisplayFrame();
 }

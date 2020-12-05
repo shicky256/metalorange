@@ -190,4 +190,12 @@ extern Uint16 capsule_width;
 extern Uint16 capsule_height;
 extern char capsule_name[];
 extern Uint32 capsule_pal[];
+
+//bit.c
+extern Uint16 bit_num;
+extern Uint16 bit_size;
+extern Uint16 bit_width;
+extern Uint16 bit_height;
+extern char bit_name[];
+extern Uint32 bit_pal[];
 #endif

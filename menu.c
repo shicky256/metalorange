@@ -204,6 +204,7 @@ static void menu_starmove(SPRITE_INFO *star) {
     distance_y *= distance_y;
     Uint32 distance = sqrt32((Uint32)distance_x + (Uint32)distance_y);
     star->scale = MTH_Div(MTH_IntToFixed(distance), MTH_FIXED(80));
+    star->angle += MTH_FIXED(3);
 }
 
 static inline void menu_starcreate(SPRITE_INFO *star) {
