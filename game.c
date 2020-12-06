@@ -452,7 +452,8 @@ void game_powerupreset() {
         sprite_delete(bit_right);
         bit_right = NULL;
     }
-    
+    // no laser
+    laser_max = 0;
 }
 
 void game_loss() {
