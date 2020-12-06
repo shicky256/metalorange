@@ -1,0 +1,9 @@
+Uint16 laser_num = 1;
+Uint16 laser_size = 32;
+Uint16 laser_width = 8;
+Uint16 laser_height = 8;
+char laser_name[] = "LASER.SPR";
+Uint32 laser_pal[] = {
+	0x0000,0xCE0000,0xFF7B00,0xFFBD00,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
+	0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
+};

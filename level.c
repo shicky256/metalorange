@@ -3,6 +3,7 @@
 #include "ball.h"
 #include "capsule.h"
 #include "game.h"
+#include "laser.h"
 #include "level.h"
 #include "print.h"
 #include "sprite.h"
@@ -134,42 +135,57 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
 
 //routine run every frame by normal block
 static void level_normalblock(BLOCK_SPR *block) {
+    int collision = 0;
+    // check all balls
     for (int i = 0; i < ball_count; i++) {
-        int collision = 0;
         //left collision
         if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_LEFT);
             collision = 1;
+            break;
         }
         //right collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_RIGHT);
             collision = 1;
+            break;
         }
         //top collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_UP);
             collision = 1;
+            break;
         }
         //bottom collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_BSENSORX, ball_sprites[i].y + BALL_BSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_DOWN);
             collision = 1;
+            break;
         }
-        // if there's a collision, make the block explode
-        if (collision) {
-            capsule_add(block->x, block->y);
+    }
+    // check all lasers
+    for (int i = 0; i < laser_count; i++) {
+        // laser is 2px wide
+        if ((level_pixelinside(block->x, block->y, laser_sprites[i].x, laser_sprites[i].y)) ||
+            (level_pixelinside(block->x, block->y, laser_sprites[i].x + MTH_FIXED(1), laser_sprites[i].y))) {
+            laser_remove(&laser_sprites[i]);
+            collision = 1;
+            break;
+        }
+    }
 
-            //gold blocks can't be broken
-            if (block->tile_no == GLD) {
-                block->state = STATE_SHINEON;
-                block->anim_timer = 0;
-            }
-            else {
-                block->state = STATE_EXPLODE;
-                block->tile_no = EXPLOSION_CHARNO;
-                block->anim_timer = 0;
-            }
+    // if there's a collision, make the block explode
+    if (collision) {
+        // gold blocks can't be broken
+        if (block->tile_no == GLD) {
+            block->state = STATE_SHINEON;
+            block->anim_timer = 0;
+        }
+        else {
+            block->state = STATE_EXPLODE;
+            block->tile_no = EXPLOSION_CHARNO;
+            block->anim_timer = 0;
+            capsule_add(block->x, block->y); // drop capsule
         }
     }
 }

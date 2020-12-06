@@ -29,3 +29,4 @@ s blocks1
 s blocks2
 s capsule
 s bit
+s laser

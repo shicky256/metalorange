@@ -198,4 +198,13 @@ extern Uint16 bit_width;
 extern Uint16 bit_height;
 extern char bit_name[];
 extern Uint32 bit_pal[];
+
+//laser.c
+extern Uint16 laser_num;
+extern Uint16 laser_size;
+extern Uint16 laser_width;
+extern Uint16 laser_height;
+extern char laser_name[];
+extern Uint32 laser_pal[];
+
 #endif

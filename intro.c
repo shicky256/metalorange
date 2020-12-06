@@ -49,7 +49,16 @@ static Fixed32 star_angle = 0;
 static SclLineparam line_param;
 static Fixed32 titletext_pos;
 
-//intro credits strings
+// intro credits strings
+// credit pseudonyms:
+// Kochan = Kotaro Horie (–x]F‘¾˜Y)
+// Ath Nagano = Atsuya Yagano (’·–ì“Ö–ç)
+// H. Yanagi = Hirohiko Yanagi (–ö‚Ğ‚ë‚Ğ‚±)
+// N. Nakajima = ?
+// JKL Furukawa = Yoshio Furukawa (ŒÃì‹`—Y)
+// MKM Hirota = Yoshitaka Hirota (O“c‰ÀF)
+// Rezon Iwata = Masuharu Iwata (Šâ“c‹§¡)
+// Waiendee = ?
 static char program_str[] = "PROGRAM\nKOCHAN";
 static char design_str[] = "GAME DESIGN\nATH NAGANO";
 static char graphic_str[] = "GRAPHIC\n       CREATE\n  H. YANAGI\n  N. NAKAJIMA";

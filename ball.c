@@ -74,9 +74,10 @@ void ball_move() {
         if (ball_sprites[i].state == BALL_STATE_INIT) {
             ball_sprites[i].x = ship_sprite->x + BALL_SPAWN_XOFFSET;
             ball_sprites[i].y = ship_sprite->y + BALL_SPAWN_YOFFSET;
-            // if (ship_sprite->dx < 0) {
-            //     ball_sprites[i].dx = -ball_sprites[i].dx;
-            // }
+            // ball goes left when player goes left
+            if (ship_sprite->dx < 0) {
+                ball_sprites[i].dx = -ball_sprites[i].dx;
+            }
 
             //don't allow ball launch until ship is done
             if ((PadData1E & PAD_A) && (ship_sprite->state == SHIP_STATE_NORM)) {

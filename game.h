@@ -14,6 +14,11 @@
 #define SHIP_YMARGIN (MTH_FIXED(8))
 #define SHIP_WIDTH (MTH_FIXED(40))
 #define SHIP_HEIGHT (MTH_FIXED(24))
+
+#define SHIP_LGUN (MTH_FIXED(13))
+#define SHIP_RGUN (MTH_FIXED(25))
+#define SHIP_GUNY (MTH_FIXED(8))
+
 #define SHIP_STATE_INIT (0)
 #define SHIP_STATE_NORM (1)
 
