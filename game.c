@@ -87,6 +87,25 @@ SPRITE_INFO *bit_right = NULL;
 #define MAX_LASER_MAX (8)
 int laser_max = 0;
 
+// --- illusion powerup ---
+// 0 if off, 1 if on
+int illusion = 0;
+// number of trailing ships
+#define ILLUSION_NUM (3)
+// number of frames between each ship
+#define ILLUSION_FRAMEDELAY (4)
+// number of frames to keep track of
+#define ILLUSION_ARRLEN (ILLUSION_NUM * ILLUSION_FRAMEDELAY)
+// struct for illusion buffer
+typedef struct {
+    Fixed32 x;
+    Fixed32 y;
+} ILLUSION_SHIP;
+
+int illusion_charno = 0;
+int illusion_cursor = 0; // cursor in illusion array (ring buffer)
+ILLUSION_SHIP illusion_arr[ILLUSION_ARRLEN];
+
 //tile numbers for the powerup names
 Uint32 powerup_names[] = {
     ((31 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
@@ -136,7 +155,8 @@ static int chip_blinktimer;
 #define SHIP_CHARNO (font_num)
 //start of ship's idle animation
 #define SHIP_IDLE (SHIP_CHARNO + 13)
-SPRITE_INFO *ship_sprite;
+
+SHIP_SPRITE ship_sprite;
 //ship's leftmost pixel
 Fixed32 ship_left;
 //ship's rightmost pixel
@@ -231,6 +251,11 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ship_width, ship_height, (char *)game_buf + (i * ship_size));
     }
     spr_charno += ship_num;
+    // load one extra ship sprite with 1/2 transparency enabled for illusion
+    SPR_2SetChar(spr_charno, COLOR_0, spr_palno | (1 << 11) | (1 << 12), ship_width, ship_height, 
+        (char *)game_buf + ((SHIP_IDLE - SHIP_CHARNO) * ship_size));
+    illusion_charno = spr_charno;
+    spr_charno++;
     spr_palno += 16;
 
     //load bit (powerup for ship width)
@@ -407,21 +432,21 @@ static inline int game_setblinktimer() {
 static void game_shipanim() {
     //-----ship animation stuff (keeping it stateless helps simplify things)
     //move ship when it spawns
-    if (ship_sprite->y > SHIP_POS) {
-        ship_sprite->y -= MTH_FIXED(1.5);
+    if (ship_sprite.y > SHIP_POS) {
+        ship_sprite.y -= MTH_FIXED(1.5);
     }
     else {
-        ship_sprite->y = SHIP_POS;
+        ship_sprite.y = SHIP_POS;
     }
     //animate ship
     ship_frames++;
     if (ship_frames == SHIP_TIMING) {
         ship_frames = 0;
-        ship_sprite->char_num++;
+        ship_sprite.char_num++;
         // reset to idle animation
-        if (ship_sprite->char_num == SHIP_CHARNO + ship_num) {
-            ship_sprite->char_num = SHIP_IDLE;
-            ship_sprite->state = SHIP_STATE_NORM;
+        if (ship_sprite.char_num == SHIP_CHARNO + ship_num) {
+            ship_sprite.char_num = SHIP_IDLE;
+            ship_sprite.state = SHIP_STATE_NORM;
         }
     }
 }
@@ -454,19 +479,26 @@ void game_powerupreset() {
     }
     // no laser
     laser_max = 0;
+    // no illusion
+    illusion = 0;
 }
 
 void game_loss() {
     game_chipset(STATE_CHIP_BURNT);
     frames = 0;
     state = STATE_GAME_LOSS;
-    explosion_make(explosion_charno, ship_sprite->x, ship_sprite->y);
+    explosion_make(explosion_charno, ship_sprite.x, ship_sprite.y);
     game_powerupreset();
-    ship_sprite->x = SHIP_STARTX;
-    ship_sprite->y = SHIP_STARTY;
+    ship_sprite.x = SHIP_STARTX;
+    ship_sprite.y = SHIP_STARTY;
 }
 
 int game_run() {
+    // for illusion
+    int top_index = 0;
+    int mid_index = 0;
+    int bot_index = 0;
+
     switch (state) {
         case STATE_GAME_INIT:
             game_init();
@@ -478,10 +510,11 @@ int game_run() {
             //init score
             score = 42069;
             //init the ship sprite
-            ship_sprite = sprite_next();
-            sprite_make(SHIP_CHARNO, SHIP_STARTX, SHIP_STARTY, ship_sprite);
+            ship_sprite.char_num = SHIP_CHARNO;
+            ship_sprite.x = SHIP_STARTX;
+            ship_sprite.y = SHIP_STARTY;
             ship_frames = 0;
-            ship_sprite->state = SHIP_STATE_INIT;
+            ship_sprite.state = SHIP_STATE_INIT;
             //init the ball handler
             ball_init(ball_charno);
             //init the capsule handler
@@ -489,7 +522,7 @@ int game_run() {
             // init laser handler
             laser_init(laser_charno);
             //add first ball
-            ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(45));
+            ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
             game_powerupreset();
             level_load(block_charno, 0);
@@ -523,8 +556,8 @@ int game_run() {
             //handle input
             Fixed32 speed = SHIP_SPEED;
             if ((PadData1E & PAD_A) && (laser_count < laser_max)) {
-                laser_add(ship_sprite->x + SHIP_LGUN, ship_sprite->y + SHIP_GUNY);
-                laser_add(ship_sprite->x + SHIP_RGUN, ship_sprite->y + SHIP_GUNY);
+                laser_add(ship_sprite.x + SHIP_LGUN, ship_sprite.y + SHIP_GUNY);
+                laser_add(ship_sprite.x + SHIP_RGUN, ship_sprite.y + SHIP_GUNY);
             }
 
             if (PadData1 & PAD_C) {
@@ -532,12 +565,12 @@ int game_run() {
             }
 
             if (PadID1 == ANALOGPAD_ID) {
-                ship_sprite->dx = 0;
+                ship_sprite.dx = 0;
                 //shoulder trigger controls
                 Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, speed);
-                ship_sprite->dx -= left_trigger;
+                ship_sprite.dx -= left_trigger;
                 Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, speed);
-                ship_sprite->dx += right_trigger;
+                ship_sprite.dx += right_trigger;
 
                 //analog stick controls
                 //transform x pos by converting the 0-255 range of the analog x pos to be
@@ -545,43 +578,68 @@ int game_run() {
                 //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
                 //(range: -SHIP_SPEED to SHIP_SPEED)
                 Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (speed + MTH_FIXED(0.15)) << 1) - (speed + MTH_FIXED(0.15));
-                ship_sprite->dx += movement;
+                ship_sprite.dx += movement;
                 //limit speed
-                if (ship_sprite->dx > speed) ship_sprite->dx = speed;
-                if (ship_sprite->dx < -speed) ship_sprite->dx = -speed;
+                if (ship_sprite.dx > speed) ship_sprite.dx = speed;
+                if (ship_sprite.dx < -speed) ship_sprite.dx = -speed;
             }
             else {
-                ship_sprite->dx = 0;
-                if (PadData1 & PAD_L) ship_sprite->dx -= speed;
-                if (PadData1 & PAD_R) ship_sprite->dx += speed;
+                ship_sprite.dx = 0;
+                if (PadData1 & PAD_L) ship_sprite.dx -= speed;
+                if (PadData1 & PAD_R) ship_sprite.dx += speed;
             }
-            ship_sprite->x += ship_sprite->dx;
+            ship_sprite.x += ship_sprite.dx;
 
             while (1) {
                 // bit powerup gives ship extra width
                 if (bit_ship) {
-                    bit_left->x = ship_sprite->x - BIT_WIDTH;
-                    bit_left->y = ship_sprite->y + SHIP_YMARGIN;
-                    bit_right->x = ship_sprite->x + SHIP_WIDTH;
-                    bit_right->y = ship_sprite->y + SHIP_YMARGIN;
+                    bit_left->x = ship_sprite.x - BIT_WIDTH;
+                    bit_left->y = ship_sprite.y + SHIP_YMARGIN;
+                    bit_right->x = ship_sprite.x + SHIP_WIDTH;
+                    bit_right->y = ship_sprite.y + SHIP_YMARGIN;
                     ship_left = bit_left->x;
                     ship_right = bit_right->x + BIT_WIDTH;
                 }
                 else {
-                    ship_left = ship_sprite->x + SHIP_XMARGIN;
-                    ship_right = ship_sprite->x + SHIP_WIDTH;
+                    ship_left = ship_sprite.x + SHIP_XMARGIN;
+                    ship_right = ship_sprite.x + (SHIP_WIDTH - SHIP_XMARGIN);
                 }
 
                 //ship boundaries
                 if (ship_left < LEFT_WALL) {
-                    ship_sprite->x += MTH_FIXED(1);
+                    ship_sprite.x += MTH_FIXED(1);
                 }
                 else if (ship_right > RIGHT_WALL) {
-                    ship_sprite->x -= MTH_FIXED(1);
+                    ship_sprite.x -= MTH_FIXED(1);
                 }
                 else {
                     break;
                 }
+            }
+            // trail for illusion powerup
+            illusion_arr[illusion_cursor].x = ship_sprite.x;
+            illusion_arr[illusion_cursor].y = ship_sprite.y;
+            illusion_cursor++;
+            if (illusion_cursor >= ILLUSION_ARRLEN) {
+                illusion_cursor = 0;
+            }
+            // calculate array indexes for each trailing ship, as well as "true" ship_left/ship_right
+            if (illusion) {
+                top_index = illusion_cursor - ILLUSION_FRAMEDELAY; // top
+                if (top_index < 0) { top_index += ILLUSION_ARRLEN; }
+                mid_index = top_index - ILLUSION_FRAMEDELAY;       // middle
+                if (mid_index < 0) { mid_index += ILLUSION_ARRLEN; }
+                bot_index = mid_index - ILLUSION_FRAMEDELAY;       // bottom
+                if (bot_index < 0) { bot_index += ILLUSION_ARRLEN; }
+                // left
+                ship_left = MIN(ship_left, illusion_arr[top_index].x);
+                ship_left = MIN(ship_left, illusion_arr[mid_index].x);
+                ship_left = MIN(ship_left, illusion_arr[bot_index].x);
+                // right
+                ship_right = MAX(ship_right, illusion_arr[top_index].x + (SHIP_WIDTH - SHIP_XMARGIN));
+                ship_right = MAX(ship_right, illusion_arr[mid_index].x + (SHIP_WIDTH - SHIP_XMARGIN));
+                ship_right = MAX(ship_right, illusion_arr[bot_index].x + (SHIP_WIDTH - SHIP_XMARGIN));
+
             }
 
             //move all balls on screen
@@ -597,9 +655,9 @@ int game_run() {
                 lives--;
                 //TODO add game over code here
                 game_chipset(STATE_CHIP_NONE);
-                ship_sprite->char_num = SHIP_CHARNO;
-                ship_sprite->state = SHIP_STATE_INIT;
-                ball_add(ship_sprite->x, ship_sprite->y, MTH_FIXED(135));
+                ship_sprite.char_num = SHIP_CHARNO;
+                ship_sprite.state = SHIP_STATE_INIT;
+                ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(135));
                 state = STATE_GAME_PLAY;
             }
         break;
@@ -654,6 +712,8 @@ int game_run() {
             
             case P_BIT:
                 if (bit_ship == 0) {
+                    // can't have bit and illusion on simultaneously
+                    illusion = 0;
                     bit_ship = 1;
                     bit_left = sprite_next();
                     sprite_make(bit_charno, MTH_FIXED(-80), MTH_FIXED(-80), bit_left);
@@ -668,7 +728,7 @@ int game_run() {
                     // range from 60 to 120 degrees
                     Fixed32 angle = MTH_GetRand() % MTH_FIXED(60);
                     angle += MTH_FIXED(60);
-                    ball_add(ship_sprite->x + (SHIP_WIDTH >> 1), ship_sprite->y, angle);
+                    ball_add(ship_sprite.x + (SHIP_WIDTH >> 1), ship_sprite.y, angle);
                 }
                 powerup_cursor = P_NONE;
                 break;
@@ -676,6 +736,23 @@ int game_run() {
             case P_LASER:
                 if (laser_max < MAX_LASER_MAX) {
                     laser_max += 4;
+                    powerup_cursor = P_NONE;
+                }
+                break;
+
+            case P_ILLUSION:
+                if (illusion == 0) {
+                    // can't have bit and illusion on simultaneously
+                    bit_ship = 0;
+                    if (bit_left != NULL) {
+                        sprite_delete(bit_left);
+                        bit_left = NULL;
+                    }
+                    if (bit_right != NULL) {
+                        sprite_delete(bit_right);
+                        bit_right = NULL;
+                    }
+                    illusion = 1;
                     powerup_cursor = P_NONE;
                 }
                 break;
@@ -717,11 +794,29 @@ int game_run() {
         }
     }
 
-    game_chipanim();
-    level_disp();
-    capsule_run();
-    laser_move();
+    game_chipanim(); // draw chip
+    level_disp(); // draw blocks
+    capsule_run(); // draw capsules
+    laser_move(); // draw laser
 
+    // draw ship
+    SPRITE_INFO spr;
+    // if illusion is active, draw those ships back to front
+    if (illusion) {
+        // bottom
+        sprite_make(illusion_charno, illusion_arr[bot_index].x, illusion_arr[bot_index].y, &spr);
+        sprite_draw(&spr);
+        // middle
+        sprite_make(illusion_charno, illusion_arr[mid_index].x, illusion_arr[mid_index].y, &spr);
+        sprite_draw(&spr);
+        // top
+        sprite_make(illusion_charno, illusion_arr[top_index].x, illusion_arr[top_index].y, &spr);
+        sprite_draw(&spr);
+    }
+    sprite_make(ship_sprite.char_num, ship_sprite.x, ship_sprite.y, &spr);
+    sprite_draw(&spr);
+
+    // move star bg
     scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));
     scroll_move(2, MTH_FIXED(0), MTH_FIXED(-2));
     scroll_move(3, MTH_FIXED(0), MTH_FIXED(-1));

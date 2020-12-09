@@ -22,7 +22,16 @@
 #define SHIP_STATE_INIT (0)
 #define SHIP_STATE_NORM (1)
 
-extern SPRITE_INFO *ship_sprite;
+typedef struct {
+    int char_num;
+    Fixed32 x;
+    Fixed32 y;
+    Fixed32 dx;
+    Fixed32 dy;
+    int state;
+} SHIP_SPRITE;
+
+extern SHIP_SPRITE ship_sprite;
 // left & right pixel of ship
 extern Fixed32 ship_left;
 extern Fixed32 ship_right;

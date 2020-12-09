@@ -155,18 +155,23 @@ void scroll_init(void) {
 	SCL_Close();
 	scroll_scale(0, FIXED(1));
 	scroll_scale(1, FIXED(1));
-	SCL_SetPriority(SCL_SPR,  7);
+
+	SCL_SetPriority(SCL_SPR, 7);
+	SCL_SetPriority(SCL_SP1, 7);
 	SCL_SetPriority(SCL_NBG0, 6);
 	SCL_SetPriority(SCL_NBG1, 5);
 	SCL_SetPriority(SCL_NBG2, 4);
 	SCL_SetPriority(SCL_NBG3, 3); //set layer priorities
+
+	SCL_SetColMixMode(1, SCL_IF_FRONT); // priority 1: 12/32 transparency
+	SCL_SetColMixRate(SCL_SP1, 12);
 	
 }
 
 void scroll_lores() {
 	SCL_DisplayFrame();
 	SCL_DisplayFrame();
-	SCL_SetSpriteMode(SCL_TYPE0, SCL_PALETTE, SCL_SP_WINDOW);
+	SCL_SetSpriteMode(SCL_TYPE5, SCL_PALETTE, SCL_SP_WINDOW);
 	SCL_SetDisplayMode(SCL_NON_INTER, SCL_240LINE, SCL_NORMAL_B);
 	SPR_2SetTvMode(SPR_TV_NORMAL, SPR_TV_352X240, OFF);
 	SCL_SetCycleTable(CycleTbLoRes);

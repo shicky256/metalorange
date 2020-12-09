@@ -80,7 +80,7 @@ void sprite_draw(SPRITE_INFO *info) {
 	if (info->scale == MTH_FIXED(1) && info->angle == 0) {
 		xy[0].x = (Sint16)MTH_FixedToInt(info->x);
 		xy[0].y = (Sint16)MTH_FixedToInt(info->y);
-		SPR_2NormSpr(0, info->mirror, ENDCODE_DISABLE, 0xffff, info->char_num, xy, NO_GOUR); //4bpp normal sprite
+		SPR_2NormSpr(0, info->mirror, ENDCODE_DISABLE | (1 << 11) | (1 << 12), 0xffff, info->char_num, xy, NO_GOUR); //4bpp normal sprite
 	}
 	
 	else if (info->angle == 0){	

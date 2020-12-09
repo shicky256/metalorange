@@ -72,15 +72,15 @@ void ball_move() {
         //when the player spawns, keep the ball attached to his ship
         //until he presses A
         if (ball_sprites[i].state == BALL_STATE_INIT) {
-            ball_sprites[i].x = ship_sprite->x + BALL_SPAWN_XOFFSET;
-            ball_sprites[i].y = ship_sprite->y + BALL_SPAWN_YOFFSET;
+            ball_sprites[i].x = ship_sprite.x + BALL_SPAWN_XOFFSET;
+            ball_sprites[i].y = ship_sprite.y + BALL_SPAWN_YOFFSET;
             // ball goes left when player goes left
-            if (ship_sprite->dx < 0) {
+            if (ship_sprite.dx < 0) {
                 ball_sprites[i].dx = -ball_sprites[i].dx;
             }
 
             //don't allow ball launch until ship is done
-            if ((PadData1E & PAD_A) && (ship_sprite->state == SHIP_STATE_NORM)) {
+            if ((PadData1E & PAD_A) && (ship_sprite.state == SHIP_STATE_NORM)) {
                 ball_sprites[i].state = BALL_STATE_NORMAL;
             }
         }
@@ -104,10 +104,10 @@ void ball_move() {
             //bottom
             if ((ball_sprites[i].x + BALL_WIDTH + BALL_MARGIN >= ship_left) &&
                 (ball_sprites[i].x - BALL_MARGIN <= ship_right) && 
-                (ball_sprites[i].y + BALL_HEIGHT - BALL_MARGIN >= ship_sprite->y + SHIP_YMARGIN) &&
-                (ball_sprites[i].y + BALL_MARGIN < ship_sprite->y + SHIP_HEIGHT)) {
+                (ball_sprites[i].y + BALL_HEIGHT - BALL_MARGIN >= ship_sprite.y + SHIP_YMARGIN) &&
+                (ball_sprites[i].y + BALL_MARGIN < ship_sprite.y + SHIP_HEIGHT)) {
                 // calculate ball's offset from paddle center
-                Fixed32 ball_offset = (ship_sprite->x + (SHIP_WIDTH >> 1)) - (ball_sprites[i].x + (BALL_WIDTH >> 1));
+                Fixed32 ball_offset = (ship_sprite.x + (SHIP_WIDTH >> 1)) - (ball_sprites[i].x + (BALL_WIDTH >> 1));
                 // fraction from -1 to 1
                 Fixed32 normalized_offset = MTH_Div(ball_offset, (SHIP_WIDTH >> 1));
                 // we want an angle range of 90 degrees +/- 65
