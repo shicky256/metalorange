@@ -1,4 +1,4 @@
-Uint16 chipgame_num = 1080;
+Uint16 chipgame_num = 1680;
 char chipgame_name[] = "CHIPGAME.TLE";
 Uint32 chipgame_pal[] = {
 	0x0000,0x80808,0x181818,0x343434,0x7C0404,0x584800,0x2858,0x0060,

@@ -19,7 +19,8 @@ typedef struct {
 void capsule_init(int charno);
 //adds a capsule onscreen
 void capsule_add(Fixed32 x, Fixed32 y);
-//moves and displays all the capsules
+//moves all the capsules
 void capsule_run();
+void capsule_draw();
 
 #endif

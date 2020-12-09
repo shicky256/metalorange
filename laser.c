@@ -36,17 +36,19 @@ void laser_remove(LASER_SPRITE *sprite) {
 }
 
 void laser_move() {
-    SPRITE_INFO laser_sprite;
-
     for (int i = 0; i < laser_count; i++) {
         laser_sprites[i].y += LASER_SPEED; 
         if (laser_sprites[i].y < 0) { // remove laser when it goes off the screen
             laser_remove(&laser_sprites[i]);
             i--; // re-run for the laser that's been swapped in this one's place
         }
-        else {
-            sprite_make(laser_charno, laser_sprites[i].x, laser_sprites[i].y, &laser_sprite);
-            sprite_draw(&laser_sprite);
-        }
+    }
+}
+
+void laser_draw() {
+    SPRITE_INFO laser_sprite;
+    for (int i = 0; i < laser_count; i++) {
+        sprite_make(laser_charno, laser_sprites[i].x, laser_sprites[i].y, &laser_sprite);
+        sprite_draw(&laser_sprite);
     }
 }

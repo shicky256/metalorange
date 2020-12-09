@@ -50,5 +50,6 @@ void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle);
 #define DIR_RIGHT (3)
 void ball_bounce(BALL_SPRITE *ball, int direction);
 void ball_move();
+void ball_draw();
 
 #endif

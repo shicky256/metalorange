@@ -23,6 +23,7 @@ typedef enum {
     STATE_GAME_INIT = 0,
     STATE_GAME_FADEIN,
     STATE_GAME_PLAY,
+    STATE_GAME_PAUSE,
     STATE_GAME_LOSS,
 } GAME_STATE;
 
@@ -125,7 +126,8 @@ typedef enum {
     STATE_CHIP_HAND,
     STATE_CHIP_BURNT,
     STATE_CHIP_SBLINK,
-    STATE_CHIP_DBLINK
+    STATE_CHIP_DBLINK,
+    STATE_CHIP_SLEEP,
 } CHIP_STATE;
 
 static int chip_state = STATE_CHIP_NONE;
@@ -151,6 +153,10 @@ static int chip_burnt_timings[CHIP_BURNT_NUMFRAMES] = {11, 6, 11, 6, 11, 6};
 static int chip_blink_frames[CHIP_BLINK_NUMFRAMES] = {5, 6, 0};
 static int chip_blink_timings[CHIP_BLINK_NUMFRAMES] = {11, 4, 4};
 static int chip_blinktimer;
+
+#define CHIP_SLEEP_NUMFRAMES (8)
+static int chip_sleep_frames[CHIP_SLEEP_NUMFRAMES] = {9, 10, 11, 12, 13, 12, 11, 10};
+static int chip_sleep_timings[CHIP_SLEEP_NUMFRAMES] = {32, 18, 18, 18, 18, 18, 18, 18};
 
 #define SHIP_CHARNO (font_num)
 //start of ship's idle animation
@@ -336,7 +342,7 @@ static inline void game_init() {
 
     //load chip's animation frames into lwram
     cd_load_nosize(chipgame_name, game_buf);
-    sound_cdda(5, 1);
+    sound_cdda(LEVEL1_TRACK, 1);
 }
 
 static void game_loadchip(int num) {
@@ -422,6 +428,17 @@ static void game_chipanim() {
                 game_loadchip(chip_blink_frames[chip_cursor]);
             }
             break;
+
+        case STATE_CHIP_SLEEP:
+            chip_frames++;
+            if (chip_frames >= chip_sleep_timings[chip_cursor]) {
+                chip_frames = 0;
+                chip_cursor++;
+                if (chip_cursor >= CHIP_SLEEP_NUMFRAMES) {
+                    chip_cursor = 0;
+                }
+                game_loadchip(chip_sleep_frames[chip_cursor]);
+            }
     }
 }
 
@@ -489,6 +506,8 @@ void game_loss() {
     state = STATE_GAME_LOSS;
     explosion_make(explosion_charno, ship_sprite.x, ship_sprite.y);
     game_powerupreset();
+    capsule_init(capsule_charno);
+    laser_init(laser_charno);
     ship_sprite.x = SHIP_STARTX;
     ship_sprite.y = SHIP_STARTY;
 }
@@ -642,13 +661,34 @@ int game_run() {
 
             }
 
-            //move all balls on screen
+            // move all balls on screen
             ball_move();
+            // move all lasers
+            laser_move();
+            // move all capsules
+            capsule_run();
+            // animate the ship
             game_shipanim();
+
+            // handle pause (last so nothing else can set an animation, etc)
+            if (PadData1E & PAD_S) {
+                state = STATE_GAME_PAUSE;
+                sound_cdda(PAUSE_TRACK, 1);
+                game_chipset(STATE_CHIP_SLEEP);
+            }
+            break;
+
+        // chip is tired and she needs a nap
+        case STATE_GAME_PAUSE:
+            if (PadData1E & PAD_S) {
+                state = STATE_GAME_PLAY;
+                sound_cdda(LEVEL1_TRACK, 1);
+                game_chipset(STATE_CHIP_NONE);
+            }
             break;
         
-        //when player has lost, show burnt chip for a second
-        //in order to make the player think about what he's done
+        // when player has lost, show burnt chip for a second
+        // in order to make the player think about what he's done
         case STATE_GAME_LOSS:
             frames++;
             if (frames >= 60) {
@@ -796,8 +836,9 @@ int game_run() {
 
     game_chipanim(); // draw chip
     level_disp(); // draw blocks
-    capsule_run(); // draw capsules
-    laser_move(); // draw laser
+    capsule_draw(); // draw capsules
+    laser_draw(); // draw laser
+    ball_draw(); // draw ball
 
     // draw ship
     SPRITE_INFO spr;

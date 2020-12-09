@@ -96,7 +96,7 @@ int logo_run(void) {
         case STATE_LOGO_FADEIN:
             frame++;
             if (frame > 60) {
-                sound_cdda(2, 0); //play logo song
+                sound_cdda(LOGO_TRACK, 0); //play logo song
                 state = STATE_LOGO_RUN;
             }
             break;

@@ -169,7 +169,7 @@ static inline void menu_init() {
         }
     }
     SCL_SetColRam(SCL_NBG0, 0, 256, chipframes_pal);
-    sound_cdda(4, 1);
+    sound_cdda(MENU_TRACK, 1);
 }
 
 //Algorithm by Tristan Muntsinger

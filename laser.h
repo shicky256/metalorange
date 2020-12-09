@@ -16,5 +16,6 @@ void laser_init(int charno);
 void laser_add(Fixed32 x, Fixed32 y);
 void laser_remove(LASER_SPRITE *sprite);
 void laser_move();
+void laser_draw();
 
 #endif

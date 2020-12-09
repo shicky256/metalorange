@@ -66,8 +66,6 @@ void ball_bounce(BALL_SPRITE *ball, int direction) {
 }
 
 void ball_move() {
-    SPRITE_INFO ball_sprite;
-
     for (int i = 0; i < ball_count; i++) {
         //when the player spawns, keep the ball attached to his ship
         //until he presses A
@@ -133,6 +131,12 @@ void ball_move() {
                 }
             }
         }
+    }
+}
+
+void ball_draw() {
+    SPRITE_INFO ball_sprite;
+    for (int i = 0; i < ball_count; i++) {
         sprite_make(ball_charno, ball_sprites[i].x, ball_sprites[i].y, &ball_sprite);
         sprite_draw(&ball_sprite);
     }

@@ -39,7 +39,6 @@ void capsule_remove(int num) {
 }
 
 void capsule_run() {
-    SPRITE_INFO spr;
     CAPSULE_SPRITE *capsule;
     for (int i = 0; i < capsule_count; i++) {
         capsule = &(capsules[i]);
@@ -68,10 +67,13 @@ void capsule_run() {
             //after the switch, repeat for the capsule that's been moved into this one's place
             i--;
         }
-        // otherwise display the capsule
-        else {
-            sprite_make(capsule->charno, capsule->x, capsule->y, &spr);
-            sprite_draw(&spr);
-        }
+    }
+}
+
+void capsule_draw() {
+    SPRITE_INFO capsule_sprite;
+    for (int i = 0; i < capsule_count; i++) {
+        sprite_make(capsules[i].charno, capsules[i].x, capsules[i].y, &capsule_sprite);
+        sprite_draw(&capsule_sprite);
     }
 }

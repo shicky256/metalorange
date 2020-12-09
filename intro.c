@@ -265,7 +265,7 @@ int intro_run() {
             SCL_SetColMixRate(SCL_NBG0, 31);
 
             intro_init();
-            sound_cdda(3, 1);
+            sound_cdda(INTRO_TRACK, 1);
             cursor = 0;
             state = STATE_INTRO_LOADGIRL;
             break;
