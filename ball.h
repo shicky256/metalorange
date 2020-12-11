@@ -41,6 +41,13 @@ typedef struct {
 extern BALL_SPRITE ball_sprites[MAX_BALLS];
 extern int ball_count; //number of balls being displayed
 
+typedef enum {
+    BALL_NORMAL = 0,
+    BALL_GIGABALL
+} BALL_MODE;
+
+extern int ball_mode;
+
 void ball_init(int charno);
 void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle);
 //makes a ball bounce from a collision in the given direction
@@ -48,7 +55,7 @@ void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle);
 #define DIR_DOWN (1)
 #define DIR_LEFT (2)
 #define DIR_RIGHT (3)
-void ball_bounce(BALL_SPRITE *ball, int direction);
+void ball_bounce(BALL_SPRITE *ball, int direction, int breakable);
 void ball_move();
 void ball_draw();
 

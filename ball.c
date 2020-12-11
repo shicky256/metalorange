@@ -10,6 +10,8 @@
 BALL_SPRITE ball_sprites[MAX_BALLS];
 int ball_count;
 
+int ball_mode;
+
 static int ball_charno;
 
 void ball_init(int charno) {
@@ -51,16 +53,21 @@ void ball_remove(BALL_SPRITE *ball) {
     }
 }
 
-void ball_bounce(BALL_SPRITE *ball, int direction) {
+void ball_bounce(BALL_SPRITE *ball, int direction, int breakable) {
     switch(direction) {
         case DIR_UP:
         case DIR_DOWN:
-            ball->dy = -ball->dy;
+        // gigaball lets ball go through breakable blocks without rebounding
+            if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                ball->dy = -ball->dy;
+            }
             break;
 
         case DIR_LEFT:
         case DIR_RIGHT:
-            ball->dx = -ball->dx;
+            if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                ball->dx = -ball->dx;
+            }
             break;
     }
 }
@@ -137,7 +144,7 @@ void ball_move() {
 void ball_draw() {
     SPRITE_INFO ball_sprite;
     for (int i = 0; i < ball_count; i++) {
-        sprite_make(ball_charno, ball_sprites[i].x, ball_sprites[i].y, &ball_sprite);
+        sprite_make(ball_charno + ball_mode, ball_sprites[i].x, ball_sprites[i].y, &ball_sprite);
         sprite_draw(&ball_sprite);
     }
 }

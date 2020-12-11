@@ -133,6 +133,10 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
     return 0;
 }
 
+static int level_breakable(Sint8 block_num) {
+    return block_num != GLD;
+}
+
 //routine run every frame by normal block
 static void level_normalblock(BLOCK_SPR *block) {
     int collision = 0;
@@ -140,25 +144,25 @@ static void level_normalblock(BLOCK_SPR *block) {
     for (int i = 0; i < ball_count; i++) {
         //left collision
         if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_LEFT);
+            ball_bounce(&ball_sprites[i], DIR_LEFT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         //right collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_RIGHT);
+            ball_bounce(&ball_sprites[i], DIR_RIGHT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         //top collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_UP);
+            ball_bounce(&ball_sprites[i], DIR_UP, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         //bottom collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_BSENSORX, ball_sprites[i].y + BALL_BSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_DOWN);
+            ball_bounce(&ball_sprites[i], DIR_DOWN, level_breakable(block->tile_no));
             collision = 1;
             break;
         }

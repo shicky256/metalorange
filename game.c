@@ -107,6 +107,9 @@ int illusion_charno = 0;
 int illusion_cursor = 0; // cursor in illusion array (ring buffer)
 ILLUSION_SHIP illusion_arr[ILLUSION_ARRLEN];
 
+// --- gigaball powerup ---
+int gigaball = 0; // whether the player has the gigaball powerup
+
 //tile numbers for the powerup names
 Uint32 powerup_names[] = {
     ((31 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET,
@@ -498,6 +501,8 @@ void game_powerupreset() {
     laser_max = 0;
     // no illusion
     illusion = 0;
+    // no gigaball
+    gigaball = 0;
 }
 
 void game_loss() {
@@ -793,6 +798,14 @@ int game_run() {
                         bit_right = NULL;
                     }
                     illusion = 1;
+                    powerup_cursor = P_NONE;
+                }
+                break;
+
+            case P_GIGABALL:
+                if (gigaball == 0) {
+                    gigaball = 1;
+                    ball_mode = BALL_GIGABALL;
                     powerup_cursor = P_NONE;
                 }
                 break;
