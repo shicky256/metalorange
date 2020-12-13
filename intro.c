@@ -56,7 +56,7 @@ static Fixed32 titletext_pos;
 // H. Yanagi = Hirohiko Yanagi (–ö‚Ğ‚ë‚Ğ‚±)
 // N. Nakajima = ?
 // JKL Furukawa = Yoshio Furukawa (ŒÃì‹`—Y)
-// MKM Hirota = Yoshitaka Hirota (O“c‰ÀF)
+// MKM Hirota = Hitoshi Sakimoto (èŒ³m)
 // Rezon Iwata = Masuharu Iwata (Šâ“c‹§¡)
 // Waiendee = ?
 static char program_str[] = "PROGRAM\nKOCHAN";

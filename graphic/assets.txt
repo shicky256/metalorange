@@ -30,3 +30,4 @@ s blocks2
 s capsule
 s bit
 s laser
+s barrier

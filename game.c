@@ -5,6 +5,7 @@
 #include <SEGA_SPR.H>
 
 #include "ball.h"
+#include "barrier.h"
 #include "capsule.h"
 #include "cd.h"
 #include "game.h"
@@ -36,7 +37,7 @@ static int frames = 0;
 //# tiles per row in the 
 #define TILES_WIDTH (18)
 
-static int score = 0;
+int score = 0;
 //character number for score text
 #define SCORE_CHARNO ((((30 * TILES_WIDTH) + 2) * 2) + SCROLL_A1_OFFSET)
 //where score is on HUD
@@ -106,9 +107,6 @@ typedef struct {
 int illusion_charno = 0;
 int illusion_cursor = 0; // cursor in illusion array (ring buffer)
 ILLUSION_SHIP illusion_arr[ILLUSION_ARRLEN];
-
-// --- gigaball powerup ---
-int gigaball = 0; // whether the player has the gigaball powerup
 
 //tile numbers for the powerup names
 Uint32 powerup_names[] = {
@@ -187,6 +185,7 @@ int ball_charno;
 int explosion_charno;
 int block_charno;
 int capsule_charno;
+int barrier_charno;
 
 static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
@@ -341,6 +340,16 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, capsule_width, capsule_height, (char *)game_buf + (i * capsule_size));
     }
     spr_charno += capsule_num;
+    spr_palno += 16;
+
+    //load barrier
+    barrier_charno = spr_charno;
+    cd_load_nosize(barrier_name, game_buf);
+    SCL_SetColRam(SCL_SPR, spr_palno, 16, barrier_pal);
+    for (int i = 0; i < barrier_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, barrier_width, barrier_height, (char *)game_buf + (i * barrier_size));
+    }
+    spr_charno += barrier_num;
     spr_palno += 16;
 
     //load chip's animation frames into lwram
@@ -502,7 +511,9 @@ void game_powerupreset() {
     // no illusion
     illusion = 0;
     // no gigaball
-    gigaball = 0;
+    ball_mode = BALL_NORMAL;
+    // no barrier
+    barrier_life = 0;
 }
 
 void game_loss() {
@@ -532,7 +543,7 @@ int game_run() {
             //init lives
             lives = START_LIVES;
             //init score
-            score = 42069;
+            score = 0;
             //init the ship sprite
             ship_sprite.char_num = SHIP_CHARNO;
             ship_sprite.x = SHIP_STARTX;
@@ -545,6 +556,8 @@ int game_run() {
             capsule_init(capsule_charno);
             // init laser handler
             laser_init(laser_charno);
+            // init barrier
+            barrier_init(barrier_charno);
             //add first ball
             ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
@@ -672,6 +685,8 @@ int game_run() {
             laser_move();
             // move all capsules
             capsule_run();
+            // animate the barrier
+            barrier_move();
             // animate the ship
             game_shipanim();
 
@@ -780,7 +795,7 @@ int game_run() {
 
             case P_LASER:
                 if (laser_max < MAX_LASER_MAX) {
-                    laser_max += 4;
+                    laser_max += (MAX_LASER_MAX >> 1);
                     powerup_cursor = P_NONE;
                 }
                 break;
@@ -803,10 +818,15 @@ int game_run() {
                 break;
 
             case P_GIGABALL:
-                if (gigaball == 0) {
-                    gigaball = 1;
+                if (ball_mode == BALL_NORMAL) {
                     ball_mode = BALL_GIGABALL;
                     powerup_cursor = P_NONE;
+                }
+                break;
+
+            case P_BARRIER:
+                if (barrier_life == 0) {
+                    barrier_life = BARRIER_MAXLIFE;
                 }
                 break;
         }
@@ -851,6 +871,7 @@ int game_run() {
     level_disp(); // draw blocks
     capsule_draw(); // draw capsules
     laser_draw(); // draw laser
+    barrier_draw(); // draw barrier
     ball_draw(); // draw ball
 
     // draw ship

@@ -189,6 +189,7 @@ static void level_normalblock(BLOCK_SPR *block) {
             block->state = STATE_EXPLODE;
             block->tile_no = EXPLOSION_CHARNO;
             block->anim_timer = 0;
+            score += 50;
             if (((MTH_GetRand() >> 16) % 10) < CAPSULE_PROBABILITY) {
                 capsule_add(block->x, block->y); // drop capsule
             }

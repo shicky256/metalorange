@@ -36,6 +36,8 @@ extern SHIP_SPRITE ship_sprite;
 extern Fixed32 ship_left;
 extern Fixed32 ship_right;
 
+extern int score;
+
 int game_run();
 //gives the player a powerup
 void game_incpowerup();

@@ -207,4 +207,13 @@ extern Uint16 laser_height;
 extern char laser_name[];
 extern Uint32 laser_pal[];
 
+//barrier.c
+extern Uint16 barrier_num;
+extern Uint16 barrier_size;
+extern Uint16 barrier_width;
+extern Uint16 barrier_height;
+extern char barrier_name[];
+extern Uint32 barrier_pal[];
+
+
 #endif

@@ -41,4 +41,4 @@ typedef unsigned long Uint32;
 #include "graphic/capsule.c"
 #include "graphic/bit.c"
 #include "graphic/laser.c"
-
+#include "graphic/barrier.c"
