@@ -24,9 +24,10 @@ typedef enum {
 } LOGO_STATE;
 
 static int timings[] = {186, 10, 10, 8, 66, 16, 8, 52, 9, 12, 16, 18, 39, 12, 5};
-static int timer = 0;
-static int cursor = 0;
-static int state = STATE_LOGO_INIT;
+static int timer;
+static int cursor;
+static int state;
+static int frame;
 
 void logo_loadframe(int num) {
     char *frame_ptr = ((char *)LWRAM) + (num * (FRAME_XPIXELS * FRAME_YPIXELS));
@@ -46,6 +47,8 @@ static inline void logo_init() {
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
     Uint16 *map_ptr = MAP_PTR(0);
     //put the image in a good location
+    scroll_clearmaps();
+    scroll_hires();
     scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
     cd_load_nosize(roarbg_name, logo_buf);
     DMA_CpuMemCopy1(tile_ptr, logo_buf, 256 * roarbg_num);
@@ -64,11 +67,15 @@ static inline void logo_init() {
     }
     //load rest of frames into LWRAM to prepare for loading to VRAM
     cd_load_nosize(roarframes_name, logo_buf);
+
+    // clear the variables
+    timer = 0;
+    cursor = 0;
+    frame = 0;
+    state = STATE_LOGO_INIT;
 }
 
 int logo_run(void) {
-    static int frame;
-
     //allow user to skip the logo
     if ((PadData1 & PAD_S) && state > STATE_LOGO_FADEIN) {
         SclRgb start, end;
@@ -139,6 +146,7 @@ int logo_run(void) {
             break;
 
         case STATE_LOGO_END:
+            state = STATE_LOGO_INIT;
             return 1;
             break;
     }

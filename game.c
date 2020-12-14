@@ -759,6 +759,12 @@ int game_run() {
     if (PadData1E & PAD_X) {
         game_incpowerup();
     }
+
+    if (PadData1E & PAD_Y) {
+        state = STATE_GAME_INIT;
+        sprite_deleteall();
+        return 1;
+    }
     #endif
 
     if (PadData1E & PAD_B) {
@@ -827,6 +833,7 @@ int game_run() {
             case P_BARRIER:
                 if (barrier_life == 0) {
                     barrier_life = BARRIER_MAXLIFE;
+                    powerup_cursor = P_NONE;
                 }
                 break;
         }

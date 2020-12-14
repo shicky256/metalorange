@@ -31,3 +31,4 @@ s capsule
 s bit
 s laser
 s barrier
+t42 soon.bmp

@@ -45,7 +45,7 @@ AS = $(GCC)/bin/gasm
 OBJCOPY = $(GCC)/bin/sh-coff-objcopy
 ISO = $(CDTOOLS)/mkisofs
 
-CFLAGS  = -g -O2 -Wall -std=gnu99 -m2 -DMODEL_S -I$(GCC)/include -I$(SEGALIB)/include -I./smpclib
+CFLAGS  = -g -O2 -Wall -Werror -std=gnu99 -m2 -DMODEL_S -I$(GCC)/include -I$(SEGALIB)/include -I./smpclib
 ASFLAGS =
 LDFLAGS = -T $(LOCATE_FILE) -e $(ENTRY_POINT) -nostartfiles
 ISOFLAGS = -sysid "SEGA SATURN" -volid "SaturnApp" -volset "SaturnApp" -publisher "SEGA ENTERPRISES, LTD." -preparer "SEGA ENTERPRISES, LTD." \

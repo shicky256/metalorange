@@ -56,17 +56,35 @@ void ball_remove(BALL_SPRITE *ball) {
 void ball_bounce(BALL_SPRITE *ball, int direction, int breakable) {
     switch(direction) {
         case DIR_UP:
+            if (ball->dy < 0) {
+                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                    ball->dy = -ball->dy;
+                }
+            }
+            break;
+
         case DIR_DOWN:
         // gigaball lets ball go through breakable blocks without rebounding
-            if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                ball->dy = -ball->dy;
+            if (ball->dy > 0) {
+                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                    ball->dy = -ball->dy;
+                }
             }
             break;
 
         case DIR_LEFT:
+            if (ball->dx < 0) {
+                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                    ball->dx = -ball->dx;
+                }
+            }
+            break;
+
         case DIR_RIGHT:
-            if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                ball->dx = -ball->dx;
+            if (ball->dx > 0) {
+                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
+                    ball->dx = -ball->dx;
+                }
             }
             break;
     }

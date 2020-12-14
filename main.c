@@ -16,6 +16,7 @@
 #include "menu.h"
 #include "release.h"
 #include "scroll.h"
+#include "soon.h"
 #include "sound.h"
 #include "sprite.h"
 #include "print.h"
@@ -29,6 +30,7 @@ typedef enum {
 	STATE_INTRO,
 	STATE_MENU,
 	STATE_GAME,
+	STATE_SOON,
 } GAME_STATE;
 
 int main() {
@@ -37,7 +39,6 @@ int main() {
 	cd_init();
 	sprite_init();
 	scroll_init();
-	scroll_hires();
 	print_init();
 	print_load();
 	sound_init();
@@ -48,7 +49,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_GAME;
+	int state = STATE_LOGO;
 	while(1) {
 		sprite_startdraw();
 		
@@ -72,7 +73,15 @@ int main() {
 				break;
 
 			case STATE_GAME:
-				game_run();
+				if (game_run()) {
+					state = STATE_SOON;
+				}
+				break;
+
+			case STATE_SOON:
+				if (soon_run()) {
+					state = STATE_LOGO;
+				}
 				break;
 		}
 

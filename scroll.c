@@ -52,8 +52,8 @@ Uint32 char_offsets[] = {
 //lo res vram layout: 
 //nbg 0/1 tilemaps in A0
 //nbg 0 graphics in A1
-//nbg 2/3 graphics in B0
-//nbg 2/3 tilemaps in B1
+//nbg 2/3 tilemaps in B0
+//nbg 1/2/3 graphics in B1
 //nbg 0 is 256 color, 1, 2, & 3 are 16 color
 Uint16	CycleTbLoRes[]={
 	0x01ee,0xeeee,

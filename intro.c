@@ -36,7 +36,7 @@ typedef enum {
 static int state = STATE_INTRO_INIT;
 static char *girls[5];
 static Uint32 *girl_pal[5] = {girl1_pal, girl2_pal, girl3_pal, girl4_pal, girl5_pal};
-static char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
+static char *tile_ptr;
 static char *title_gfx_ptr;
 static char *metalorange_ptr;
 static char *cyberblock_ptr;
@@ -48,6 +48,13 @@ static Fixed32 star_x = 0, star_y = 0;
 static Fixed32 star_angle = 0;
 static SclLineparam line_param;
 static Fixed32 titletext_pos;
+
+
+#define TEXT_LOAD (0)
+#define TEXT_SHOW (1)
+static int text_mode;
+static int text_num;
+static int text_frame;
 
 // intro credits strings
 // credit pseudonyms:
@@ -91,6 +98,14 @@ static inline void intro_init() {
     }
 
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
+    // set layer priorities
+	SCL_SetPriority(SCL_SPR, 7);
+	SCL_SetPriority(SCL_SP1, 7);
+	SCL_SetPriority(SCL_NBG0, 6);
+	SCL_SetPriority(SCL_NBG1, 5);
+	SCL_SetPriority(SCL_NBG2, 4);
+	SCL_SetPriority(SCL_NBG3, 3);
+    
     //load all 5 images
     girls[0] = dest_buf;
     cd_load_nosize(girl1_name, dest_buf);
@@ -134,20 +149,19 @@ static inline void intro_init() {
     size = cd_load_nosize(cyberblock_name, dest_buf);
     cyberblock_ptr = dest_buf;
 
-
+    tile_ptr = (char *)SCL_VDP2_VRAM_A1;
     for (int i = 0; i < 256; i++) {
         tile_ptr[i] = 0;
     }
     tile_ptr += 256;
+
+    // init vars
+    text_mode = TEXT_LOAD;
+    text_num = 0;
+    text_frame = 0;
 }
 
-#define TEXT_LOAD (0)
-#define TEXT_SHOW (1)
-
 static inline int intro_disptext(int girl) {
-    static int text_mode = TEXT_LOAD;
-    static int text_num = 0;
-    static int frame;
     int row, col;
 
     if (text_mode == TEXT_LOAD) {
@@ -161,12 +175,12 @@ static inline int intro_disptext(int girl) {
         }
         print_init();
         print_string(intro_strs[girl * 2 + text_num], row, col);
-        frame = 0;
+        text_frame = 0;
         text_mode = TEXT_SHOW;
     }
     else {
-        frame++;
-        if (frame == 180) {
+        text_frame++;
+        if (text_frame == 180) {
             text_num++;
             text_mode = TEXT_LOAD;
             if (text_num == 2) {
@@ -446,6 +460,7 @@ int intro_run() {
         case STATE_INTRO_FADEOUT:
             frames++;
             if (frames == 30) {
+                state = STATE_INTRO_INIT;
                 return 1;
             }
             break;       

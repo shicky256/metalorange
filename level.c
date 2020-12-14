@@ -137,30 +137,30 @@ static int level_breakable(Sint8 block_num) {
     return block_num != GLD;
 }
 
-//routine run every frame by normal block
+// routine run every frame by normal block
 static void level_normalblock(BLOCK_SPR *block) {
     int collision = 0;
     // check all balls
     for (int i = 0; i < ball_count; i++) {
-        //left collision
+        // left collision
         if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_LEFT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
-        //right collision
+        // right collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_RIGHT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
-        //top collision
+        // top collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_UP, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
-        //bottom collision
+        // bottom collision
         else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_BSENSORX, ball_sprites[i].y + BALL_BSENSORY)) {
             ball_bounce(&ball_sprites[i], DIR_DOWN, level_breakable(block->tile_no));
             collision = 1;

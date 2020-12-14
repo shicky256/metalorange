@@ -136,6 +136,8 @@ static inline void menu_init() {
     scroll_lores();
     SCL_SetColOffset(SCL_OFFSET_A, SCL_SPR | SCL_NBG0 | SCL_NBG1 | SCL_NBG2, -255, -255, -255);
     scroll_clearmaps();
+    // fix vdp2 config from intro
+    SCL_SetColMixRate(SCL_NBG0, 0);
     //put NBG0 in a good location
     scroll_set(0, MTH_FIXED(-220), MTH_FIXED(-140));
     scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
@@ -305,6 +307,7 @@ int menu_run() {
             break;
 
         case STATE_MENU_DONE:
+            state = STATE_MENU_INIT;
             return 1;
             break;
 

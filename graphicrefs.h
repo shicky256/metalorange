@@ -82,6 +82,11 @@ extern Uint16 gamestar_num;
 extern char gamestar_name[];
 extern Uint32 gamestar_pal[];
 
+//soon.c
+extern Uint16 soon_num;
+extern char soon_name[];
+extern Uint32 soon_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;

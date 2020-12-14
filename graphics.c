@@ -19,6 +19,7 @@ typedef unsigned long Uint32;
 #include "graphic/game_tiles.c"
 #include "graphic/chipgame.c"
 #include "graphic/gamestar.c"
+#include "graphic/soon.c"
 
 //maps
 #include "graphic/starnear.c"
