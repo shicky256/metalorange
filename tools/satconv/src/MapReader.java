@@ -99,7 +99,6 @@ public class MapReader {
                     byteArr[(i * mapArr[0].length * 2) + (j * 2)] = (byte)(((mapVal & 0xFF00) >> 8) & 0xff);
                     byteArr[(i * mapArr[0].length * 2) + (j * 2 + 1)] = (byte)(mapVal & 0xff);
                 }
-                System.out.println();
             }
             Files.write(path, byteArr);
         }
@@ -134,7 +133,6 @@ public class MapReader {
                     byteArr[(i * mapArr[0].length * 4) + (j * 4 + 2)] = (byte)(((mapVal & 0xff0000) >> 16) & 0xff);
                     byteArr[(i * mapArr[0].length * 4) + (j * 4 + 3)] = (byte)(((mapVal & 0xff000000) >> 24) & 0xff);
                 }
-                System.out.println();
             }
             Files.write(path, byteArr);
         }

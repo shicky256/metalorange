@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TileConverter {
     private ArrayList<Byte> tileData;
@@ -33,7 +34,16 @@ public class TileConverter {
             height = image.getHeight();
             size = tileSize;
 
-            if (tileSize == 1) {
+            // framebuffer
+            if (tileSize == 0) {
+                int[] imageData = new int[width * height];
+                imageData = image.getData().getPixels(0, 0, width, height, imageData);
+                for (int i = 0; i < imageData.length; i++) {
+                    tileData.add((byte) (imageData[i] & 0xFF));
+                }
+            }
+
+            else if (tileSize == 1) {
                 //split image up into 8x8 tiles
                 int[] imageData = new int[8 * 8];
                 for (int i = 0; i < height; i += 8) {
@@ -125,7 +135,7 @@ public class TileConverter {
                 //0123456789ABCDEF0123456789ABCDEF
                 //RRRRRRRRGGGGGGGGBBBBBBBB00000000
                 int paletteEntry = (reds[i] & 0xff) | ((greens[i] & 0xff) << 8) | ((blues[i] & 0xff) << 16);
-                System.out.print(paletteEntry + " ");
+//                System.out.print(paletteEntry + " ");
                 palettes.add(paletteEntry);
             }
         } catch (IOException e) {

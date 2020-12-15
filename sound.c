@@ -7,6 +7,7 @@
 #include "print.h"
 #include "release.h"
 
+#if DEVCART_LOAD == 0
 static void sound_external_audio_enable(Uint8 vol_l, Uint8 vol_r) {
     volatile Uint16 *slot_ptr;
 
@@ -57,6 +58,7 @@ static void sound_external_audio_enable(Uint8 vol_l, Uint8 vol_r) {
 
     *((volatile Uint16 *)(0x25B00400)) = 0x020F;
 }
+#endif
 
 //must be called after cd_init
 void sound_init() {

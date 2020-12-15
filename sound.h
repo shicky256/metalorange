@@ -13,6 +13,7 @@ typedef enum {
     INTRO_TRACK,
     MENU_TRACK,
     PAUSE_TRACK,
+    TOMO_TRACK,
     LEVEL1_TRACK,
     SOON_TRACK,
 } CDDA_INDEX;

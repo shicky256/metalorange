@@ -154,7 +154,12 @@ static inline void menu_init() {
     SCL_SetColRam(SCL_NBG1, 0, 16, menufont_pal);
     menu_print(5, 5, 0, "START GAME");
     menu_print(5, 6, 0, "LOAD GAME");
-    menu_print(5, 7, 0, "CUTSCENE: ON ");
+    if (cutscene) {
+        menu_print(5, 7, 0, "CUTSCENE: ON ");
+    }
+    else {
+        menu_print(5, 7, 0, "CUTSCENE: OFF");
+    }
     //load chip gfx
     cd_load_nosize(chipframes_name, menu_buf);
     DMA_CpuMemCopy1(tile_ptr, menu_buf, 256 * 42);

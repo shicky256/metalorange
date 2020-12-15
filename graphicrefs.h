@@ -87,6 +87,10 @@ extern Uint16 soon_num;
 extern char soon_name[];
 extern Uint32 soon_pal[];
 
+//tomo.c
+extern char tomo_name[];
+extern Uint32 tomo_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;

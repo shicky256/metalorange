@@ -40,4 +40,8 @@ void scroll_clearmaps(void);
 void scroll_charsize(int num, Uint8 size);
 //sets bg #num's map size (either 1 word or 2 word)
 void scroll_mapsize(int num, Uint8 size);
+
+//enable/disable bitmap graphics (turns on nbg0, disables all other bgs)
+void scroll_bitmapon();
+void scroll_bitmapoff();
 #endif

@@ -13,7 +13,7 @@
 
 Uint32 vram[] = {SCL_VDP2_VRAM_A0, SCL_VDP2_VRAM_A0 + 0x10000, SCL_VDP2_VRAM_B0, SCL_VDP2_VRAM_B0 + 0x10000}; //where in VRAM each tilemap is
 int scroll_res = SCROLL_RES_LOW;
-
+int bitmap = 0;
 
 Uint32 char_offsets[] = {
 	SCL_VDP2_VRAM_A1 - SCL_VDP2_VRAM, //NBG0
@@ -55,7 +55,7 @@ Uint32 char_offsets[] = {
 //nbg 2/3 tilemaps in B0
 //nbg 1/2/3 graphics in B1
 //nbg 0 is 256 color, 1, 2, & 3 are 16 color
-Uint16	CycleTbLoRes[]={
+Uint16	CycleTbLoRes[] = {
 	0x01ee,0xeeee,
 	0x44ee,0xeeee,
 	0xff23,0xffff,
@@ -69,11 +69,20 @@ Uint16	CycleTbLoRes[]={
 //nbg 2/3 tilemaps in B0
 //nbg 1/2/3 graphics in B1
 //nbg 0 is 256 color, 1, 2 & 3 are 16 color
-Uint16	CycleTbHiRes[]={
+Uint16	CycleTbHiRes[] = {
 	0x01ee,0xffff,
 	0x44ee,0xffff,
 	0xff23,0xffff,
 	0x756f,0xffff
+};
+
+
+//only nbg0 is enabled, use gfx from all of vram
+Uint16 CycleTbBitmap[] = {
+	0x4444,0xffff,
+	0x4444,0xffff,
+	0x4444,0xffff,
+	0x4444,0xffff
 };
 
 SclConfig scfg[4];
@@ -241,4 +250,44 @@ void scroll_charsize(int num, Uint8 size) {
 void scroll_mapsize(int num, Uint8 size) {
 	scfg[num].pnamesize = size;
 	SCL_SetConfig(1 << (num + 2), &scfg[num]);
+}
+
+void scroll_bitmapon() {
+	scfg[0].datatype = SCL_BITMAP;
+	scfg[0].bmpsize = SCL_BMP_SIZE_1024X512;
+	SCL_SetConfig(SCL_NBG0, &scfg[0]);
+
+	scfg[1].dispenbl = OFF;
+	SCL_SetConfig(SCL_NBG1, &scfg[1]);
+
+	scfg[2].dispenbl = OFF;
+	SCL_SetConfig(SCL_NBG2, &scfg[2]);
+
+	scfg[3].dispenbl = OFF;
+	SCL_SetConfig(SCL_NBG3, &scfg[3]);
+
+	SCL_SetCycleTable(CycleTbBitmap);
+	bitmap = 1;
+}
+
+void scroll_bitmapoff() {
+	scfg[0].datatype = SCL_CELL;
+	SCL_SetConfig(SCL_NBG0, &scfg[0]);
+
+	scfg[1].dispenbl = ON;
+	SCL_SetConfig(SCL_NBG1, &scfg[1]);
+
+	scfg[2].dispenbl = ON;
+	SCL_SetConfig(SCL_NBG2, &scfg[2]);
+
+	scfg[3].dispenbl = ON;
+	SCL_SetConfig(SCL_NBG3, &scfg[3]);
+
+	if (scroll_res == SCROLL_RES_HIGH) {
+		SCL_SetCycleTable(CycleTbHiRes);
+	}
+	else {
+		SCL_SetCycleTable(CycleTbLoRes);
+	}
+	bitmap = 0;
 }

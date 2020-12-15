@@ -90,7 +90,7 @@ public class SpriteConverter {
                 //0123456789ABCDEF0123456789ABCDEF
                 //RRRRRRRRGGGGGGGGBBBBBBBB00000000
                 int paletteEntry = (reds[i] & 0xff) | ((greens[i] & 0xff) << 8) | ((blues[i] & 0xff) << 16);
-                System.out.print(paletteEntry + " ");
+//                System.out.print(paletteEntry + " ");
                 palettes.add(paletteEntry);
             }
             PrintWriter writer = new PrintWriter(outFile, "UTF-8");

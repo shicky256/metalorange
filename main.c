@@ -8,6 +8,7 @@
 #include <SEGA_PER.H>
 
 #include "cd.h"
+#include "cutscene.h"
 #include "devcart.h"
 #include "game.h"
 #include "graphicrefs.h"
@@ -29,6 +30,7 @@ typedef enum {
 	STATE_LOGO = 0,
 	STATE_INTRO,
 	STATE_MENU,
+	STATE_CUTSCENE,
 	STATE_GAME,
 	STATE_SOON,
 } GAME_STATE;
@@ -68,6 +70,17 @@ int main() {
 			
 			case STATE_MENU:
 				if (menu_run()) {
+					if (cutscene) {
+						state = STATE_CUTSCENE;
+					}
+					else {
+						state = STATE_GAME;
+					}
+				}
+				break;
+
+			case STATE_CUTSCENE:
+				if (cutscene_run()) {
 					state = STATE_GAME;
 				}
 				break;

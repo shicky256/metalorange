@@ -34,7 +34,7 @@ public class SatConv {
                     int bpp = Character.getNumericValue(bppChar);
                     char sizeChar = line.charAt(2);
                     int size = Character.getNumericValue(sizeChar);
-                    if (size < 1 || size > 2) {
+                    if (size > 2) {
                         System.out.println("Error: Invalid size " + size);
                         return;
                     }
