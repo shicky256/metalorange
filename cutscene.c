@@ -23,6 +23,14 @@ static int frames;
 // dimensions of the vdp2 framebuffer
 #define BMP_WIDTH (1024)
 #define BMP_HEIGHT (512)
+// dimensions of font graphic
+#define FONT_WIDTH (256)
+#define CHAR_WIDTH (16)
+#define CHAR_HEIGHT (32)
+
+char tomo_text[] = "Hi, I'm Tomo. Only a couple\n"
+                   "of my levels are programmed in\n"
+                   "right now. Oh well...";
 
 static inline void cutscene_init() {
     char *gfx_ptr = (char *)LWRAM;
@@ -45,6 +53,9 @@ static inline void cutscene_init() {
             vram[BMP_WIDTH * y + x] = gfx_ptr[IMG_WIDTH * y + x];
         }
     }
+
+    // load font
+    cd_load_nosize(cutscfont_name, gfx_ptr);
     // set up auto fade-in
     SclRgb start, end;
     start.red = start.green = start.blue = -255;
@@ -54,10 +65,38 @@ static inline void cutscene_init() {
     sound_cdda(TOMO_TRACK, 1);
 }
 
+static void cutscene_print(int x_pos, int y_pos, char *str) {
+    int x_bak = x_pos;
+    char *vram = (char *)SCL_VDP2_VRAM;
+    char ch;
+    while ((ch = *str) != '\0') {
+        if (ch == '\n') {
+            y_pos += CHAR_HEIGHT;
+            x_pos = x_bak;
+            str++;
+            continue;
+        }
+
+        ch -= 32; // font starts with the space character
+        // each row in the font image has 16 characters
+        int graphic_start = LWRAM + ((ch >> 4) * (CHAR_HEIGHT * FONT_WIDTH)) + ((ch & 0xf) * CHAR_WIDTH);
+        // pointer to top left pixel of the character in the font
+        char *graphic_ptr = (char *)graphic_start;
+        for (int y = 0; y < CHAR_HEIGHT; y++) {
+            for (int x = 0; x < CHAR_WIDTH; x++) {
+                vram[(y + y_pos) * BMP_WIDTH + (x + x_pos)] = graphic_ptr[y * FONT_WIDTH + x];
+            }
+        }
+        x_pos += CHAR_WIDTH;
+        str++;
+    }
+}
+
 int cutscene_run() {
     switch (state) {
         case CUTSCENE_INIT:
             cutscene_init();
+            cutscene_print(120, 350, tomo_text);
             state = CUTSCENE_RUN;
             break;
         

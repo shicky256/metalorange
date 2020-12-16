@@ -91,6 +91,10 @@ extern Uint32 soon_pal[];
 extern char tomo_name[];
 extern Uint32 tomo_pal[];
 
+//cutscfont.c
+extern char cutscfont_name[];
+extern Uint32 cutscfont_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;
