@@ -3,6 +3,7 @@
 #include "ball.h"
 #include "barrier.h"
 #include "game.h"
+#include "sound.h"
 #include "sprite.h"
 
 static int barrier_charno;
@@ -39,6 +40,7 @@ void barrier_move() {
             ball_sprites[i].y = BARRIER_YPOS;
             ball_sprites[i].dy = -ball_sprites[i].dy;
             barrier_life--;
+            sound_play(SOUND_START); // menu start sound is the same as barrier bounce sound
         }
     }
 

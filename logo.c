@@ -116,7 +116,7 @@ int logo_run(void) {
                     timer = 0;
                     if (cursor == 9) {
                         //play roar sound
-                        sound_play(0);
+                        sound_play(SOUND_ROAR);
                     }
                 }
             }

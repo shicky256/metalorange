@@ -321,23 +321,27 @@ int menu_run() {
         //handle menu movement
         if ((PadData1E & PAD_U) && (menu_cursor > 0)) {
             menu_cursor--;
-            pcm_play(1, PCM_SEMI, 6);
+            // pcm_play(1, PCM_SEMI, 6);
+            sound_play(SOUND_SELECT);
         }
         if ((PadData1E & PAD_D) && (menu_cursor < 2)) {
             menu_cursor++;
-            pcm_play(1, PCM_SEMI, 6);
+            // pcm_play(1, PCM_SEMI, 6);
+            sound_play(SOUND_SELECT);
         }
         //start game
         if ((menu_cursor == 0) && (PadData1E & (PAD_S | PAD_A | PAD_B | PAD_C))) {
             chip_cursor = 0;
             timer = 0;
             state = STATE_MENU_ANIMOUT;
-            pcm_play(2, PCM_SEMI, 6);
+            // pcm_play(2, PCM_SEMI, 6);
+            sound_play(SOUND_START);
         }
         //handle cutscene toggle
         if ((menu_cursor == 2) && (PadData1E & (PAD_S | PAD_A | PAD_B | PAD_C))) {
             cutscene ^= 1;
-            pcm_play(2, PCM_SEMI, 6);
+            // pcm_play(2, PCM_SEMI, 6);
+            sound_play(SOUND_START);
         }
         //cycle palette for selected item
         menu_palcycle();

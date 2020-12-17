@@ -56,6 +56,9 @@ static int text_mode;
 static int text_num;
 static int text_frame;
 
+static Fixed32 linescroll_angle;
+static int linescroll_multiplier;
+
 // intro credits strings
 // credit pseudonyms:
 // Kochan = Kotaro Horie (ñxç]çFëæòY)
@@ -159,6 +162,8 @@ static inline void intro_init() {
     text_mode = TEXT_LOAD;
     text_num = 0;
     text_frame = 0;
+    linescroll_angle = 0;
+    linescroll_multiplier = MTH_FIXED(16);
 }
 
 static inline int intro_disptext(int girl) {
@@ -239,32 +244,29 @@ static inline void intro_drawpolys(int num) {
 }
 
 static inline int intro_linescroll() {
-    static Fixed32 angle = 0;
-    static int multiplier = MTH_FIXED(16);
-
-    angle += MTH_FIXED(2);
-    multiplier -= MTH_FIXED(0.08);
-    if (multiplier < MTH_FIXED(4.5)) { //otherwise it spends too much time wiggling in the middle, which looks shitty
-        multiplier = 0;
+    linescroll_angle += MTH_FIXED(2);
+    linescroll_multiplier -= MTH_FIXED(0.08);
+    if (linescroll_multiplier < MTH_FIXED(4.5)) { //otherwise it spends too much time wiggling in the middle, which looks shitty
+        linescroll_multiplier = 0;
     }
     for (int i = 0; i < 48; i++) {
-        Fixed32 curr_angle = angle + MTH_IntToFixed(i * 2);
+        Fixed32 curr_angle = linescroll_angle + MTH_IntToFixed(i * 2);
         curr_angle %= MTH_FIXED(360);
         curr_angle -= MTH_FIXED(180);
         // if (curr_angle > MTH_FIXED(180)) {
         //     curr_angle -= MTH_FIXED(360);
         // }
         if (i & 1) {
-            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), multiplier);
+            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), linescroll_multiplier);
         }
         else {
-            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), -multiplier);
+            line_param.line_tbl[i - METALORANGE_Y].h = MTH_Mul(MTH_Sin(curr_angle), -linescroll_multiplier);
         }
     }
     SCL_Open(SCL_NBG1);
     SCL_SetLineParam(&line_param);
     SCL_Close();
-    if (multiplier == 0) {
+    if (linescroll_multiplier == 0) {
         return 1;
     }
     return 0;

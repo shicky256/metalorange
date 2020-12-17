@@ -69,6 +69,14 @@ void sound_init() {
     load_8bit_pcm("ROAR.RAW", 11025);
     load_8bit_pcm("SELECT.RAW", 11025);
     load_8bit_pcm("START.RAW", 11025);
+    load_8bit_pcm("BLOCK.RAW", 11025);
+    load_8bit_pcm("DEATH.RAW", 11025);
+    load_8bit_pcm("SHIP.RAW", 11025);
+    load_8bit_pcm("GOLD.RAW", 11025);
+    load_8bit_pcm("CAPSULE.RAW", 11025);
+    load_8bit_pcm("POWERUP.RAW", 11025);
+    load_8bit_pcm("LASER.RAW", 11025);
+    load_8bit_pcm("REPLACE.RAW", 11025);
 }
 
 void sound_cdda(int track, int loop) {

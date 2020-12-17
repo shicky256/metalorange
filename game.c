@@ -481,6 +481,7 @@ static void game_shipanim() {
 }
 
 void game_incpowerup() {
+    sound_play(SOUND_CAPSULE);
     powerup_cursor++;
     if (powerup_cursor > NUM_POWERUPS) { // handle wraparound
         powerup_cursor = P_TURBO;
@@ -522,6 +523,7 @@ void game_loss() {
     state = STATE_GAME_LOSS;
     explosion_make(explosion_charno, ship_sprite.x, ship_sprite.y);
     game_powerupreset();
+    sound_play(SOUND_DEATH);
     capsule_init(capsule_charno);
     laser_init(laser_charno);
     ship_sprite.x = SHIP_STARTX;
@@ -595,6 +597,7 @@ int game_run() {
             if ((PadData1E & PAD_A) && (laser_count < laser_max)) {
                 laser_add(ship_sprite.x + SHIP_LGUN, ship_sprite.y + SHIP_GUNY);
                 laser_add(ship_sprite.x + SHIP_RGUN, ship_sprite.y + SHIP_GUNY);
+                sound_play(SOUND_LASER);
             }
 
             if (PadData1 & PAD_C) {
@@ -773,12 +776,20 @@ int game_run() {
                 if (turbo < MAX_TURBO) {
                     turbo++;
                     powerup_cursor = P_NONE;
+                    sound_play(SOUND_POWERUP);
                 }
                 break;
             
             case P_BIT:
                 if (bit_ship == 0) {
                     // can't have bit and illusion on simultaneously
+                    if (illusion) {
+                        illusion = 0;
+                        sound_play(SOUND_REPLACE);
+                    }
+                    else {
+                        sound_play(SOUND_POWERUP);
+                    }
                     illusion = 0;
                     bit_ship = 1;
                     bit_left = sprite_next();
@@ -797,12 +808,14 @@ int game_run() {
                     ball_add(ship_sprite.x + (SHIP_WIDTH >> 1), ship_sprite.y, angle);
                 }
                 powerup_cursor = P_NONE;
+                sound_play(SOUND_POWERUP);
                 break;
 
             case P_LASER:
                 if (laser_max < MAX_LASER_MAX) {
                     laser_max += (MAX_LASER_MAX >> 1);
                     powerup_cursor = P_NONE;
+                    sound_play(SOUND_POWERUP);
                 }
                 break;
 
@@ -813,6 +826,10 @@ int game_run() {
                     if (bit_left != NULL) {
                         sprite_delete(bit_left);
                         bit_left = NULL;
+                        sound_play(SOUND_REPLACE);
+                    }
+                    else {
+                        sound_play(SOUND_POWERUP);
                     }
                     if (bit_right != NULL) {
                         sprite_delete(bit_right);
@@ -827,6 +844,7 @@ int game_run() {
                 if (ball_mode == BALL_NORMAL) {
                     ball_mode = BALL_GIGABALL;
                     powerup_cursor = P_NONE;
+                    sound_play(SOUND_POWERUP);
                 }
                 break;
 
@@ -834,6 +852,7 @@ int game_run() {
                 if (barrier_life == 0) {
                     barrier_life = BARRIER_MAXLIFE;
                     powerup_cursor = P_NONE;
+                    sound_play(SOUND_POWERUP);
                 }
                 break;
         }

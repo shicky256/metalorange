@@ -4,6 +4,7 @@
 #include "game.h"
 #include "print.h"
 #include "scroll.h"
+#include "sound.h"
 #include "sprite.h"
 #include "vblank.h"
 
@@ -144,6 +145,7 @@ void ball_move() {
                 }
                 ball_sprites[i].dx = MTH_Mul(MTH_Cos(ball_angle), BALL_SPEED);
                 ball_sprites[i].dy = MTH_Mul(MTH_Sin(ball_angle), -BALL_SPEED);
+                sound_play(SOUND_SHIP); // play sound effect when ball hits ship
             }
 
             if (ball_sprites[i].y > MTH_FIXED(SCROLL_LORES_Y)) {

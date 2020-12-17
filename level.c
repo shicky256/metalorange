@@ -6,6 +6,7 @@
 #include "laser.h"
 #include "level.h"
 #include "print.h"
+#include "sound.h"
 #include "sprite.h"
 
 #define EXPLOSION_CHARNO (0)
@@ -184,12 +185,14 @@ static void level_normalblock(BLOCK_SPR *block) {
         if (block->tile_no == GLD) {
             block->state = STATE_SHINEON;
             block->anim_timer = 0;
+            sound_play(SOUND_GOLD);
         }
         else {
             block->state = STATE_EXPLODE;
             block->tile_no = EXPLOSION_CHARNO;
             block->anim_timer = 0;
             score += 50;
+            sound_play(SOUND_BLOCK);
             if (((MTH_GetRand() >> 16) % 10) < CAPSULE_PROBABILITY) {
                 capsule_add(block->x, block->y); // drop capsule
             }

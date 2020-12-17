@@ -1,9 +1,6 @@
 #ifndef SOUND_H
 #define SOUND_H
 
-#define SOUND_EXPLOSION (0)
-#define SOUND_JUMP (1)
-#define SOUND_DASH (2)
 //must be called after cd_init
 void sound_init(void);
 
@@ -20,6 +17,21 @@ typedef enum {
 
 //play an audio track. loop: 1 if we want to loop the track
 void sound_cdda(int track, int loop);
+
+typedef enum {
+    SOUND_ROAR = 0,
+    SOUND_SELECT,
+    SOUND_START,
+    SOUND_BLOCK,
+    SOUND_DEATH,
+    SOUND_SHIP,
+    SOUND_GOLD,
+    SOUND_CAPSULE,
+    SOUND_POWERUP,
+    SOUND_LASER,
+    SOUND_REPLACE,
+} PCM_INDEX;
+
 //play a pcm sound
 void sound_play(short num);
 #endif
