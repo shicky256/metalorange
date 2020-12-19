@@ -50,6 +50,8 @@ static inline void logo_init() {
     scroll_clearmaps();
     scroll_hires();
     scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
+    scroll_charsize(0, SCL_CHAR_SIZE_2X2);
+    scroll_mapsize(0, SCL_PN1WORD);
     cd_load_nosize(roarbg_name, logo_buf);
     DMA_CpuMemCopy1(tile_ptr, logo_buf, 256 * roarbg_num);
     SCL_SetColRam(SCL_NBG0, 0, 256, roarbg_pal);

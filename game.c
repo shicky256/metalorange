@@ -26,6 +26,7 @@ typedef enum {
     STATE_GAME_PLAY,
     STATE_GAME_PAUSE,
     STATE_GAME_LOSS,
+    STATE_GAME_OVER,
 } GAME_STATE;
 
 static int state = STATE_GAME_INIT;
@@ -44,7 +45,7 @@ int score = 0;
 #define SCORE_AREA ((2 * MAP_WIDTH) + 33)
 #define SCORE_DIGITS (7)
 
-#define START_LIVES (5)
+#define START_LIVES (3)
 static int lives = START_LIVES; //how many extra lives you have
 //character num for life icon
 #define LIFE_CHARNO (((30 * TILES_WIDTH) * 2) + SCROLL_A1_OFFSET)
@@ -129,6 +130,7 @@ typedef enum {
     STATE_CHIP_SBLINK,
     STATE_CHIP_DBLINK,
     STATE_CHIP_SLEEP,
+    STATE_CHIP_GAMEOVER,
 } CHIP_STATE;
 
 static int chip_state = STATE_CHIP_NONE;
@@ -159,6 +161,11 @@ static int chip_blinktimer;
 static int chip_sleep_frames[CHIP_SLEEP_NUMFRAMES] = {9, 10, 11, 12, 13, 12, 11, 10};
 static int chip_sleep_timings[CHIP_SLEEP_NUMFRAMES] = {32, 18, 18, 18, 18, 18, 18, 18};
 
+// game over graphic overwrites the others
+#define CHIP_GAMEOVER_NUMFRAMES (2)
+static int chip_gameover_frames[CHIP_GAMEOVER_NUMFRAMES] = {0, 1};
+#define CHIP_GAMEOVER_TIMING (12)
+
 #define SHIP_CHARNO (font_num)
 //start of ship's idle animation
 #define SHIP_IDLE (SHIP_CHARNO + 13)
@@ -177,6 +184,13 @@ static int ship_frames;
 //where ship starts a new life
 #define SHIP_STARTX (MTH_FIXED(102))
 #define SHIP_STARTY (MTH_FIXED(240))
+
+// game over graphic tile width/height
+#define GAMEOVER_WIDTH (12)
+#define GAMEOVER_HEIGHT (3)
+SclLineparam gameover_line;
+Fixed32 gameover_angle;
+#define GAMEOVER_MULTIPLIER (MTH_FIXED(-180))
 
 // character numbers
 int bit_charno;
@@ -233,13 +247,20 @@ static inline void game_init() {
     DMA_CpuMemCopy1(tile_ptr, game_buf, gamestar_num * 128);
     //load palette for stars
     SCL_SetColRam(SCL_NBG1, 0, 16, gamestar_pal);
+    // set layer priorities
+	SCL_SetPriority(SCL_SPR, 7);
+	SCL_SetPriority(SCL_SP1, 7);
+	SCL_SetPriority(SCL_NBG0, 6);
+	SCL_SetPriority(SCL_NBG3, 4);
+	SCL_SetPriority(SCL_NBG2, 3);
+	SCL_SetPriority(SCL_NBG1, 2);
     //load maps
     cd_load_nosize(gamenear_name, game_buf);
-    DMA_CpuMemCopy1(MAP_PTR(1), game_buf, 32 * 32 * 2);
+    DMA_CpuMemCopy1(MAP_PTR(3), game_buf, 32 * 32 * 2);
     cd_load_nosize(gamemid_name, game_buf);
     DMA_CpuMemCopy1(MAP_PTR(2), game_buf, 32 * 32 * 2);
     cd_load_nosize(gamefar_name, game_buf);
-    DMA_CpuMemCopy1(MAP_PTR(3), game_buf, 32 * 32 * 2);
+    DMA_CpuMemCopy1(MAP_PTR(1), game_buf, 32 * 32 * 2);
     //fade in
     SclRgb start, end;
     start.red = start.green = start.blue = -255;
@@ -357,12 +378,22 @@ static inline void game_init() {
     sound_cdda(LEVEL1_TRACK, 1);
 }
 
-static void game_loadchip(int num) {
-    char *frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * CHIP_YPIXELS));
+static void game_loadchip(int num, int gameover) {
+    char *frame_ptr;
+    int y_bound;
+    // chip's "game over" graphics has an extra row of tiles
+    if (gameover) {
+        frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * (CHIP_YPIXELS + 8)));
+        y_bound = CHIP_YTILES + 1;
+    }
+    else {
+        frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * CHIP_YPIXELS));
+        y_bound = CHIP_YTILES;
+    }
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1 + ((64 * IMAGE_XTILES) * 4) + (64 * 4); //start at 6 rows + 6 tiles in
 
     int offset;
-    for (int i = 0; i < CHIP_YTILES; i++) {
+    for (int i = 0; i < y_bound; i++) {
         offset = i * (64 * IMAGE_XTILES);
         for (int j = 0; j < 64 * CHIP_XTILES; j++) {
             tile_ptr[offset++] = frame_ptr[j + (i * 64 * CHIP_XTILES)];
@@ -376,20 +407,20 @@ static void game_chipset(int state) {
     chip_state = state;
     switch(state) {
         case STATE_CHIP_NONE:
-            game_loadchip(0);
+            game_loadchip(0, 0);
             break;
 
         case STATE_CHIP_HAND:
-            game_loadchip(chip_hand_frames[0]);
+            game_loadchip(chip_hand_frames[0], 0);
             break;
 
         case STATE_CHIP_BURNT:
-            game_loadchip(chip_burnt_frames[0]);
+            game_loadchip(chip_burnt_frames[0], 0);
             break;
 
         case STATE_CHIP_SBLINK:
         case STATE_CHIP_DBLINK:
-            game_loadchip(chip_blink_frames[0]);
+            game_loadchip(chip_blink_frames[0], 0);
             break;
     }
 }
@@ -405,7 +436,7 @@ static void game_chipanim() {
                     game_chipset(STATE_CHIP_NONE);
                     break;
                 }
-                game_loadchip(chip_hand_frames[chip_cursor]);
+                game_loadchip(chip_hand_frames[chip_cursor], 0);
             }
             break;
 
@@ -418,7 +449,7 @@ static void game_chipanim() {
                     chip_state = STATE_CHIP_NONE; //we want to leave chip on the burnt frame
                     break;
                 }
-                game_loadchip(chip_burnt_frames[chip_cursor]);
+                game_loadchip(chip_burnt_frames[chip_cursor], 0);
             }
         break;
 
@@ -437,7 +468,7 @@ static void game_chipanim() {
                     }
                     break;
                 }
-                game_loadchip(chip_blink_frames[chip_cursor]);
+                game_loadchip(chip_blink_frames[chip_cursor], 0);
             }
             break;
 
@@ -449,8 +480,21 @@ static void game_chipanim() {
                 if (chip_cursor >= CHIP_SLEEP_NUMFRAMES) {
                     chip_cursor = 0;
                 }
-                game_loadchip(chip_sleep_frames[chip_cursor]);
+                game_loadchip(chip_sleep_frames[chip_cursor], 0);
             }
+            break;
+
+        case STATE_CHIP_GAMEOVER:
+            chip_frames++;
+            if (chip_frames >= CHIP_GAMEOVER_TIMING) {
+                chip_frames = 0;
+                chip_cursor++;
+                if (chip_cursor >= CHIP_GAMEOVER_NUMFRAMES) {
+                    chip_cursor = 0;
+                }
+                game_loadchip(chip_gameover_frames[chip_cursor], 1);
+            }
+            break;
     }
 }
 
@@ -716,12 +760,88 @@ int game_run() {
             frames++;
             if (frames >= 60) {
                 lives--;
-                //TODO add game over code here
+                if (lives < 0) {
+                    frames = 0;
+                    // load "GAME OVER" graphic into VRAM
+                    Uint8 *pic_buf = (Uint8 *)LWRAM;
+                    Uint8 *tile_ptr = (Uint8 *)SCL_VDP2_VRAM_B1 + (stars_num * 128);
+                    cd_load_nosize(gameover_name, pic_buf);
+                    DMA_CpuMemCopy1(tile_ptr, pic_buf, gameover_num * 128);
+                    // load chip's "game over" frames into LWRAM
+                    cd_load_nosize(chipover_name, pic_buf);
+                    game_chipset(STATE_CHIP_GAMEOVER);
+                    // This is a hack. Basically the last 3 colors in the nbg1/2/3 palette are blank,
+                    // so this overwrites them with the colors for the game over graphic. then, the graphic
+                    // can be displayed on NBG1 and co-exist with the stars on the remaining two backgrounds.
+                    SCL_SetColRam(SCL_NBG1, 13, 3, gameover_pal + 13);
+                    // put nbg1 on top of the other star bgs
+                    SCL_SetPriority(SCL_NBG1, 5);
+                    Uint16 *map_buf = MAP_PTR(1);
+                    int count = stars_num;
+                    for (int y = 0; y < 32; y++) {
+                        for (int x = 0; x < 32; x++) {
+                            if ((x < GAMEOVER_WIDTH) && (y < GAMEOVER_HEIGHT)) {
+                                map_buf[y * 32 + x] = count++;
+                            }
+                            else {
+                                map_buf[y * 32 + x] = 0;
+                            }
+                        }
+                    }
+                    scroll_set(1, MTH_FIXED(-24), MTH_FIXED(-30));
+                    // scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
+
+                    // values determined by messing around until i found something that looks cool
+                    gameover_angle = MTH_FIXED(20);
+                    // init game over text line scroll
+                    SCL_InitLineParamTb(&gameover_line);
+                    gameover_line.h_enbl = ON;
+                    gameover_line.line_addr = SCL_VDP2_VRAM_B1 + 0x1f000; //b1 + 124kb
+                    gameover_line.interval = SCL_1_LINE;
+                    //play "game over" music
+                    sound_cdda(GAMEOVER_TRACK, 0);
+                    state = STATE_GAME_OVER;
+                    break;
+                }
                 game_chipset(STATE_CHIP_NONE);
                 ship_sprite.char_num = SHIP_CHARNO;
                 ship_sprite.state = SHIP_STATE_INIT;
                 ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(135));
                 state = STATE_GAME_PLAY;
+            }
+        break;
+
+        case STATE_GAME_OVER:
+            if (PadData1 & PAD_L) {
+                gameover_angle -= MTH_FIXED(1);
+            }
+            if (PadData1 & PAD_R) {
+                gameover_angle += MTH_FIXED(1);
+            }
+            gameover_angle -= MTH_FIXED(1);
+            // this works becaulse the sbl trig functions return 0 for out of range and modulo doesn't keep within
+            // range for negative numbers
+            for (int i = 0; i < (GAMEOVER_HEIGHT * 16); i++) {
+                Fixed32 curr_angle = gameover_angle + MTH_IntToFixed(i * 3);
+                // keep within range
+                curr_angle %= MTH_FIXED(360);
+                curr_angle -= MTH_FIXED(180);
+                if (i & 1) {
+                    // adding 24 because it's the y pos of the start of the graphic
+                    gameover_line.line_tbl[i + 24].h = MTH_Mul(MTH_Sin(curr_angle), GAMEOVER_MULTIPLIER);
+                }
+                else {
+                    gameover_line.line_tbl[i + 24].h = MTH_Mul(MTH_Sin(curr_angle), -GAMEOVER_MULTIPLIER);
+                }
+            }
+            SCL_Open(SCL_NBG1);
+            SCL_SetLineParam(&gameover_line);
+            SCL_Close();
+
+            frames++;
+            if (frames >= 360) {
+                state = STATE_GAME_INIT;
+                return 2;
             }
         break;
 
@@ -894,32 +1014,35 @@ int game_run() {
     }
 
     game_chipanim(); // draw chip
-    level_disp(); // draw blocks
-    capsule_draw(); // draw capsules
-    laser_draw(); // draw laser
-    barrier_draw(); // draw barrier
-    ball_draw(); // draw ball
+    if (state < STATE_GAME_OVER) {
+        level_disp(); // draw blocks
+        capsule_draw(); // draw capsules
+        laser_draw(); // draw laser
+        barrier_draw(); // draw barrier
+        ball_draw(); // draw ball
 
-    // draw ship
-    SPRITE_INFO spr;
-    // if illusion is active, draw those ships back to front
-    if (illusion) {
-        // bottom
-        sprite_make(illusion_charno, illusion_arr[bot_index].x, illusion_arr[bot_index].y, &spr);
+        // draw ship
+        SPRITE_INFO spr;
+        // if illusion is active, draw those ships back to front
+        if (illusion) {
+            // bottom
+            sprite_make(illusion_charno, illusion_arr[bot_index].x, illusion_arr[bot_index].y, &spr);
+            sprite_draw(&spr);
+            // middle
+            sprite_make(illusion_charno, illusion_arr[mid_index].x, illusion_arr[mid_index].y, &spr);
+            sprite_draw(&spr);
+            // top
+            sprite_make(illusion_charno, illusion_arr[top_index].x, illusion_arr[top_index].y, &spr);
+            sprite_draw(&spr);
+        }
+        sprite_make(ship_sprite.char_num, ship_sprite.x, ship_sprite.y, &spr);
         sprite_draw(&spr);
-        // middle
-        sprite_make(illusion_charno, illusion_arr[mid_index].x, illusion_arr[mid_index].y, &spr);
-        sprite_draw(&spr);
-        // top
-        sprite_make(illusion_charno, illusion_arr[top_index].x, illusion_arr[top_index].y, &spr);
-        sprite_draw(&spr);
+        // far bg is for stars normally and for game over graphic otherwise
+        scroll_move(1, MTH_FIXED(0), MTH_FIXED(-1));
     }
-    sprite_make(ship_sprite.char_num, ship_sprite.x, ship_sprite.y, &spr);
-    sprite_draw(&spr);
 
     // move star bg
-    scroll_move(1, MTH_FIXED(0), MTH_FIXED(-4));
+    scroll_move(3, MTH_FIXED(0), MTH_FIXED(-4));
     scroll_move(2, MTH_FIXED(0), MTH_FIXED(-2));
-    scroll_move(3, MTH_FIXED(0), MTH_FIXED(-1));
     return 0;
 }

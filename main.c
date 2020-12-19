@@ -51,7 +51,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_MENU;
+	int state = STATE_LOGO;
 	while(1) {
 		sprite_startdraw();
 		
@@ -85,9 +85,13 @@ int main() {
 				}
 				break;
 
-			case STATE_GAME:
-				if (game_run()) {
+			case STATE_GAME:;
+				int result = game_run();
+				if (result == 1) { // completed
 					state = STATE_SOON;
+				}
+				else if (result == 2) { // game over
+					state = STATE_LOGO;
 				}
 				break;
 

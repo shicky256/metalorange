@@ -31,7 +31,7 @@ void barrier_init(int charno) {
 }
 
 void barrier_move() {
-    if (barrier_life == 0) {
+    if (barrier_life <= 0) {
         return;
     }
     // handle ball collision
@@ -58,7 +58,7 @@ void barrier_draw() {
     SPRITE_INFO barrier_spr;
     int tileno = barrier_charno + barrier_animcursor;
 
-    if (barrier_life == 0) {
+    if (barrier_life <= 0) {
         return; // don't draw the barrier if it's not there
     }
     if (barrier_life == 1) { // switch to red barrier if one hit is left

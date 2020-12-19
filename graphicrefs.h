@@ -95,6 +95,16 @@ extern Uint32 tomo_pal[];
 extern char cutscfont_name[];
 extern Uint32 cutscfont_pal[];
 
+//gameover.c
+extern Uint16 gameover_num;
+extern char gameover_name[];
+extern Uint32 gameover_pal[];
+
+//chipover.c
+extern Uint16 chipover_num;
+extern char chipover_name[];
+extern Uint32 chipover_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;

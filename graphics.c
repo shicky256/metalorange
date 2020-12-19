@@ -22,6 +22,8 @@ typedef unsigned long Uint32;
 #include "graphic/soon.c"
 #include "graphic/tomo.c"
 #include "graphic/cutscfont.c"
+#include "graphic/gameover.c"
+#include "graphic/chipover.c"
 
 //maps
 #include "graphic/starnear.c"

@@ -350,6 +350,7 @@ int intro_run() {
             intro_drawpolys(5); //black out the screen
             SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
             SCL_SetColMixRate(SCL_NBG0, 0); //make screen opaque
+            SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255); // black out the screen
             DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
             scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
             count = 2;
@@ -383,6 +384,7 @@ int intro_run() {
             frames++;
             if (frames == 12) {
                 cursor--;
+                SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, 0, 0, 0); // clear screen blackout
                 frames = 0;
                 if (cursor == 0) {
                     state = STATE_INTRO_LOADMETALORANGE;
@@ -392,10 +394,6 @@ int intro_run() {
             break;
         
         case STATE_INTRO_LOADMETALORANGE:
-
-            for (int i = 0; i < 32; i++) {
-
-            }
             SCL_SetColRam(SCL_NBG1, 0, 16, metalorange_pal); //load palette
             DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
             SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
