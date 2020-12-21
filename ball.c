@@ -29,15 +29,19 @@ void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle) {
         //spawn ball offscreen
         ball_sprites[ball_count].x = MTH_FIXED(-80);
         ball_sprites[ball_count].y = MTH_FIXED(-80);
-        ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), BALL_SPEED);
-        ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -BALL_SPEED);
+        ball_sprites[ball_count].speed = BALL_MINSPEED;
+        ball_sprites[ball_count].angle = MTH_FIXED(45);
+        // ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), ball_sprites[ball_count].speed);
+        // ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -ball_sprites[ball_count].speed);
         ball_sprites[ball_count].state = BALL_STATE_INIT; //ball attached to ship
     }
     else {
         ball_sprites[ball_count].x = x_pos;
         ball_sprites[ball_count].y = y_pos;
-        ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), BALL_SPEED);
-        ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -BALL_SPEED);
+        ball_sprites[ball_count].speed = BALL_MINSPEED;
+        ball_sprites[ball_count].angle = MTH_FIXED(45);
+        // ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), ball_sprites[ball_count].speed);
+        // ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -ball_sprites[ball_count].speed);
         ball_sprites[ball_count].state = BALL_STATE_NORMAL; //ball comes out of ship
     }
     ball_sprites[ball_count].index = ball_count;
@@ -55,37 +59,41 @@ void ball_remove(BALL_SPRITE *ball) {
 }
 
 void ball_bounce(BALL_SPRITE *ball, int direction, int breakable) {
+    // gigaball goes through breakable blocks
+    if ((ball_mode == BALL_GIGABALL) && breakable) {
+        return;
+    }
+
     switch(direction) {
         case DIR_UP:
-            if (ball->dy < 0) {
-                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                    ball->dy = -ball->dy;
-                }
+            if (ball->angle >= MTH_FIXED(0)) {
+                ball->angle = -ball->angle;
             }
             break;
 
         case DIR_DOWN:
         // gigaball lets ball go through breakable blocks without rebounding
-            if (ball->dy > 0) {
-                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                    ball->dy = -ball->dy;
-                }
+            if (ball->angle <= MTH_FIXED(0)) {
+                ball->angle = -ball->angle;
+
             }
             break;
 
         case DIR_LEFT:
-            if (ball->dx < 0) {
-                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                    ball->dx = -ball->dx;
-                }
+            if (ball->angle >= MTH_FIXED(90)) {
+                ball->angle = MTH_FIXED(180) - ball->angle;
+            }
+            else if (ball->angle <= MTH_FIXED(-90)) {
+                ball->angle = MTH_FIXED(-180) - ball->angle;
             }
             break;
 
         case DIR_RIGHT:
-            if (ball->dx > 0) {
-                if ((ball_mode != BALL_GIGABALL) || ((ball_mode == BALL_GIGABALL) && !breakable)) {
-                    ball->dx = -ball->dx;
-                }
+            if ((ball->angle >= MTH_FIXED(0)) && (ball->angle <= MTH_FIXED(90))) {
+                ball->angle = MTH_FIXED(180) - ball->angle;
+            }
+            else if ((ball->angle <= MTH_FIXED(0)) && (ball->angle >= MTH_FIXED(-90))) {
+                ball->angle = MTH_FIXED(-180) - ball->angle;
             }
             break;
     }
@@ -100,7 +108,8 @@ void ball_move() {
             ball_sprites[i].y = ship_sprite.y + BALL_SPAWN_YOFFSET;
             // ball goes left when player goes left
             if (ship_sprite.dx < 0) {
-                ball_sprites[i].dx = -ball_sprites[i].dx;
+                ball_sprites[i].angle = MTH_FIXED(135);
+                // ball_sprites[i].dx = -ball_sprites[i].dx;
             }
 
             //don't allow ball launch until ship is done
@@ -109,20 +118,20 @@ void ball_move() {
             }
         }
         else if (ball_sprites[i].state == BALL_STATE_NORMAL) {
-            ball_sprites[i].x += ball_sprites[i].dx;
-            ball_sprites[i].y += ball_sprites[i].dy;
+            ball_sprites[i].x += MTH_Mul(MTH_Cos(ball_sprites[i].angle), ball_sprites[i].speed);
+            ball_sprites[i].y += MTH_Mul(MTH_Sin(ball_sprites[i].angle), -ball_sprites[i].speed);
             //left/right wall
             if (ball_sprites[i].x <= BALL_LBOUND) {
-                ball_sprites[i].dx = -ball_sprites[i].dx;
+                ball_bounce(&ball_sprites[i], DIR_LEFT, 0);
                 ball_sprites[i].x = BALL_LBOUND + MTH_FIXED(1);
             }
             else if (ball_sprites[i].x >= BALL_RBOUND) {
-                ball_sprites[i].dx = -ball_sprites[i].dx;
+                ball_bounce(&ball_sprites[i], DIR_RIGHT, 0);
                 ball_sprites[i].x = BALL_RBOUND - MTH_FIXED(1);
             }
             //top of screen
             if (ball_sprites[i].y <= BALL_MARGIN) {
-                ball_sprites[i].dy = -ball_sprites[i].dy;
+                ball_bounce(&ball_sprites[i], DIR_UP, 0);
                 ball_sprites[i].y = BALL_MARGIN + MTH_FIXED(1);
             }
             //bottom
@@ -143,8 +152,10 @@ void ball_move() {
                 if (ball_angle > MTH_FIXED(155)) {
                     ball_angle = MTH_FIXED(155);
                 }
-                ball_sprites[i].dx = MTH_Mul(MTH_Cos(ball_angle), BALL_SPEED);
-                ball_sprites[i].dy = MTH_Mul(MTH_Sin(ball_angle), -BALL_SPEED);
+                ball_sprites[i].angle = ball_angle;
+                if (ball_sprites[i].speed < BALL_MAXSPEED) {
+                    ball_sprites[i].speed += BALL_ACCEL;
+                }
                 sound_play(SOUND_SHIP); // play sound effect when ball hits ship
             }
 

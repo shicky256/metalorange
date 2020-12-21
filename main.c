@@ -51,7 +51,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_LOGO;
+	int state = STATE_GAME;
 	while(1) {
 		sprite_startdraw();
 		

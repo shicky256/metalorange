@@ -18,7 +18,10 @@
 #define BALL_RSENSORX (BALL_MARGIN + BALL_WIDTH)
 #define BALL_RSENSORY (BALL_MARGIN + (BALL_HEIGHT >> 1))
 
-#define BALL_SPEED (MTH_FIXED(3))
+#define BALL_MINSPEED (MTH_FIXED(3))
+#define BALL_MAXSPEED (MTH_FIXED(4))
+#define BALL_ACCEL (MTH_FIXED(0.02))
+
 #define BALL_MAXANGLE (MTH_FIXED(65))
 #define BALL_LBOUND (LEFT_WALL - BALL_MARGIN)
 #define BALL_RBOUND (RIGHT_WALL - BALL_WIDTH + BALL_MARGIN)
@@ -30,8 +33,10 @@
 typedef struct {
     Fixed32 x; //x pos onscreen
     Fixed32 y; //y pos onscreen
-    Fixed32 dx; //x delta
-    Fixed32 dy; //y delta
+    // Fixed32 dx; //x delta
+    // Fixed32 dy; //y delta
+    Fixed32 speed; //speed (used to calculate dx/dy)
+    Fixed32 angle; //angle (only updated when bouncing off paddle)
     int state; //state variable
     int index; //index in ball arr
 } BALL_SPRITE;

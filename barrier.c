@@ -9,6 +9,8 @@
 static int barrier_charno;
 
 #define BARRIER_MAXLIFE (5)
+// how much to accelerate the ball when it touches the barrier
+#define BARRIER_ACCEL (MTH_FIXED(0.2))
 // how many hits the barrier has left
 int barrier_life;
 
@@ -38,7 +40,8 @@ void barrier_move() {
     for (int i = 0; i < ball_count; i++) {
         if (ball_sprites[i].y > BARRIER_YPOS) {
             ball_sprites[i].y = BARRIER_YPOS;
-            ball_sprites[i].dy = -ball_sprites[i].dy;
+            ball_sprites[i].speed += MTH_FIXED(0.2);
+            ball_bounce(&ball_sprites[i], DIR_DOWN, 0);          
             barrier_life--;
             sound_play(SOUND_START); // menu start sound is the same as barrier bounce sound
         }

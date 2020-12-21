@@ -812,18 +812,12 @@ int game_run() {
         break;
 
         case STATE_GAME_OVER:
-            if (PadData1 & PAD_L) {
-                gameover_angle -= MTH_FIXED(1);
-            }
-            if (PadData1 & PAD_R) {
-                gameover_angle += MTH_FIXED(1);
-            }
             gameover_angle -= MTH_FIXED(1);
             // this works becaulse the sbl trig functions return 0 for out of range and modulo doesn't keep within
             // range for negative numbers
             for (int i = 0; i < (GAMEOVER_HEIGHT * 16); i++) {
                 Fixed32 curr_angle = gameover_angle + MTH_IntToFixed(i * 3);
-                // keep within range
+                // keep within range for positive
                 curr_angle %= MTH_FIXED(360);
                 curr_angle -= MTH_FIXED(180);
                 if (i & 1) {
