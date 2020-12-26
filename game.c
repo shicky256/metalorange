@@ -352,6 +352,13 @@ static inline void game_init() {
     }
     spr_charno += blocks2_num;
     spr_palno += 16;
+    cd_load_nosize(blockcrack_name, game_buf);
+    SCL_SetColRam(SCL_SPR, spr_palno, 16, blockcrack_pal);
+    for (int i = 0; i < blockcrack_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blockcrack_width, blockcrack_height, (char *)game_buf + (i * blockcrack_size));
+    }
+    spr_charno += blockcrack_num;
+    spr_palno += 16;
 
     //load powerup capsule
     capsule_charno = spr_charno;
@@ -608,7 +615,7 @@ int game_run() {
             ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
             game_powerupreset();
-            level_load(block_charno, 0);
+            level_load(block_charno, 1);
 
             state = STATE_GAME_FADEIN;
             break;
@@ -736,6 +743,13 @@ int game_run() {
             barrier_move();
             // animate the ship
             game_shipanim();
+            
+            print_num(level_blocksleft, 0, 0);
+            if (level_blocksleft == 0) {
+                state = STATE_GAME_INIT;
+                sprite_deleteall();
+                return 1;
+            }
 
             // handle pause (last so nothing else can set an animation, etc)
             if (PadData1E & PAD_S) {

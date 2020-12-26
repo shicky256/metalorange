@@ -27,6 +27,7 @@ s explosion
 s beffect
 s blocks1
 s blocks2
+s blockcrack
 s capsule
 s bit
 s laser
@@ -36,3 +37,4 @@ t80 tomo.bmp
 t80 cutscfont.bmp
 t42 gameover.bmp
 t81 chipover.bmp
+t41 noticefont.bmp

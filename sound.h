@@ -27,6 +27,7 @@ typedef enum {
     SOUND_DEATH,
     SOUND_SHIP,
     SOUND_GOLD,
+    SOUND_CRACK,
     SOUND_CAPSULE,
     SOUND_POWERUP,
     SOUND_LASER,

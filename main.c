@@ -15,6 +15,7 @@
 #include "intro.h"
 #include "logo.h"
 #include "menu.h"
+#include "notice.h"
 #include "release.h"
 #include "scroll.h"
 #include "soon.h"
@@ -27,7 +28,8 @@ Uint32 frame = 0;
 SclConfig off_config;
 
 typedef enum {
-	STATE_LOGO = 0,
+	STATE_NOTICE = 0,
+	STATE_LOGO,
 	STATE_INTRO,
 	STATE_MENU,
 	STATE_CUTSCENE,
@@ -51,11 +53,17 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_GAME;
+	int state = STATE_NOTICE;
 	while(1) {
 		sprite_startdraw();
 		
 		switch (state) {
+			case STATE_NOTICE:
+				if (notice_run()) {
+					state = STATE_LOGO;
+				}
+				break;
+
 			case STATE_LOGO:
 				if (logo_run()) {
 					state = STATE_INTRO;

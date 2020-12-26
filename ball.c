@@ -31,17 +31,13 @@ void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle) {
         ball_sprites[ball_count].y = MTH_FIXED(-80);
         ball_sprites[ball_count].speed = BALL_MINSPEED;
         ball_sprites[ball_count].angle = MTH_FIXED(45);
-        // ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), ball_sprites[ball_count].speed);
-        // ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -ball_sprites[ball_count].speed);
         ball_sprites[ball_count].state = BALL_STATE_INIT; //ball attached to ship
     }
     else {
         ball_sprites[ball_count].x = x_pos;
         ball_sprites[ball_count].y = y_pos;
         ball_sprites[ball_count].speed = BALL_MINSPEED;
-        ball_sprites[ball_count].angle = MTH_FIXED(45);
-        // ball_sprites[ball_count].dx = MTH_Mul(MTH_Cos(angle), ball_sprites[ball_count].speed);
-        // ball_sprites[ball_count].dy = MTH_Mul(MTH_Sin(angle), -ball_sprites[ball_count].speed);
+        ball_sprites[ball_count].angle = angle;
         ball_sprites[ball_count].state = BALL_STATE_NORMAL; //ball comes out of ship
     }
     ball_sprites[ball_count].index = ball_count;

@@ -105,6 +105,11 @@ extern Uint16 chipover_num;
 extern char chipover_name[];
 extern Uint32 chipover_pal[];
 
+//noticefont.c
+extern Uint16 noticefont_num;
+extern char noticefont_name[];
+extern Uint32 noticefont_pal[];
+
 //---maps---
 //starnear.c
 extern Uint16 starnear_width;
@@ -205,6 +210,14 @@ extern Uint16 blocks2_width;
 extern Uint16 blocks2_height;
 extern char blocks2_name[];
 extern Uint32 blocks2_pal[];
+
+//blockcrack.c
+extern Uint16 blockcrack_num;
+extern Uint16 blockcrack_size;
+extern Uint16 blockcrack_width;
+extern Uint16 blockcrack_height;
+extern char blockcrack_name[];
+extern Uint32 blockcrack_pal[];
 
 //capsule.c
 extern Uint16 capsule_num;

@@ -24,6 +24,7 @@ typedef unsigned long Uint32;
 #include "graphic/cutscfont.c"
 #include "graphic/gameover.c"
 #include "graphic/chipover.c"
+#include "graphic/noticefont.c"
 
 //maps
 #include "graphic/starnear.c"
@@ -43,6 +44,7 @@ typedef unsigned long Uint32;
 #include "graphic/beffect.c"
 #include "graphic/blocks1.c"
 #include "graphic/blocks2.c"
+#include "graphic/blockcrack.c"
 #include "graphic/capsule.c"
 #include "graphic/bit.c"
 #include "graphic/laser.c"

@@ -153,7 +153,7 @@ static inline void menu_init() {
     DMA_CpuMemCopy1(font_ptr, menu_buf, 128 * menufont_num);
     SCL_SetColRam(SCL_NBG1, 0, 16, menufont_pal);
     menu_print(5, 5, 0, "START GAME");
-    menu_print(5, 6, 0, "LOAD GAME");
+    // menu_print(5, 6, 0, "LOAD GAME");
     if (cutscene) {
         menu_print(5, 7, 0, "CUTSCENE: ON ");
     }
@@ -196,8 +196,8 @@ Uint32 sqrt32(Uint32 n)
 }  
 
 static void menu_starmove(SPRITE_INFO *star) {
-    if ((star->x < MTH_FIXED(0)) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
-        (star->y < MTH_FIXED(0)) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
+    if ((star->x < MTH_FIXED(-32)) || (star->x > MTH_FIXED(SCROLL_LORES_X) ||
+        (star->y < MTH_FIXED(-32)) || (star->y > MTH_FIXED(SCROLL_LORES_Y)))) {
         sprite_delete(star);
         return;
     }
@@ -320,12 +320,12 @@ int menu_run() {
     if (state == STATE_MENU_RUN) {
         //handle menu movement
         if ((PadData1E & PAD_U) && (menu_cursor > 0)) {
-            menu_cursor--;
+            menu_cursor = 0;
             // pcm_play(1, PCM_SEMI, 6);
             sound_play(SOUND_SELECT);
         }
         if ((PadData1E & PAD_D) && (menu_cursor < 2)) {
-            menu_cursor++;
+            menu_cursor = 2;
             // pcm_play(1, PCM_SEMI, 6);
             sound_play(SOUND_SELECT);
         }
@@ -348,8 +348,8 @@ int menu_run() {
         if (menu_cursor == 0) { menu_print(5, 5, 1, "START GAME"); }
         else menu_print(5, 5, 0, "START GAME");
 
-        if (menu_cursor == 1) { menu_print(5, 6, 1, "LOAD GAME"); }
-        else { menu_print(5, 6, 0, "LOAD GAME"); }
+        // if (menu_cursor == 1) { menu_print(5, 6, 1, "LOAD GAME"); }
+        // else { menu_print(5, 6, 0, "LOAD GAME"); }
 
         if (cutscene) {
             if (menu_cursor == 2) { menu_print(5, 7, 1, "CUTSCENE: ON "); }

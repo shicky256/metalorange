@@ -30,6 +30,8 @@ typedef enum {
     ORN, //orange
     WHT, //white
     PUR, //purple
+    CR1, //cracked 1 (before it's cracked)
+    CR2, //cracked 2 (actually cracked)
 } BLOCK;
 
 typedef enum {
@@ -69,6 +71,11 @@ static int anim_cursor;
 static int row_num;
 //what y pos the animating row is at
 static Fixed32 row_y;
+// level currently loaded
+static int current_level;
+
+// number of blocks left on the stage
+int level_blocksleft;
 
 //level format: 13 wide by however many necessary deep 
 
@@ -85,15 +92,52 @@ Sint8 level0_blocks[] = {
     PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR,
 };
 
-Sint8 *level_blocks[] = {level0_blocks};
-int level_lengths[] = {(int)sizeof(level0_blocks)};
+Sint8 level1_blocks[] = {
+    NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
+    NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
+    GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY,
+    BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE, BGE,
+    WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT, WHT,
+    NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
+    NON, CR1, BLU, BLU, CR1, BLU, CR1, BLU, CR1, BLU, BLU, CR1, NON,
+    NON, CR1, WHT, WHT, CR1, WHT, GLD, WHT, CR1, WHT, WHT, CR1, NON,
+    NON, CR1, GLD, CR1, CR1, GRY, CR1, GRY, CR1, CR1, GLD, CR1, NON,
+    NON, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, NON,
+};
+
+// Sint8 level1_blocks[] = {
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
+// };
+
+Sint8 *level_blocks[] = {
+    level0_blocks,
+    level1_blocks,
+};
+
+int level_lengths[] = {
+    (int)sizeof(level0_blocks),
+    (int)sizeof(level1_blocks),
+};
 
 void level_load(Uint16 base, int num) {
     block_base = base;
     //set row cursor to bottom row
+    current_level = num;
     row_num = (level_lengths[num] / LEVEL_WIDTH) - 1;
     anim_cursor = -1;
     block_cursor = 0;
+    level_blocksleft = 0;
+}
+
+static int level_breakable(Sint8 block_num) {
+    return block_num != GLD;
 }
 
 static void level_addblock(BLOCK_SPR *block) {
@@ -111,12 +155,17 @@ static void level_addblock(BLOCK_SPR *block) {
         curr_block->state = STATE_NORM;
         curr_block->overlay_no = 0;
     }
+
+    if (level_breakable(block->tile_no)) {
+        level_blocksleft++;
+    }
 }
 
 //removes a block from the level block array by swapping the last block and the one to remove
 static void level_removeblock(BLOCK_SPR *block) {
     int index = block->index;
     block_cursor--;
+    level_blocksleft--;
     //if we're not removing the last block and we have multiple blocks
     if ((block_cursor != index) && (block_cursor > 0)) {
         block_arr[index] = block_arr[block_cursor];
@@ -132,10 +181,6 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
         return 1;
     }
     return 0;
-}
-
-static int level_breakable(Sint8 block_num) {
-    return block_num != GLD;
 }
 
 // routine run every frame by normal block
@@ -182,26 +227,44 @@ static void level_normalblock(BLOCK_SPR *block) {
     // if there's a collision, make the block explode
     if (collision) {
         // gold blocks can't be broken
-        if (block->tile_no == GLD) {
-            block->state = STATE_SHINEON;
-            block->anim_timer = 0;
-            sound_play(SOUND_GOLD);
-        }
-        else {
-            block->state = STATE_EXPLODE;
-            block->tile_no = EXPLOSION_CHARNO;
-            block->anim_timer = 0;
-            score += 50;
-            sound_play(SOUND_BLOCK);
-            if (((MTH_GetRand() >> 16) % 10) < CAPSULE_PROBABILITY) {
-                capsule_add(block->x, block->y); // drop capsule
+        switch(block->tile_no) {
+            case GLD:
+                block->state = STATE_SHINEON;
+                block->anim_timer = 0;
+                sound_play(SOUND_GOLD);
+                break;
+
+            case CR1:
+                if (block->state == STATE_NORM) {
+                    block->state = STATE_SHINEON;
+                    block->anim_timer = 0;
+                    sound_play(SOUND_CRACK);
+                }
+                break;
+
+            case CR2:
+            // fall through to destroy if the block is done with the "breaking" animation
+            if (block->state != STATE_NORM) {
+                break;
             }
+
+            default:
+                block->state = STATE_EXPLODE;
+                block->tile_no = EXPLOSION_CHARNO;
+                block->anim_timer = 0;
+                score += 50;
+                sound_play(SOUND_BLOCK);
+                if (((MTH_GetRand() >> 16) % 10) < CAPSULE_PROBABILITY) {
+                    capsule_add(block->x, block->y); // drop capsule
+                }
+                break;
         }
     }
 }
 
 //routine run when a block explodes
 static void level_explodeblock(BLOCK_SPR *block) {
+    block->overlay_no = 0;
     block->anim_timer++;
     if (block->anim_timer >= EXPLOSION_TIMING) {
         block->tile_no++;
@@ -214,15 +277,26 @@ static void level_explodeblock(BLOCK_SPR *block) {
 
 //routine run to do the shine effect on a block
 static void level_shineblock(BLOCK_SPR *block) {
+    // for cracked block, show whole block during SHINEON and 
+    // cracked block during SHINEOFF
+    if (block->tile_no == CR2) {
+        block->tile_no = CR1;
+    }
     block->anim_timer++;
-    block->overlay_no = block->anim_timer / SHINE_TIMING + SHINE_CHARNO;
-    if (block->overlay_no - SHINE_CHARNO >= SHINE_NUM) {
+    block->overlay_no = (block->anim_timer / SHINE_TIMING) + SHINE_CHARNO;
+    if ((block->overlay_no - SHINE_CHARNO) >= SHINE_NUM) {
         block->state = STATE_NORM;
         block->overlay_no = 0;
         block->anim_timer = 0;
+        if (block->tile_no == CR1) {
+            block->tile_no = CR2;
+        }
     }
     else {
         block->state = STATE_SHINEOFF;
+        if (block->tile_no == CR1) {
+            block->tile_no = CR2;
+        }
     }
 }
 
@@ -235,7 +309,8 @@ void level_disp() {
         if (anim_cursor == -1) {
             anim_cursor = 0;
             for (int i = 0; i < LEVEL_WIDTH; i++) {
-                Sint8 tile_num = level0_blocks[row_num * LEVEL_WIDTH + i];
+                Sint8 *level_ptr = level_blocks[current_level];
+                Sint8 tile_num = level_ptr[row_num * LEVEL_WIDTH + i];
                 if (tile_num >= 0) {
                     BLOCK_SPR *block = &anim_row[anim_cursor++];
                     block->x = MTH_Mul(MTH_FIXED(i), BLOCK_WIDTH) + LEFT_WALL + MTH_FIXED(1);

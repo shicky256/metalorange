@@ -247,6 +247,11 @@ void scroll_charsize(int num, Uint8 size) {
 	SCL_SetConfig(1 << (num + 2), &scfg[num]);
 }
 
+void scroll_enable(int num, Uint8 state) {
+	scfg[num].dispenbl = state;
+	SCL_SetConfig(1 << (num + 2), &scfg[num]);
+}
+
 void scroll_mapsize(int num, Uint8 size) {
 	scfg[num].pnamesize = size;
 	SCL_SetConfig(1 << (num + 2), &scfg[num]);

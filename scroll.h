@@ -38,6 +38,8 @@ void scroll_move(int num, Fixed32 x, Fixed32 y);
 void scroll_clearmaps(void);
 //sets bg #num's character size
 void scroll_charsize(int num, Uint8 size);
+//enables/disable bg #num
+void scroll_enable(int num, Uint8 state);
 //sets bg #num's map size (either 1 word or 2 word)
 void scroll_mapsize(int num, Uint8 size);
 

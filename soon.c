@@ -9,6 +9,7 @@
 #include "scroll.h"
 #include "soon.h"
 #include "sound.h"
+#include "sprite.h"
 
 typedef enum {
     STATE_SOON_INIT = 0,
@@ -29,6 +30,8 @@ int soon_scroll;
 void soon_init() {
 	//wipe out vram
 	memset((void *)SCL_VDP2_VRAM, 0, 0x80000);
+    // clear out sprites
+    sprite_deleteall();
     // low res
     scroll_lores();
     // fix vdp2 config from game
