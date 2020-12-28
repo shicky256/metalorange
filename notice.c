@@ -54,15 +54,16 @@ void notice_print(int x, int y, char *str) {
 
 int notice_run() {
     if (notice_displayed == 0) {
+        scroll_clearmaps();
         scroll_lores();
         scroll_charsize(1, SCL_CHAR_SIZE_1X1);
         scroll_set(1, 0, 0);
         scroll_enable(2, OFF);
         scroll_enable(3, OFF);
-        scroll_enable(4, OFF);
         char *gfx_buf = (char *)LWRAM;
         cd_load_nosize(noticefont_name, gfx_buf);
         DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, gfx_buf, 32 * noticefont_num);
+        SCL_SetColRam(SCL_NBG1, 0, 16, noticefont_pal);
         notice_print(NOTICE_X, NOTICE_Y, notice_text);
         notice_displayed = 1;
     }

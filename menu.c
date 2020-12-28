@@ -143,6 +143,7 @@ static inline void menu_init() {
     scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
     //load star gfx
     cd_load_nosize(starspr_name, sprite_buf);
+    SPR_2ClrAllChar();
     SCL_SetColRam(SCL_SPR, 16, 16, starspr_pal);
 	for (int i = 0; i < starspr_num; i++) {
 		SPR_2SetChar(i + STAR_CHARNO, COLOR_0, 16, starspr_width, starspr_height, sprite_buf + (i * starspr_size));

@@ -251,5 +251,11 @@ extern Uint16 barrier_height;
 extern char barrier_name[];
 extern Uint32 barrier_pal[];
 
-
+//introfont.c
+extern Uint16 introfont_num;
+extern Uint16 introfont_size;
+extern Uint16 introfont_width;
+extern Uint16 introfont_height;
+extern char introfont_name[];
+extern Uint32 introfont_pal[];
 #endif

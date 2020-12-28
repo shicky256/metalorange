@@ -49,3 +49,4 @@ typedef unsigned long Uint32;
 #include "graphic/bit.c"
 #include "graphic/laser.c"
 #include "graphic/barrier.c"
+#include "graphic/introfont.c"

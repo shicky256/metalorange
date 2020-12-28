@@ -38,3 +38,4 @@ t80 cutscfont.bmp
 t42 gameover.bmp
 t81 chipover.bmp
 t41 noticefont.bmp
+s introfont

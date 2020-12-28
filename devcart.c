@@ -1,4 +1,5 @@
 #include <SEGA_MTH.H>
+#include <SEGA_PER.H>
 #include "crc.h"
 #include "release.h"
 
@@ -95,11 +96,9 @@ void devcart_printstr(char *string) {
 }
 
 void devcart_reset() {
-    void (*func_ptr)(void);
-
-    //quit server program
+    // quit server program
     devcart_putbyte(FUNC_QUIT);
-    func_ptr = (void(*)(void))(0x02000100);
-    (*func_ptr)();
+    // reset saturn
+    PER_SMPC_SYS_RES();
 }
 

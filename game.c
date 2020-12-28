@@ -748,6 +748,7 @@ int game_run() {
             if (level_blocksleft == 0) {
                 state = STATE_GAME_INIT;
                 sprite_deleteall();
+                print_init();
                 return 1;
             }
 
@@ -849,6 +850,8 @@ int game_run() {
             frames++;
             if (frames >= 360) {
                 state = STATE_GAME_INIT;
+                print_init();
+                sprite_deleteall();
                 return 2;
             }
         break;
@@ -894,6 +897,7 @@ int game_run() {
     if (PadData1E & PAD_Y) {
         state = STATE_GAME_INIT;
         sprite_deleteall();
+        print_init();
         return 1;
     }
     #endif

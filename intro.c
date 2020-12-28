@@ -7,6 +7,7 @@
 #include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
+#include "sprite.h"
 #include "intro.h"
 #include "print.h"
 #include "vblank.h"
@@ -80,9 +81,18 @@ static char midi_str[] = "MIDI ARRANGE\n MKM HIROTA\nJKL FURUKAWA";
 static char direct_str[] = "  DIRECT\nATH NAGANO";
 static char produce_str[] = "PRODUCE\nH. YANAGI";
 
+static int introfont_widths[] = {
+    8, 7, 11, 14, 18, 14, 19, 7, 11, 11, 14, 14, 7, 10, 7, 6,
+	14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 7, 7, 9, 14, 9, 13,
+	27, 21, 22, 17, 23, 22, 19, 21, 25, 13, 14, 23, 21, 27, 22, 20,
+	20, 20, 21, 16, 19, 22, 21, 30, 23, 22, 17, 10, 9, 11, 8, 23
+};
+
+#define INTROFONT_START (font_num)
+static Uint32 introfont_curpal[16];
+
 static char *intro_strs[] = {program_str, design_str, graphic_str, character_str, music_str,
     sound_str, opm_str, midi_str, direct_str, produce_str};
-
 static inline void intro_init() {
     char *img_buf = (char *)LWRAM;
     char *dest_buf = img_buf;
@@ -100,6 +110,7 @@ static inline void intro_init() {
         }
     }
 
+    scroll_hires();
     scroll_set(0, MTH_FIXED(0), MTH_FIXED(0));
     // set layer priorities
 	SCL_SetPriority(SCL_SPR, 7);
@@ -109,6 +120,13 @@ static inline void intro_init() {
 	SCL_SetPriority(SCL_NBG2, 4);
 	SCL_SetPriority(SCL_NBG3, 3);
     
+    // load font for intro
+    cd_load_nosize(introfont_name, dest_buf);
+    SPR_2ClrAllChar();
+    for (int i = 0; i < introfont_num; i++) {
+        SPR_2SetChar(i + INTROFONT_START, COLOR_0, 16, introfont_width, introfont_height, (char *)(dest_buf) + (i * introfont_size));
+    }
+
     //load all 5 images
     girls[0] = dest_buf;
     cd_load_nosize(girl1_name, dest_buf);
@@ -166,22 +184,45 @@ static inline void intro_init() {
     linescroll_multiplier = MTH_FIXED(16);
 }
 
-static inline int intro_disptext(int girl) {
-    int row, col;
+static void intro_print(int x, int y, char *str) {
+    int start_x = x;
+    SPRITE_INFO letter;
+    char ch;
 
+    while ((ch = *str) != '\0') {
+        if (ch == '\n') {
+            y += 32;
+            x = start_x;
+            str++;
+            continue;
+        }
+
+        ch -= 32; //font starts with the space character
+        sprite_make(ch + INTROFONT_START, MTH_IntToFixed(x), MTH_IntToFixed(y), &letter);
+        sprite_draw(&letter);
+        x += introfont_widths[(int)ch];
+        str++;
+    }
+}
+
+static inline int intro_disptext(int girl) {
+    int x_pos, y_pos;
+    if ((girl & 1) == 0) { //even girls are on the right
+        x_pos = 120;
+        y_pos = 120;
+    }
+    else { //odd girls are on the left
+        x_pos = 360;
+        y_pos = 120;
+    }
     if (text_mode == TEXT_LOAD) {
-        if ((girl & 1) == 0) { //even girls are on the right
-            row = 20;
-            col = 10;
-        }
-        else { //odd girls are on the left
-            row = 20;
-            col = 50;
-        }
-        print_init();
-        print_string(intro_strs[girl * 2 + text_num], row, col);
         text_frame = 0;
         text_mode = TEXT_SHOW;
+        // clear out text palette
+        for (int i = 0; i < sizeof(introfont_curpal); i++) {
+            introfont_curpal[i] = 0;
+        }
+        SCL_SetColRam(SCL_SPR, 16, 16, introfont_curpal);
     }
     else {
         text_frame++;
@@ -190,12 +231,20 @@ static inline int intro_disptext(int girl) {
             text_mode = TEXT_LOAD;
             if (text_num == 2) {
                 text_num = 0;
-                print_init();
                 return 1;
             }
-
         }
+        // "draw down" palette effect
+        for (int i = 0; i < sizeof(introfont_curpal); i++) {
+            if (introfont_curpal[i] == 0) {
+                introfont_curpal[i] = 0xFF0000;
+                break;
+            }
+        }
+        SCL_SetColRam(SCL_SPR, 16, 16, introfont_curpal);
     }
+
+    intro_print(x_pos, y_pos, intro_strs[girl * 2 + text_num]);
     return 0;
 }
 
@@ -487,7 +536,6 @@ int intro_run() {
         end.red = -255; end.green = -255; end.blue = -255;
         SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
         frames = 0;
-        print_init();
         state = STATE_INTRO_FADEOUT;
     }
     return 0;
