@@ -2,6 +2,7 @@
 
 #include "ball.h"
 #include "game.h"
+#include "level.h"
 #include "print.h"
 #include "scroll.h"
 #include "sound.h"
@@ -108,8 +109,8 @@ void ball_move() {
                 // ball_sprites[i].dx = -ball_sprites[i].dx;
             }
 
-            //don't allow ball launch until ship is done
-            if ((PadData1E & PAD_A) && (ship_sprite.state == SHIP_STATE_NORM)) {
+            //don't allow ball launch until level is done loading and ship is done
+            if ((PadData1E & PAD_A) && (level_doneload()) && (ship_sprite.state == SHIP_STATE_NORM)) {
                 ball_sprites[i].state = BALL_STATE_NORMAL;
             }
         }

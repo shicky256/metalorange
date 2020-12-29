@@ -92,6 +92,10 @@ Sint8 level0_blocks[] = {
     PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR,
 };
 
+// Sint8 level0_blocks[] = {
+//     NON, NON, NON, NON, BLU, NON, NON, NON, NON, NON, NON, NON, NON,
+// };
+
 Sint8 level1_blocks[] = {
     NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
     NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
@@ -105,21 +109,13 @@ Sint8 level1_blocks[] = {
     NON, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, GRY, NON,
 };
 
-// Sint8 level1_blocks[] = {
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-//     CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1, CR1,
-// };
 
 Sint8 *level_blocks[] = {
     level0_blocks,
     level1_blocks,
 };
+
+int level_count = sizeof(level_blocks) / sizeof(level_blocks[0]);
 
 int level_lengths[] = {
     (int)sizeof(level0_blocks),
@@ -298,6 +294,10 @@ static void level_shineblock(BLOCK_SPR *block) {
             block->tile_no = CR2;
         }
     }
+}
+
+int level_doneload() {
+    return row_num == -1;
 }
 
 void level_disp() {

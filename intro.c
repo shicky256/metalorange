@@ -31,7 +31,7 @@ typedef enum {
 
 #define SCREEN_X (704)
 #define GIRL_X (272)
-#define MOVE_SPEED (MTH_FIXED(6))
+#define MOVE_SPEED (MTH_FIXED(7))
 #define METALORANGE_Y (-100)
 
 static int state = STATE_INTRO_INIT;
@@ -536,6 +536,7 @@ int intro_run() {
         end.red = -255; end.green = -255; end.blue = -255;
         SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
         frames = 0;
+
         state = STATE_INTRO_FADEOUT;
     }
     return 0;

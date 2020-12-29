@@ -123,6 +123,8 @@ Uint32 powerup_names[] = {
 #define POWERUP_NAME_AREA ((23 * MAP_WIDTH) + 35)
 #define POWERUP_NAME_LEN (7)
 
+int curr_level;
+
 typedef enum {
     STATE_CHIP_NONE = 0,
     STATE_CHIP_HAND,
@@ -615,7 +617,8 @@ int game_run() {
             ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
             game_powerupreset();
-            level_load(block_charno, 1);
+            curr_level = 0;
+            level_load(block_charno, curr_level);
 
             state = STATE_GAME_FADEIN;
             break;
@@ -745,11 +748,29 @@ int game_run() {
             game_shipanim();
             
             print_num(level_blocksleft, 0, 0);
-            if (level_blocksleft == 0) {
-                state = STATE_GAME_INIT;
-                sprite_deleteall();
-                print_init();
-                return 1;
+            print_num(level_count, 1, 0);
+            // if all the blocks from the current level are gone, move to the new level.
+            // if there's no more letters, show the coming soon text.
+            if (level_doneload() && level_blocksleft == 0) {
+                curr_level++;
+                if (curr_level >= level_count) {
+                    state = STATE_GAME_INIT;
+                    sprite_deleteall();
+                    print_init();
+                    return 1;
+                }
+                else {
+                    // load new level
+                    level_load(block_charno, curr_level);
+                    // remove all balls
+                    ball_init(ball_charno);
+                    // add a new one for the ship
+                    ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
+                    // remove all capsules
+                    capsule_init(capsule_charno);
+                    // remove all lasers
+                    laser_init(laser_charno);
+                }
             }
 
             // handle pause (last so nothing else can set an animation, etc)
