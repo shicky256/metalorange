@@ -258,4 +258,12 @@ extern Uint16 introfont_width;
 extern Uint16 introfont_height;
 extern char introfont_name[];
 extern Uint32 introfont_pal[];
+
+//circle.c
+extern Uint16 circle_num;
+extern Uint16 circle_size;
+extern Uint16 circle_width;
+extern Uint16 circle_height;
+extern char circle_name[];
+extern Uint32 circle_pal[];
 #endif

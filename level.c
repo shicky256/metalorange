@@ -2,6 +2,7 @@
 
 #include "ball.h"
 #include "capsule.h"
+#include "circle.h"
 #include "game.h"
 #include "laser.h"
 #include "level.h"
@@ -74,6 +75,13 @@ static Fixed32 row_y;
 // level currently loaded
 static int current_level;
 
+// timer for spawning circle
+#define CIRCLE_SPAWNRATE (1200)
+static int circle_timer;
+#define CIRCLE_XPOS1 (MTH_FIXED(20))
+#define CIRCLE_XPOS2 (MTH_FIXED(180))
+static Fixed32 circle_xpos;
+
 // number of blocks left on the stage
 int level_blocksleft;
 
@@ -91,10 +99,6 @@ Sint8 level0_blocks[] = {
     WHT, PUR, WHT, PUR, WHT, PUR, WHT, PUR, WHT, PUR, WHT, PUR, WHT,
     PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR, PUR,
 };
-
-// Sint8 level0_blocks[] = {
-//     NON, NON, NON, NON, BLU, NON, NON, NON, NON, NON, NON, NON, NON,
-// };
 
 Sint8 level1_blocks[] = {
     NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON, NON,
@@ -130,6 +134,11 @@ void level_load(Uint16 base, int num) {
     anim_cursor = -1;
     block_cursor = 0;
     level_blocksleft = 0;
+
+    if (num == 1) {
+        circle_timer = CIRCLE_SPAWNRATE;
+        circle_xpos = CIRCLE_XPOS1;
+    }
 }
 
 static int level_breakable(Sint8 block_num) {
@@ -208,6 +217,15 @@ static void level_normalblock(BLOCK_SPR *block) {
             collision = 1;
             break;
         }
+
+        // check for circle collision
+        for (int j = 0; j < circle_cursor; j++) {
+            if ((ball_sprites[i].x >= circle_sprites[j].x) && (ball_sprites[i].x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
+                if ((ball_sprites[i].y >= circle_sprites[j].y) && (ball_sprites[i].y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
+                    circle_explode(&circle_sprites[j]);
+                }
+            }
+        }
     }
     // check all lasers
     for (int i = 0; i < laser_count; i++) {
@@ -217,6 +235,15 @@ static void level_normalblock(BLOCK_SPR *block) {
             laser_remove(&laser_sprites[i]);
             collision = 1;
             break;
+        }
+
+        // check for circle collision
+        for (int j = 0; j < circle_cursor; j++) {
+            if ((laser_sprites[i].x >= circle_sprites[j].x) && (laser_sprites[i].x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
+                if ((laser_sprites[i].y >= circle_sprites[j].y) && (laser_sprites[i].y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
+                    circle_explode(&circle_sprites[j]);
+                }
+            }
         }
     }
 
@@ -254,6 +281,25 @@ static void level_normalblock(BLOCK_SPR *block) {
                     capsule_add(block->x, block->y); // drop capsule
                 }
                 break;
+        }
+    }
+
+    // check all circles
+    for (int i = 0; i < circle_cursor; i++) {
+        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_LSENSORX, circle_sprites[i].y + CIRCLE_LSENSORY)) {
+            circle_bounce(&circle_sprites[i], DIR_LEFT);
+        }
+
+        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_RSENSORX, circle_sprites[i].y + CIRCLE_RSENSORY)) {
+            circle_bounce(&circle_sprites[i], DIR_RIGHT);
+        }
+
+        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_TSENSORX, circle_sprites[i].y + CIRCLE_TSENSORY)) {
+            circle_bounce(&circle_sprites[i], DIR_UP);
+        }
+
+        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_BSENSORX, circle_sprites[i].y + CIRCLE_BSENSORY)) {
+            circle_bounce(&circle_sprites[i], DIR_DOWN);
         }
     }
 }
@@ -337,6 +383,19 @@ void level_disp() {
                 anim_row[i].y = row_y;
                 sprite_make(anim_row[i].tile_no + (Uint16)block_base, anim_row[i].x, anim_row[i].y, &spr);
                 sprite_draw(&spr);
+            }
+        }
+    }
+    else if (game_playing() && current_level == 1) {
+        circle_timer++;
+        if (circle_timer >= CIRCLE_SPAWNRATE) {
+            circle_timer = 0;
+            circle_add(circle_xpos, MTH_FIXED(0));
+            if (circle_xpos == CIRCLE_XPOS1) {
+                circle_xpos = CIRCLE_XPOS2;
+            }
+            else {
+                circle_xpos = CIRCLE_XPOS1;
             }
         }
     }

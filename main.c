@@ -53,7 +53,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_GAME;
+	int state = STATE_NOTICE;
 	while(1) {
 		sprite_startdraw();
 		
@@ -128,7 +128,9 @@ int main() {
 			#endif
 		}
 		sprite_draw_all();
+		#if DEBUG
 		print_display();
+		#endif
 		SPR_2CloseCommand();
 
 		SCL_DisplayFrame();

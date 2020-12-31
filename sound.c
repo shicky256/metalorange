@@ -78,6 +78,7 @@ void sound_init() {
     load_8bit_pcm("POWERUP.RAW", 11025);
     load_8bit_pcm("LASER.RAW", 11025);
     load_8bit_pcm("REPLACE.RAW", 11025);
+    load_8bit_pcm("CIRCLE.RAW", 11025);
 }
 
 void sound_cdda(int track, int loop) {

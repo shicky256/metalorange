@@ -8,6 +8,7 @@
 #include "barrier.h"
 #include "capsule.h"
 #include "cd.h"
+#include "circle.h"
 #include "game.h"
 #include "graphicrefs.h"
 #include "laser.h"
@@ -202,6 +203,7 @@ int explosion_charno;
 int block_charno;
 int capsule_charno;
 int barrier_charno;
+int circle_charno;
 
 static inline void game_init() {
     Uint8 *game_buf = (Uint8 *)LWRAM;
@@ -380,6 +382,16 @@ static inline void game_init() {
         SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, barrier_width, barrier_height, (char *)game_buf + (i * barrier_size));
     }
     spr_charno += barrier_num;
+    spr_palno += 16;
+
+    //load circle
+    circle_charno = spr_charno;
+    cd_load_nosize(circle_name, game_buf);
+    SCL_SetColRam(SCL_SPR, spr_palno, 16, circle_pal);
+    for (int i = 0; i < barrier_num; i++) {
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, circle_width, circle_height, (char *)game_buf + (i * circle_size));
+    }
+    spr_charno += circle_num;
     spr_palno += 16;
 
     //load chip's animation frames into lwram
@@ -583,6 +595,10 @@ void game_loss() {
     ship_sprite.y = SHIP_STARTY;
 }
 
+int game_playing() {
+    return state == STATE_GAME_PLAY;
+}
+
 int game_run() {
     // for illusion
     int top_index = 0;
@@ -613,6 +629,9 @@ int game_run() {
             laser_init(laser_charno);
             // init barrier
             barrier_init(barrier_charno);
+            // init circle
+            circle_init(circle_charno);
+            // circle_add(MTH_FIXED(150), MTH_FIXED(150));
             //add first ball
             ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
@@ -740,6 +759,8 @@ int game_run() {
             ball_move();
             // move all lasers
             laser_move();
+            // move all circles
+            circle_move();
             // move all capsules
             capsule_run();
             // animate the barrier
@@ -751,7 +772,7 @@ int game_run() {
             print_num(level_count, 1, 0);
             // if all the blocks from the current level are gone, move to the new level.
             // if there's no more letters, show the coming soon text.
-            if (level_doneload() && level_blocksleft == 0) {
+            if (level_doneload() && ((DEBUG && (PadData1E & PAD_Y)) || (level_blocksleft == 0))) {
                 curr_level++;
                 if (curr_level >= level_count) {
                     state = STATE_GAME_INIT;
@@ -770,6 +791,8 @@ int game_run() {
                     capsule_init(capsule_charno);
                     // remove all lasers
                     laser_init(laser_charno);
+                    // remove all circles
+                    circle_init(circle_charno);
                 }
             }
 
@@ -914,13 +937,6 @@ int game_run() {
     if (PadData1E & PAD_X) {
         game_incpowerup();
     }
-
-    if (PadData1E & PAD_Y) {
-        state = STATE_GAME_INIT;
-        sprite_deleteall();
-        print_init();
-        return 1;
-    }
     #endif
 
     if (PadData1E & PAD_B) {
@@ -1052,6 +1068,7 @@ int game_run() {
         capsule_draw(); // draw capsules
         laser_draw(); // draw laser
         barrier_draw(); // draw barrier
+        circle_draw(); // draw circle
         ball_draw(); // draw ball
 
         // draw ship

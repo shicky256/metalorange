@@ -6,6 +6,6 @@
 #define DEVCART_LOAD (0)
 
 // Debug features
-#define DEBUG (1)
+#define DEBUG (0)
 
 #endif

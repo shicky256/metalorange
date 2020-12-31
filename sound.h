@@ -32,6 +32,7 @@ typedef enum {
     SOUND_POWERUP,
     SOUND_LASER,
     SOUND_REPLACE,
+    SOUND_CIRCLE,
 } PCM_INDEX;
 
 //play a pcm sound

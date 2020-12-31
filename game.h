@@ -43,5 +43,6 @@ int game_run();
 void game_incpowerup();
 //running this kills the player (in the game, not real life)
 void game_loss();
-
+// returns 1 if the game is in the normal playing state
+int game_playing();
 #endif
