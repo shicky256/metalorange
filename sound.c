@@ -1,5 +1,5 @@
-#include <SEGA_CDC.H>
-#include <SEGA_INT.H>
+#include <sega_xpt.h>
+#include <sega_cdc.h>
 
 #include "cd.h"
 #include "sound.h"
@@ -66,19 +66,19 @@ void sound_init() {
     sound_external_audio_enable(5, 5);
     #endif
     load_drv();
-    load_8bit_pcm("ROAR.RAW", 11025);
-    load_8bit_pcm("SELECT.RAW", 11025);
-    load_8bit_pcm("START.RAW", 11025);
-    load_8bit_pcm("BLOCK.RAW", 11025);
-    load_8bit_pcm("DEATH.RAW", 11025);
-    load_8bit_pcm("SHIP.RAW", 11025);
-    load_8bit_pcm("GOLD.RAW", 11025);
-    load_8bit_pcm("CRACK.RAW", 11025);
-    load_8bit_pcm("CAPSULE.RAW", 11025);
-    load_8bit_pcm("POWERUP.RAW", 11025);
-    load_8bit_pcm("LASER.RAW", 11025);
-    load_8bit_pcm("REPLACE.RAW", 11025);
-    load_8bit_pcm("CIRCLE.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"ROAR.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"SELECT.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"START.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"BLOCK.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"DEATH.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"SHIP.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"GOLD.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"CRACK.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"CAPSULE.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"POWERUP.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"LASER.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"REPLACE.RAW", 11025);
+    load_8bit_pcm((Sint8 *)"CIRCLE.RAW", 11025);
 }
 
 void sound_cdda(int track, int loop) {

@@ -178,21 +178,25 @@ void scroll_init(void) {
 }
 
 void scroll_lores() {
-	SCL_DisplayFrame();
-	SCL_DisplayFrame();
+	// SCL_DisplayFrame();
+	// SCL_DisplayFrame();
 	SCL_SetSpriteMode(SCL_TYPE5, SCL_PALETTE, SCL_SP_WINDOW);
 	SCL_SetDisplayMode(SCL_NON_INTER, SCL_240LINE, SCL_NORMAL_B);
 	SPR_2SetTvMode(SPR_TV_NORMAL, SPR_TV_352X240, OFF);
+	SPR_2FrameChgIntr(0);
+	SPR_2FrameEraseData(0);
 	SCL_SetCycleTable(CycleTbLoRes);
 	scroll_res = SCROLL_RES_LOW;
 }
 
 void scroll_hires() {
-	SCL_DisplayFrame();
-	SCL_DisplayFrame();
+	// SCL_DisplayFrame();
+	// SCL_DisplayFrame();
 	SCL_SetSpriteMode(SCL_TYPE8, SCL_PALETTE, SCL_SP_WINDOW);
 	SCL_SetDisplayMode(SCL_DOUBLE_INTER, SCL_240LINE, SCL_HIRESO_B);
 	SPR_2SetTvMode(SPR_TV_HIRESO, SPR_TV_704X240, ON);
+	SPR_2FrameChgIntr(0);
+	SPR_2FrameEraseData(0);
 	SCL_SetCycleTable(CycleTbHiRes);
 	scroll_res = SCROLL_RES_HIGH;
 }

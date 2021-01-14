@@ -9,6 +9,7 @@
 #include "capsule.h"
 #include "cd.h"
 #include "circle.h"
+#include "explosion.h"
 #include "game.h"
 #include "graphicrefs.h"
 #include "laser.h"
@@ -18,7 +19,6 @@
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
-#include "spritecode/explosion.h"
 #include "vblank.h"
 
 typedef enum {
@@ -281,12 +281,12 @@ static inline void game_init() {
     Uint16 spr_palno = 16;
     //load ship sprites
     for (int i = 0; i < ship_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ship_width, ship_height, (char *)game_buf + (i * ship_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ship_width, ship_height, (Uint8 *)game_buf + (i * ship_size));
     }
     spr_charno += ship_num;
     // load one extra ship sprite with 1/2 transparency enabled for illusion
     SPR_2SetChar(spr_charno, COLOR_0, spr_palno | (1 << 11) | (1 << 12), ship_width, ship_height, 
-        (char *)game_buf + ((SHIP_IDLE - SHIP_CHARNO) * ship_size));
+        (Uint8 *)game_buf + ((SHIP_IDLE - SHIP_CHARNO) * ship_size));
     illusion_charno = spr_charno;
     spr_charno++;
     spr_palno += 16;
@@ -296,7 +296,7 @@ static inline void game_init() {
     cd_load_nosize(bit_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, bit_pal);
     for (int i = 0; i < bit_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, bit_width, bit_height, (char *)game_buf + (i * bit_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, bit_width, bit_height, (Uint8 *)game_buf + (i * bit_size));
     }
     spr_charno += bit_num;
     spr_palno += 16;
@@ -306,7 +306,7 @@ static inline void game_init() {
     cd_load_nosize(laser_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, laser_pal);
     for (int i = 0; i < laser_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, laser_width, laser_height, (char *)game_buf + (i * laser_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, laser_width, laser_height, (Uint8 *)game_buf + (i * laser_size));
     }
     spr_charno += laser_num;
     spr_palno += 16;
@@ -316,7 +316,7 @@ static inline void game_init() {
     cd_load_nosize(ball_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, ball_pal);
     for (int i = 0; i < ball_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ball_width, ball_height, (char *)game_buf + (i * ball_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ball_width, ball_height, (Uint8 *)game_buf + (i * ball_size));
     }
     spr_charno += ball_num;
     spr_palno += 16;
@@ -326,7 +326,7 @@ static inline void game_init() {
     cd_load_nosize(explosion_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, explosion_pal);
     for (int i = 0; i < explosion_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, explosion_width, explosion_height, (char *)game_buf + (i * explosion_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, explosion_width, explosion_height, (Uint8 *)game_buf + (i * explosion_size));
     }
     spr_charno += explosion_num;
     spr_palno += 16;
@@ -336,7 +336,7 @@ static inline void game_init() {
     cd_load_nosize(beffect_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, beffect_pal);
     for (int i = 0; i < beffect_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, beffect_width, beffect_height, (char *)game_buf + (i * beffect_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, beffect_width, beffect_height, (Uint8 *)game_buf + (i * beffect_size));
     }
     spr_charno += beffect_num;
     spr_palno += 16;
@@ -345,21 +345,21 @@ static inline void game_init() {
     cd_load_nosize(blocks1_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, blocks1_pal);
     for (int i = 0; i < blocks1_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks1_width, blocks1_height, (char *)game_buf + (i * blocks1_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks1_width, blocks1_height, (Uint8 *)game_buf + (i * blocks1_size));
     }
     spr_charno += blocks1_num;
     spr_palno += 16;
     cd_load_nosize(blocks2_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, blocks2_pal);
     for (int i = 0; i < blocks2_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks2_width, blocks2_height, (char *)game_buf + (i * blocks2_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks2_width, blocks2_height, (Uint8 *)game_buf + (i * blocks2_size));
     }
     spr_charno += blocks2_num;
     spr_palno += 16;
     cd_load_nosize(blockcrack_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, blockcrack_pal);
     for (int i = 0; i < blockcrack_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blockcrack_width, blockcrack_height, (char *)game_buf + (i * blockcrack_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blockcrack_width, blockcrack_height, (Uint8 *)game_buf + (i * blockcrack_size));
     }
     spr_charno += blockcrack_num;
     spr_palno += 16;
@@ -369,7 +369,7 @@ static inline void game_init() {
     cd_load_nosize(capsule_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, capsule_pal);
     for (int i = 0; i < capsule_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, capsule_width, capsule_height, (char *)game_buf + (i * capsule_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, capsule_width, capsule_height, (Uint8 *)game_buf + (i * capsule_size));
     }
     spr_charno += capsule_num;
     spr_palno += 16;
@@ -379,7 +379,7 @@ static inline void game_init() {
     cd_load_nosize(barrier_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, barrier_pal);
     for (int i = 0; i < barrier_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, barrier_width, barrier_height, (char *)game_buf + (i * barrier_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, barrier_width, barrier_height, (Uint8 *)game_buf + (i * barrier_size));
     }
     spr_charno += barrier_num;
     spr_palno += 16;
@@ -389,7 +389,7 @@ static inline void game_init() {
     cd_load_nosize(circle_name, game_buf);
     SCL_SetColRam(SCL_SPR, spr_palno, 16, circle_pal);
     for (int i = 0; i < barrier_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, circle_width, circle_height, (char *)game_buf + (i * circle_size));
+        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, circle_width, circle_height, (Uint8 *)game_buf + (i * circle_size));
     }
     spr_charno += circle_num;
     spr_palno += 16;
@@ -677,30 +677,30 @@ int game_run() {
                 speed += MTH_IntToFixed(turbo);
             }
 
-            if (PadID1 == ANALOGPAD_ID) {
-                ship_sprite.dx = 0;
-                //shoulder trigger controls
-                Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, speed);
-                ship_sprite.dx -= left_trigger;
-                Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, speed);
-                ship_sprite.dx += right_trigger;
+            // if (PadID1 == ANALOGPAD_ID) {
+            //     ship_sprite.dx = 0;
+            //     //shoulder trigger controls
+            //     Fixed32 left_trigger = MTH_Mul((PadAnalogL1 + 1) << 8, speed);
+            //     ship_sprite.dx -= left_trigger;
+            //     Fixed32 right_trigger = MTH_Mul((PadAnalogR1 + 1) << 8, speed);
+            //     ship_sprite.dx += right_trigger;
 
-                //analog stick controls
-                //transform x pos by converting the 0-255 range of the analog x pos to be
-                //MTH_FIXED(0) to MTH_FIXED(1), multiplying it by twice the max ship speed
-                //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
-                //(range: -SHIP_SPEED to SHIP_SPEED)
-                Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (speed + MTH_FIXED(0.15)) << 1) - (speed + MTH_FIXED(0.15));
-                ship_sprite.dx += movement;
-                //limit speed
-                if (ship_sprite.dx > speed) ship_sprite.dx = speed;
-                if (ship_sprite.dx < -speed) ship_sprite.dx = -speed;
-            }
-            else {
+            //     //analog stick controls
+            //     //transform x pos by converting the 0-255 range of the analog x pos to be
+            //     //MTH_FIXED(0) to MTH_FIXED(1), multiplying it by twice the max ship speed
+            //     //(range: MTH_FIXED(0) to SHIP_SPEED * 2) and then subtracting SHIP_SPEED
+            //     //(range: -SHIP_SPEED to SHIP_SPEED)
+            //     Fixed32 movement = MTH_Mul(PadAnalogX1 << 8, (speed + MTH_FIXED(0.15)) << 1) - (speed + MTH_FIXED(0.15));
+            //     ship_sprite.dx += movement;
+            //     //limit speed
+            //     if (ship_sprite.dx > speed) ship_sprite.dx = speed;
+            //     if (ship_sprite.dx < -speed) ship_sprite.dx = -speed;
+            // }
+            // else {
                 ship_sprite.dx = 0;
                 if (PadData1 & PAD_L) ship_sprite.dx -= speed;
                 if (PadData1 & PAD_R) ship_sprite.dx += speed;
-            }
+            // }
             ship_sprite.x += ship_sprite.dx;
 
             while (1) {

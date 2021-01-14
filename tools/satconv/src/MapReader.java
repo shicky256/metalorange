@@ -163,7 +163,7 @@ public class MapReader {
         String varName = filename.substring(filename.lastIndexOf('/') + 1, filename.indexOf('.'));
         writer.println("Uint16 " + varName + "_width = " + mapArr[0].length + ";");
         writer.println("Uint16 " + varName + "_height = " + mapArr.length + ";");
-        writer.println("char " + varName + "_name[] = \"" + varName.toUpperCase().substring(0, Math.min(varName.length(), 8)) + ".MAP\";");
+        writer.println("Sint8 " + varName + "_name[] = \"" + varName.toUpperCase().substring(0, Math.min(varName.length(), 8)) + ".MAP\";");
         writer.close();
     }
 }

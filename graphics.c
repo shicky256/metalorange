@@ -1,6 +1,4 @@
-typedef unsigned char Uint8;
-typedef unsigned short Uint16; 
-typedef unsigned long Uint32;
+#include <sega_xpt.h>
 
 //background tiles
 #include "graphic/roarbg.c"

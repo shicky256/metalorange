@@ -12,7 +12,7 @@ void cd_init(void);
  * dataBuf: where you want to copy the data to
  * read_size: # of bytes to read 
  */
-void cd_load(char *filename, void *dataBuf, int read_size);
+void cd_load(Sint8 *filename, void *dataBuf, int read_size);
 
 /**
  * read data off the cd's root directory
@@ -20,5 +20,5 @@ void cd_load(char *filename, void *dataBuf, int read_size);
  * dataBuf: where to copy the data to
  * returns the loaded file's size
  */
-Sint32 cd_load_nosize(char *filename, void *dataBuf);
+Sint32 cd_load_nosize(Sint8 *filename, void *dataBuf);
 #endif

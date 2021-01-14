@@ -106,7 +106,7 @@ public class SpriteConverter {
             writer.println("Uint16 " + substring + "_size = " + imageLength + ";");
             writer.println("Uint16 " + substring + "_width = " + image.getWidth() + ";");
             writer.println("Uint16 " + substring + "_height = " + image.getHeight() + ";");
-            writer.println("char " + substring + "_name[] = \"" + substring.toUpperCase().substring(0, Math.min(substring.length(), 8)) + ".SPR\";");
+            writer.println("Sint8 " + substring + "_name[] = \"" + substring.toUpperCase().substring(0, Math.min(substring.length(), 8)) + ".SPR\";");
             writer.print("Uint32 " + substring + "_pal[] = {");
             for (int i = 0; i < palettes.size(); i += 8) {
     //            //if a row is entirely zeroes, assume we've reached the end of a palette definition

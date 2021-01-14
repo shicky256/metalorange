@@ -1,44 +1,28 @@
-#if	!defined( __V_BLANK_H )
-	#define	__V_BLANK_H
-	
-	/****************************************
-	*			include files				*
-	****************************************/
-	#include	"per_x.h"
-	
-	/****************************************
-	*			define constants			*
-	****************************************/
-	#define PAD_U	TRG_UP
-	#define PAD_D	TRG_DOWN
-	#define PAD_R	TRG_RIGHT
-	#define PAD_L	TRG_LEFT
-	#define PAD_A	TRG_A
-	#define PAD_B	TRG_B
-	#define PAD_C	TRG_C
-	#define PAD_S	TRG_START
-	#define PAD_X	TRG_X
-	#define PAD_Y	TRG_Y
-	#define PAD_Z	TRG_Z
-	#define PAD_RB	TRG_R
-	#define PAD_LB	TRG_L
-	
-	/****************************************
-	*		declare external objects		*
-	****************************************/
-	extern volatile trigger_t	PadData1;
-	extern volatile trigger_t	PadData1E;
-	volatile int PadID1;
-	volatile Uint8 PadAnalogX1;
-	volatile Uint8 PadAnalogY1;
-	volatile Uint8 PadAnalogL1;
-	volatile Uint8 PadAnalogR1;
-	extern volatile trigger_t	PadData2;
-	extern volatile trigger_t	PadData2E;
+#ifndef VBLANK_H
+#define VBLANK_H
 
-	/****************************************
-	*			declare functions			*
-	****************************************/
-	void	SetVblank( void );
-	
+#include <sega_per.h> 
+
+extern void  SetVblank(void);
+
+extern volatile Uint16  PadData1;
+extern volatile Uint16  PadData1E;
+extern volatile Uint16  PadData2;
+extern volatile Uint16  PadData2E;
+extern volatile Sint32  VblankFlg;
+
+#define PAD_U	PER_DGT_U
+#define PAD_D	PER_DGT_D
+#define PAD_R	PER_DGT_R
+#define PAD_L	PER_DGT_L
+#define PAD_A	PER_DGT_A
+#define PAD_B	PER_DGT_B
+#define PAD_C	PER_DGT_C
+#define PAD_S	PER_DGT_S
+#define PAD_X	PER_DGT_X
+#define PAD_Y	PER_DGT_Y
+#define PAD_Z	PER_DGT_Z
+#define PAD_RB	PER_DGT_TR
+#define PAD_LB	PER_DGT_TL
+
 #endif

@@ -1,3 +1,4 @@
+#include <sega_cdc.h>
 #include <sega_gfs.h>
 
 #include "devcart.h"
@@ -25,7 +26,6 @@ void cd_init(void) {
     GFS_DIRTBL_DIRNAME(&directory_table) = dirname;
     GFS_DIRTBL_NDIR(&directory_table) = MAX_DIR;
     GFS_Init(MAX_OPEN, lib_work, &directory_table);
-
     #endif
 }
 
@@ -35,7 +35,7 @@ void cd_init(void) {
  * dataBuf: where you want to copy the data to
  * read_size: # of bytes to read 
  */
-void cd_load(char *filename, void *dataBuf, int read_size) {
+void cd_load(Sint8 *filename, void *dataBuf, int read_size) {
     #if DEVCART_LOAD
     devcart_loadfile(filename, dataBuf);
     #else
@@ -47,7 +47,7 @@ void cd_load(char *filename, void *dataBuf, int read_size) {
 }
 
 
-Sint32 cd_load_nosize(char *filename, void *dataBuf) {
+Sint32 cd_load_nosize(Sint8 *filename, void *dataBuf) {
     #if DEVCART_LOAD
     return devcart_loadfile(filename, dataBuf);
     #else

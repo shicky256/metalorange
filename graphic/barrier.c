@@ -2,7 +2,7 @@ Uint16 barrier_num = 16;
 Uint16 barrier_size = 128;
 Uint16 barrier_width = 16;
 Uint16 barrier_height = 16;
-char barrier_name[] = "BARRIER.SPR";
+Sint8 barrier_name[] = "BARRIER.SPR";
 Uint32 barrier_pal[] = {
 	0x0000,0xCE0000,0xFF7B00,0xFFBD00,0xFFFFFF,0x0088,0x00C8,0x1878F8,
 	0x78C0F8,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,

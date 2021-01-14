@@ -2,6 +2,7 @@
 #include <SEGA_SCL.H>
 #define _SPR2_
 #include <SEGA_SPR.H>
+#include <string.h>
 
 #include "cd.h"
 #include "graphicrefs.h"
@@ -70,6 +71,14 @@ static int linescroll_multiplier;
 // MKM Hirota = Hitoshi Sakimoto (çËå≥êm)
 // Rezon Iwata = Masuharu Iwata (ä‚ìcãßé°)
 // Waiendee = ?
+
+// Custom info:
+// "If you're talking about Cybertech Custom, it looks like the company closed down around the year 2000.
+// After the company's entry into the console market was a huge failure, the game designers and programmers all quit.
+// They couldn't do proper development, so they outsourced the porting of the Windows versions to a third party, and ended their activities.
+// The representative of the company, Hirohiko Yanagi, is still active in the erotic doujin business (although his designs are different now).
+// From a doujin software shop to a manufacturer, he became so absorbed in making doujin magazines that he ended up going out of business."
+
 static char program_str[] = "PROGRAM\nKOCHAN";
 static char design_str[] = "GAME DESIGN\nATH NAGANO";
 static char graphic_str[] = "GRAPHIC\n       CREATE\n  H. YANAGI\n  N. NAKAJIMA";
@@ -124,7 +133,7 @@ static inline void intro_init() {
     cd_load_nosize(introfont_name, dest_buf);
     SPR_2ClrAllChar();
     for (int i = 0; i < introfont_num; i++) {
-        SPR_2SetChar(i + INTROFONT_START, COLOR_0, 16, introfont_width, introfont_height, (char *)(dest_buf) + (i * introfont_size));
+        SPR_2SetChar(i + INTROFONT_START, COLOR_0, 16, introfont_width, introfont_height, (Uint8 *)(dest_buf) + (i * introfont_size));
     }
 
     //load all 5 images
@@ -219,7 +228,7 @@ static inline int intro_disptext(int girl) {
         text_frame = 0;
         text_mode = TEXT_SHOW;
         // clear out text palette
-        for (int i = 0; i < sizeof(introfont_curpal); i++) {
+        for (int i = 0; i < sizeof(introfont_curpal) / sizeof(introfont_curpal[0]); i++) {
             introfont_curpal[i] = 0;
         }
         SCL_SetColRam(SCL_SPR, 16, 16, introfont_curpal);
@@ -235,7 +244,7 @@ static inline int intro_disptext(int girl) {
             }
         }
         // "draw down" palette effect
-        for (int i = 0; i < sizeof(introfont_curpal); i++) {
+        for (int i = 0; i < sizeof(introfont_curpal) / sizeof(introfont_curpal[0]); i++) {
             if (introfont_curpal[i] == 0) {
                 introfont_curpal[i] = 0xFF0000;
                 break;
@@ -396,11 +405,11 @@ int intro_run() {
             break;
 
         case STATE_INTRO_LOADTITLE:
-            intro_drawpolys(5); //black out the screen
             SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
             SCL_SetColMixRate(SCL_NBG0, 0); //make screen opaque
             SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255); // black out the screen
-            DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
+            // DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
+            memcpy(tile_ptr, title_gfx_ptr, 256 * title_num);
             scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
             count = 2;
             map_ptr = MAP_PTR(0);
@@ -422,7 +431,8 @@ int intro_run() {
             map_ptr = MAP_PTR(3);
             for (int i = 0; i < 32 * 32; i++) {
                 map_ptr[i] = 0;
-            }            
+            }
+            intro_drawpolys(5); //black out the screen
             scroll_lores();
             cursor = 5;
             frames = 0;

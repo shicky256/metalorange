@@ -12,13 +12,13 @@
 
 #include	<machine.h>
 #include	<sega_mth.h>
-#include	<SEGA_PCM.H>
 #include	<sega_spr.h>
 #include	<sega_scl.h>
 #include	<sega_xpt.h>
 #include 	<sega_int.h>
-#include    "pcmsys.h"
-#include	"per_x.h"
+#include	<sega_per.h>
+#include	"pcmsys.h"
+#include	"vblank.h"
 
 typedef	struct {
 	Uint8	type;
@@ -30,32 +30,47 @@ typedef	struct {
 	Uint8	al;
 } AnalogPadData;
 
+volatile Uint16	PadData1  = 0x0000;
+volatile Uint16	PadData1L = 0x0000;
+volatile Uint16	PadData1E = 0x0000;
+volatile Uint16	PadData2  = 0x0000;
+volatile Uint16	PadData2L = 0x0000;
+volatile Uint16	PadData2E = 0x0000;
+Uint32	PadWorkArea[7];
 
-volatile trigger_t	PadData1  = 0x0000;
-volatile trigger_t	PadData1E = 0x0000;
-volatile int PadID1;
-volatile Uint8 PadAnalogX1;
-volatile Uint8 PadAnalogY1;
-volatile Uint8 PadAnalogL1;
-volatile Uint8 PadAnalogR1;
-volatile trigger_t	PadData2  = 0x0000;
-volatile trigger_t	PadData2E = 0x0000;
+volatile Sint32 perFlag;
+volatile Sint32 VblankFlg;
 
-SysPort	*__port = NULL;
+#define ALL_BUTTONS (PAD_U | PAD_D | PAD_L | PAD_R | PAD_A | PAD_B | PAD_C \
+	| PAD_X | PAD_Y | PAD_Z | PAD_S | PAD_LB | PAD_RB)
+
 void UsrVblankIn(void);
 void UsrVblankOut(void);
+void CheckVblankEnd(void);
 
 void SetVblank(void) {
+	// Wait for vblank out interrupt
 	
-	__port = PER_OpenPort();
-	
-	/* V-BlankŠ„‚èž‚Ýƒ‹[ƒ`ƒ“‚Ì“o˜^ */
-	INT_ChgMsk(INT_MSK_NULL,INT_MSK_VBLK_IN | INT_MSK_VBLK_OUT);
-	INT_SetScuFunc(INT_SCU_VBLK_IN,UsrVblankIn);
-	INT_SetScuFunc(INT_SCU_VBLK_OUT,UsrVblankOut);
-	INT_ChgMsk(INT_MSK_VBLK_IN | INT_MSK_VBLK_OUT,INT_MSK_NULL);
+	INT_ChgMsk(INT_MSK_NULL, INT_MSK_VBLK_IN | INT_MSK_VBLK_OUT);
+	INT_SetScuFunc(INT_SCU_VBLK_OUT, CheckVblankEnd);
+	INT_ChgMsk(INT_MSK_VBLK_OUT, INT_MSK_NULL);
+
+	perFlag = 1;
+	while (perFlag);
+    
+	PER_Init(PER_KD_PERTIM, 2, PER_ID_DGT, PER_SIZE_DGT, PadWorkArea, 0);
+
+	// Register vblank routine
+	INT_ChgMsk(INT_MSK_NULL, INT_MSK_VBLK_IN | INT_MSK_VBLK_OUT);
+	INT_SetScuFunc(INT_SCU_VBLK_IN, UsrVblankIn);
+	INT_SetScuFunc(INT_SCU_VBLK_OUT, UsrVblankOut);
+	INT_ChgMsk(INT_MSK_VBLK_IN | INT_MSK_VBLK_OUT, INT_MSK_NULL);
 }
 
+
+void CheckVblankEnd(void) {
+	perFlag = 0;
+}
 
 void UsrVblankIn(void) {
 	m68k_com->start = 1;	
@@ -65,43 +80,16 @@ void UsrVblankIn(void) {
 void UsrVblankOut(void) {
 	SCL_VblankEnd();
 	
-	if( __port != NULL ){
-		const SysDevice	*device;
+	PerDgtInfo *pad;
+	PER_GetPer((PerGetPer **)&pad);
+	if (pad != NULL) {
+		PadData1L = PadData1;
+		PadData2L = PadData2;
 
-		PER_GetPort( __port );
-		
-		if(( device = PER_GetDeviceR( &__port[0], 0 )) != NULL ){
-
-			int id = PER_GetID(device);
-			PadID1 = id;
-
-			if (id == ANALOGPAD_ID) {
-				const AnalogPadData *analog = (const AnalogPadData *)device;
-				PadAnalogX1 = analog->ax;
-				PadAnalogY1 = analog->ay;
-				PadAnalogL1 = analog->al;
-				PadAnalogR1 = analog->ar;
-			}
-
-			trigger_t	prev = PadData1;
-			trigger_t	current = PER_GetTrigger( device );
-			
-			PadData1  = current;
-			PadData1E = PER_GetPressEdge( prev, current );
-		}
-		else{
-			PadData1 = PadData1E = 0;
-		}
-		
-		if(( device = PER_GetDeviceR( &__port[1], 0 )) != NULL ){
-			trigger_t	prev = PadData2;
-			trigger_t	current = PER_GetTrigger( device );
-			
-			PadData2  = current;
-			PadData2E = PER_GetPressEdge( prev, current );
-		}
-		else{
-			PadData2 = PadData2E = 0;
-		}
+		PadData1  = pad[0].data ^ 0xffff;
+		PadData1E = (PadData1L ^ ALL_BUTTONS) & PadData1;
+		PadData2  = pad[1].data ^ 0xffff;
+		PadData2E = (PadData2L ^ ALL_BUTTONS) & PadData2;
 	}
+	VblankFlg = 0;
 }

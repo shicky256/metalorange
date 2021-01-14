@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "cd.h"
+#include "devcart.h"
 #include "graphicrefs.h"
 #include "notice.h"
 #include "print.h"
@@ -61,8 +62,13 @@ int notice_run() {
         scroll_enable(2, OFF);
         scroll_enable(3, OFF);
         char *gfx_buf = (char *)LWRAM;
+        gfx_buf[0] = 1;
+        gfx_buf[3] = 1;
+        gfx_buf[4] = 1;
+        gfx_buf[5] = 1;
         cd_load_nosize(noticefont_name, gfx_buf);
-        DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, gfx_buf, 32 * noticefont_num);
+        memcpy((void *)SCL_VDP2_VRAM_B1, gfx_buf, 32 * noticefont_num);
+        // DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, gfx_buf, 32 * noticefont_num);
         SCL_SetColRam(SCL_NBG1, 0, 16, noticefont_pal);
         notice_print(NOTICE_X, NOTICE_Y, notice_text);
         notice_displayed = 1;
@@ -71,11 +77,11 @@ int notice_run() {
     if (PadData1E) {
         notice_displayed = 0;
         scroll_charsize(1, SCL_CHAR_SIZE_2X2);
+        // devcart_printstr("scroll_charsize\n");
         // scroll_clearmaps();
         memset((void *)SCL_VDP2_VRAM, 0, 0x80000);
         scroll_enable(2, ON);
         scroll_enable(3, ON);
-        scroll_enable(4, ON);
         return 1;
     }
     return 0;

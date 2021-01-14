@@ -37,7 +37,7 @@ static inline void devcart_putbyte(Uint8 byte) {
     USB_FIFO = byte;
 }
 
-int devcart_loadfile(char *filename, void *dest) {
+int devcart_loadfile(Sint8 *filename, void *dest) {
     Uint8 *ptr = (Uint8 *)dest;
     Uint8 letter;
     int len;

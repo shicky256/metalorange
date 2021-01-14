@@ -2,7 +2,7 @@ Uint16 blocks2_num = 3;
 Uint16 blocks2_size = 64;
 Uint16 blocks2_width = 16;
 Uint16 blocks2_height = 8;
-char blocks2_name[] = "BLOCKS2.SPR";
+Sint8 blocks2_name[] = "BLOCKS2.SPR";
 Uint32 blocks2_pal[] = {
 	0x0000,0x844242,0xC66363,0x428C,0xD69494,0xB5B5B5,0x7BFF,0x7BB5FF,
 	0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,

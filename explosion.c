@@ -1,9 +1,9 @@
 #include <sega_mth.h>
 
 #include "explosion.h"
-#include "../graphicrefs.h"
-#include "../sprite.h"
-#include "../print.h"
+#include "graphicrefs.h"
+#include "sprite.h"
+#include "print.h"
 
 //how many frames to wait before switching to next frame
 #define FRAME_DELAY (5)

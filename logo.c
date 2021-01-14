@@ -2,6 +2,7 @@
 #include <SEGA_SCL.H>
 
 #include "cd.h"
+#include "devcart.h"
 #include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
@@ -92,7 +93,7 @@ int logo_run(void) {
         case STATE_LOGO_INIT:
             //turn brightness all the way down
             SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
-            SCL_DisplayFrame();
+            // SCL_DisplayFrame();
             logo_init();
             SclRgb start, end;
             start.red = start.green = start.blue = -255;

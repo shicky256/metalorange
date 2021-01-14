@@ -1,3 +1,4 @@
+#include <machine.h>
 #include <string.h> //memcpy
 #define	_SPR2_
 #include <sega_spr.h>
@@ -39,6 +40,8 @@ typedef enum {
 
 int main() {
 	CdcStat cd_status;
+	set_imask(0); // enable interrupts
+	SCL_Vdp2Init();
 
 	cd_init();
 	sprite_init();
@@ -56,7 +59,7 @@ int main() {
 	int state = STATE_NOTICE;
 	while(1) {
 		sprite_startdraw();
-		
+
 		switch (state) {
 			case STATE_NOTICE:
 				if (notice_run()) {
@@ -134,6 +137,9 @@ int main() {
 		SPR_2CloseCommand();
 
 		SCL_DisplayFrame();
+		// wait for vblank int to set flag to 0
+		VblankFlg = 1;
+		while (VblankFlg);
 	}
 	return 0;
 }
