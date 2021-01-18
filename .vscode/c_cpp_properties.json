@@ -7,8 +7,8 @@
                 "C:/saturn/sbl/segalib/include"
             ],
             "defines": [],
-            "compilerPath": "C:/MinGW/bin/gcc",
-            "cStandard": "c99",
+            "compilerPath": "C:/saturn/gcc84/bin/sh-elf-gcc.exe",
+            "cStandard": "gnu99",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
         }
