@@ -1,1 +1,2 @@
 s ship
+t2 girl1.bmp

@@ -3,7 +3,7 @@ CC = gcc
 TARGET = satconv
 CFLAGS = -g -std=gnu99 -Wall
 
-OBJECTS = satconv.o qdbmp.o sprite.o
+OBJECTS = satconv.o qdbmp.o sprite.o tile.o
 
 all: $(TARGET)
 

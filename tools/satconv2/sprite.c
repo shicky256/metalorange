@@ -34,6 +34,7 @@ void sprite_convert(BMP *tile) {
 		
 	info->x = BMP_GetWidth(tile);
 	info->y = BMP_GetHeight(tile);
+	DBG_PRINTF("Width: %d Height: %d\n", info->x, info->y);
 	
 	// read in the palette data
 	int color;
@@ -71,7 +72,6 @@ void sprite_convert(BMP *tile) {
 		// 4bpp so we only count through half the x vals
 		// and combine them together
 		for (int x = 0; x < (info->x >> 1); x++) {
-			// printf("x: %d, y: %d\n", x, y);
 			BMP_GetPixelIndex(tile, x << 1, y, &index1);
 			BMP_GetPixelIndex(tile, (x << 1) + 1, y, &index2);
 			val = ((index1 & 0xF) << 4) | (index2 & 0xF);
@@ -82,7 +82,7 @@ void sprite_convert(BMP *tile) {
 
 #define FILENAME_BUFLEN (256)
 
-int sprite_process(char *dirname, char *outfile) {
+int sprite_process(char *dirname, char *outname) {
 	struct dirent *entry;
 	DIR *dir_ptr;
 	palette_cursor = 0;
@@ -148,7 +148,16 @@ int sprite_process(char *dirname, char *outfile) {
 	closedir(dir_ptr);
 	
 	// write out the sprite data
-	FILE *out = fopen(outfile, "wb");
+	FILE *out = fopen(outname, "wb");
+	if (!out) {
+		printf("Error: couldn't open %s for writing!\n", outname);
+		for (int i = 0; i < num_files; i++) {
+			free(palette_list[i]);
+			free(info_list[i].graphics);
+		}
+		free(palette_list);
+		free(info_list);
+	}
 	// saturn is big-endian so all the data over one byte must be byteswapped
 	// write number of palettes
 	int palette_cursor_be = bswap_32(palette_cursor);
@@ -171,6 +180,14 @@ int sprite_process(char *dirname, char *outfile) {
 		fwrite(&tmp_pal, sizeof(tmp_pal), 1, out);
 		fwrite(info_list[i].graphics, sizeof(uint8_t), (info_list[i].x >> 1) * info_list[i].y, out);
 	}
-	fclose(out);
+	fclose(out);	
+	// clean up memory
+	for (int i = 0; i < num_files; i++) {
+		free(palette_list[i]);
+		free(info_list[i].graphics);
+	}
+	free(palette_list);
+	free(info_list);
+	
 	return 1;
 }
