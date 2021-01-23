@@ -1,5 +1,4 @@
 #include <byteswap.h>
-#include <dirent.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

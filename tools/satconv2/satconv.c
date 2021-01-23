@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "debug.h"
+#include "map.h"
 #include "sprite.h"
 #include "tile.h"
 
@@ -35,8 +36,9 @@ int main(int argc, char **argv) {
 			// sprite directory
 			case 's':
 				infile = &line[2];
-				ext_index = strlen(infile);
-				memcpy(outfile, infile, MIN(8, ext_index));
+				// cd-rom filesystem only allows 8.3 filenames
+				ext_index = MIN(8, strlen(infile));
+				memcpy(outfile, infile, ext_index);
 				strcpy(outfile + ext_index, ".spr");
 				printf("%s\n", outfile);
 				sprite_process(infile, outfile);
@@ -46,8 +48,8 @@ int main(int argc, char **argv) {
 			case 't':
 				infile = &line[3];
 				ext = strchr(infile, '.');
-				ext_index = ext - infile;
-				memcpy(outfile, infile, MIN(8, ext_index));
+				ext_index = MIN(8, ext - infile);
+				memcpy(outfile, infile, ext_index);
 				strcpy(outfile + ext_index, ".tle");
 				printf("%s\n", outfile);
 				tile_process(infile, outfile, line[1] - ASCII_NUMBER_BASE);
@@ -55,6 +57,13 @@ int main(int argc, char **argv) {
 			
 			// tilemap
 			case 'm':
+				infile = &line[4];
+				ext = strchr(infile, '.');
+				ext_index = MIN(8, ext - infile);
+				memcpy(outfile, infile, ext_index);
+				strcpy(outfile + ext_index, ".map");
+				printf("%s\n", outfile);
+				map_process(infile, outfile, line[1] - ASCII_NUMBER_BASE, line[2] - ASCII_NUMBER_BASE);
 				break;
 			
 			default:
