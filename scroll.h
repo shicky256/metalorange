@@ -19,6 +19,9 @@ extern Uint32 vram[];
 #define SCROLL_RES_HIGH (1)
 extern int scroll_res;
 
+#define SCROLL_HEADER16 (72)
+#define SCROLL_HEADER256 (1032)
+
 typedef struct {
     Uint8 *tile_name; //filename of .TLE file
     Uint16 tile_num; //number of tiles
@@ -29,6 +32,16 @@ typedef struct {
 } LAYER;
 
 void scroll_init(void);
+// Loads a tile file into VRAM.
+// src: where in RAM the tile file is
+// dest: where in VRAM to load the tile file (or NULL for "don't load into vram")
+// object: what screen to load the palette to
+// palno: the color to load the palette from the file at
+int scroll_loadtile(void *src, void *dest, Uint32 object, Uint16 palno);
+// Returns a pointer to the start of the tile file's graphics
+char *scroll_tileptr(void *buff, int *size);
+// Returns a pointer to the start of the map file's graphics
+char *scroll_mapptr(void *buff, int *xsize, int *ysize);
 void scroll_lores(void);
 void scroll_hires(void);
 void scroll_scale(int num, Fixed32 scale);

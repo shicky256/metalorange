@@ -12,7 +12,6 @@
 #include "cutscene.h"
 #include "devcart.h"
 #include "game.h"
-#include "graphicrefs.h"
 #include "intro.h"
 #include "logo.h"
 #include "menu.h"

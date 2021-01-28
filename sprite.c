@@ -7,12 +7,14 @@
 #include <string.h>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "scroll.h"
 #include "sprite.h"
 #include "vblank.h"
 
 int num_sprites = 0;
+
+int sprite_tilecnt = 0;
+int sprite_palcnt = 0;
 SPRITE_INFO sprites[SPRITE_LIST_SIZE];
 //normalize diagonal speed
 #define DIAGONAL_MULTIPLIER (MTH_FIXED(0.8))
@@ -55,6 +57,53 @@ void sprite_erase(Sint16 x, Sint16 y) {
 	xy[2].x = x; xy[2].y = y; //lower right
 	xy[3].x = 0; xy[3].y = y; //lower right
 	SPR_2Polygon(0, SPD_DISABLE, 0, xy, NO_GOUR);
+}
+
+void sprite_clear() {
+	sprite_tilecnt = 0;
+	sprite_palcnt = 0;
+	SPR_2ClrAllChar();
+}
+
+int sprite_load(char *filename, int *count) {
+	cd_load(filename, sprite_buf);
+	Uint8 *sprite_bufptr = sprite_buf;
+	Sint32 num_pals;
+	memcpy(&num_pals, sprite_bufptr, sizeof(num_pals));
+	sprite_bufptr += sizeof(num_pals);
+
+	// load all the palettes
+	for (int i = 0; i < num_pals; i++) {
+		SCL_SetColRam(SCL_SPR, i + sprite_palcnt, 16, sprite_bufptr);
+		sprite_bufptr += 16 * sizeof(Sint32); // move to next palette
+	}
+
+	// first 4 bytes after palettes is the number of sprites
+	Sint32 num_sprites;
+	memcpy(&num_sprites, sprite_bufptr, sizeof(num_sprites));
+	sprite_bufptr += sizeof(num_sprites);
+	// load all the sprites
+	Sint32 sprite_x;
+	Sint32 sprite_y;
+	Sint32 sprite_pal;
+	for (int i = 0; i < num_sprites; i++) {
+		memcpy(&sprite_x, sprite_bufptr, sizeof(sprite_x));
+		sprite_bufptr += sizeof(sprite_x);
+		memcpy(&sprite_y, sprite_bufptr, sizeof(sprite_y));
+		sprite_bufptr += sizeof(sprite_y);
+		memcpy(&sprite_pal, sprite_bufptr, sizeof(sprite_pal));
+		sprite_bufptr += sizeof(sprite_pal);
+		SPR_2SetChar((Uint16)(i + sprite_tilecnt), COLOR_0, (Uint16)(sprite_pal + sprite_palcnt),
+		  (Uint16)sprite_x, (Uint16)sprite_y, sprite_bufptr);
+		sprite_bufptr += ((sprite_x / 2) * sprite_y);
+	}
+	int sprite_tilebak = sprite_tilecnt;
+	sprite_tilecnt += num_sprites;
+	sprite_palcnt += (num_pals * 16);
+	if (count) {
+		*count = num_sprites;
+	}
+	return sprite_tilebak;
 }
 
 void sprite_startdraw(void) {

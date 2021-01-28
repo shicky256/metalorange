@@ -1,9 +1,0 @@
-Uint16 capsule_num = 3;
-Uint16 capsule_size = 128;
-Uint16 capsule_width = 16;
-Uint16 capsule_height = 16;
-Sint8 capsule_name[] = "CAPSULE.SPR";
-Uint32 capsule_pal[] = {
-	0x0000,0xDE1010,0xFFD618,0xFF9C21,0x10107B,0x7B7B7B,0xA5A5A5,0x1010B5,
-	0xCECECE,0x52BDDE,0x2173EF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
-};

@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "print.h"
 #include "scroll.h"
 #include "soon.h"
@@ -40,10 +39,8 @@ void soon_init() {
     char *img_buf = (char *)LWRAM;
     // load image
     scroll_set(1, MTH_FIXED(0), SOON_YSCROLL);
-    cd_load_nosize(soon_name, img_buf);
-    DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, img_buf, 128 * soon_num);
-    // load palette
-    SCL_SetColRam(SCL_NBG1, 0, 16, soon_pal);
+    cd_load("SOON.TLE", img_buf);
+    scroll_loadtile(img_buf, (void *)SCL_VDP2_VRAM_B1, SCL_NBG1, 0);
     // play music
     sound_cdda(SOON_TRACK, 1);
     // reset scroll variable

@@ -1,9 +1,0 @@
-Uint16 starspr_num = 4;
-Uint16 starspr_size = 128;
-Uint16 starspr_width = 16;
-Uint16 starspr_height = 16;
-Sint8 starspr_name[] = "STARSPR.SPR";
-Uint32 starspr_pal[] = {
-	0x0000,0xFFFFFF,0xB9B9B9,0xAF0762,0xFF63C6,0x1F70F5,0x106CBA,0x49E9EF,
-	0x14CEDA,0x00FF,0xFF00,0xFFFF,0xFF0000,0xFF00FF,0xFFFF00,0xFFFFFF,
-};

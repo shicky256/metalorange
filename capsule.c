@@ -2,7 +2,6 @@
 
 #include "capsule.h"
 #include "game.h"
-#include "graphicrefs.h"
 #include "scroll.h"
 #include "sprite.h"
 

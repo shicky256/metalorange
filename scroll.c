@@ -1,12 +1,12 @@
 #include <string.h>
 #include <sega_def.h>
+#include <sega_dma.h>
 #include <sega_mth.h>
 #include <sega_scl.h>
 #define	_SPR2_
 #include <sega_spr.h>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "print.h"
 #include "scroll.h"
 #include "sprite.h"
@@ -175,6 +175,49 @@ void scroll_init(void) {
 	SCL_SetColMixMode(1, SCL_IF_FRONT); // priority 1: 12/32 transparency
 	SCL_SetColMixRate(SCL_SP1, 12);
 	
+}
+
+int scroll_loadtile(void *src, void *dest, Uint32 object, Uint16 palno) {
+	Uint32 pal_len;
+	memcpy(&pal_len, src, sizeof(pal_len));
+	src += 4;
+	SCL_SetColRam(object, palno, pal_len, src);
+	src += (pal_len * sizeof(Uint32));
+	Uint32 image_size;
+	memcpy(&image_size, src, sizeof(image_size));
+	src += sizeof(Uint32);
+	if (dest) {
+		memcpy(dest, src, image_size);
+	}
+	if (pal_len == 16) {
+		return image_size / 128;
+	}
+	else {
+		return image_size / 256;
+	}
+}
+
+char *scroll_tileptr(void *buff, int *size) {
+	Sint32 pal_len;
+	memcpy(&pal_len, buff, sizeof(pal_len));
+	buff += (pal_len + 1) * sizeof(pal_len);
+	if (size) {
+		memcpy(size, buff, sizeof(*size));
+	}
+	buff += sizeof(size);
+	return (char *)buff;
+}
+
+char *scroll_mapptr(void *buff, int *xsize, int *ysize) {
+	if (xsize) {
+		memcpy(xsize, buff, sizeof(int));
+	}
+	buff += sizeof(int);
+	if (ysize) {
+		memcpy(ysize, buff, sizeof(int));
+	}
+	buff += sizeof(int);
+	return (char *)buff;
 }
 
 void scroll_lores() {

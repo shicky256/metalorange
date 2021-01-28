@@ -11,7 +11,6 @@
 #include "circle.h"
 #include "explosion.h"
 #include "game.h"
-#include "graphicrefs.h"
 #include "laser.h"
 #include "level.h"
 #include "print.h"
@@ -169,9 +168,8 @@ static int chip_sleep_timings[CHIP_SLEEP_NUMFRAMES] = {32, 18, 18, 18, 18, 18, 1
 static int chip_gameover_frames[CHIP_GAMEOVER_NUMFRAMES] = {0, 1};
 #define CHIP_GAMEOVER_TIMING (12)
 
-#define SHIP_CHARNO (font_num)
 //start of ship's idle animation
-#define SHIP_IDLE (SHIP_CHARNO + 13)
+#define SHIP_IDLE (ship_charno + 13)
 
 SHIP_SPRITE ship_sprite;
 //ship's leftmost pixel
@@ -196,6 +194,8 @@ Fixed32 gameover_angle;
 #define GAMEOVER_MULTIPLIER (MTH_FIXED(-180))
 
 // character numbers
+int ship_charno;
+int ship_num;
 int bit_charno;
 int laser_charno;
 int ball_charno;
@@ -224,20 +224,19 @@ static inline void game_init() {
     scroll_set(2, MTH_FIXED(0), MTH_FIXED(0));
     scroll_set(3, MTH_FIXED(0), MTH_FIXED(0));
     //load tiles for hud
-    cd_load_nosize(game_tiles_name, game_buf);
-    //write them to the screen
-    char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
-    DMA_CpuMemCopy1(tile_ptr, game_buf, game_tiles_num * 64);
-    //load palette for hud
-    SCL_SetColRam(SCL_NBG0, 0, 256, game_tiles_pal);
+    cd_load("GAME_TIL.TLE", game_buf);
+    scroll_loadtile(game_buf, (void *)SCL_VDP2_VRAM_A1, SCL_NBG0, 0);
     //load map
-    cd_load_nosize(game_name, game_buf);
+    cd_load("GAME.MAP", game_buf);
     Uint32 *game_map = MAP_PTR32(0);
-    Uint32 *map_buf = (Uint32 *)LWRAM;
+    char *map_buf;
+    int game_width, game_height;
+    map_buf = scroll_mapptr((void *)LWRAM, &game_width, &game_height);
+    Uint32 *map_buf32 = (Uint32 *)map_buf;
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 64; j++) {
-            if (i < game_height && j < game_width) {
-                game_map[i * MAP_WIDTH + j] = SCROLL_A1_OFFSET + map_buf[i * game_width + j];
+            if (i < 30 && j < 44) {
+                game_map[i * MAP_WIDTH + j] = SCROLL_A1_OFFSET + map_buf32[i * 44 + j];
             } 
             else {
                 game_map[i * MAP_WIDTH + j] = 0;
@@ -245,12 +244,8 @@ static inline void game_init() {
         }
     }
     //load tiles for stars
-    cd_load_nosize(gamestar_name, game_buf);
-    //write them to screen
-    tile_ptr = (char *)SCL_VDP2_VRAM_B1;
-    DMA_CpuMemCopy1(tile_ptr, game_buf, gamestar_num * 128);
-    //load palette for stars
-    SCL_SetColRam(SCL_NBG1, 0, 16, gamestar_pal);
+    cd_load("GAMESTAR.TLE", game_buf);
+    scroll_loadtile(game_buf, (void *)SCL_VDP2_VRAM_B1, SCL_NBG1, 0);
     // set layer priorities
 	SCL_SetPriority(SCL_SPR, 7);
 	SCL_SetPriority(SCL_SP1, 7);
@@ -259,143 +254,35 @@ static inline void game_init() {
 	SCL_SetPriority(SCL_NBG2, 3);
 	SCL_SetPriority(SCL_NBG1, 2);
     //load maps
-    cd_load_nosize(gamenear_name, game_buf);
-    DMA_CpuMemCopy1(MAP_PTR(3), game_buf, 32 * 32 * 2);
-    cd_load_nosize(gamemid_name, game_buf);
-    DMA_CpuMemCopy1(MAP_PTR(2), game_buf, 32 * 32 * 2);
-    cd_load_nosize(gamefar_name, game_buf);
-    DMA_CpuMemCopy1(MAP_PTR(1), game_buf, 32 * 32 * 2);
+    cd_load("GAMENEAR.MAP", game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(3), game_buf + (2 * sizeof(Uint32)), 32 * 32 * 2);
+    cd_load("GAMEMID.MAP", game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(2), game_buf + (2 * sizeof(Uint32)), 32 * 32 * 2);
+    cd_load("GAMEFAR.MAP", game_buf);
+    DMA_CpuMemCopy1(MAP_PTR(1), game_buf + (2 * sizeof(Uint32)), 32 * 32 * 2);
     //fade in
     SclRgb start, end;
     start.red = start.green = start.blue = -255;
     end.red = end.green = end.blue = 0;
     SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end);
-    //load sprite frames
-    cd_load_nosize(ship_name, game_buf);
-    SCL_SetColRam(SCL_SPR, 16, 16, ship_pal);
-    SPR_2ClrAllChar();
-    //load font
+    // load sprites
+    sprite_clear();
     print_load();
-
-    Uint16 spr_charno = SHIP_CHARNO;
-    Uint16 spr_palno = 16;
-    //load ship sprites
-    for (int i = 0; i < ship_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ship_width, ship_height, (Uint8 *)game_buf + (i * ship_size));
-    }
-    spr_charno += ship_num;
-    // load one extra ship sprite with 1/2 transparency enabled for illusion
-    SPR_2SetChar(spr_charno, COLOR_0, spr_palno | (1 << 11) | (1 << 12), ship_width, ship_height, 
-        (Uint8 *)game_buf + ((SHIP_IDLE - SHIP_CHARNO) * ship_size));
-    illusion_charno = spr_charno;
-    spr_charno++;
-    spr_palno += 16;
-
-    //load bit (powerup for ship width)
-    bit_charno = spr_charno;
-    cd_load_nosize(bit_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, bit_pal);
-    for (int i = 0; i < bit_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, bit_width, bit_height, (Uint8 *)game_buf + (i * bit_size));
-    }
-    spr_charno += bit_num;
-    spr_palno += 16;
-
-    //load ship's laser
-    laser_charno = spr_charno;
-    cd_load_nosize(laser_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, laser_pal);
-    for (int i = 0; i < laser_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, laser_width, laser_height, (Uint8 *)game_buf + (i * laser_size));
-    }
-    spr_charno += laser_num;
-    spr_palno += 16;
-
-    //load ball
-    ball_charno = spr_charno;
-    cd_load_nosize(ball_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, ball_pal);
-    for (int i = 0; i < ball_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, ball_width, ball_height, (Uint8 *)game_buf + (i * ball_size));
-    }
-    spr_charno += ball_num;
-    spr_palno += 16;
-
-    //load ship explosion frames
-    explosion_charno = spr_charno;
-    cd_load_nosize(explosion_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, explosion_pal);
-    for (int i = 0; i < explosion_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, explosion_width, explosion_height, (Uint8 *)game_buf + (i * explosion_size));
-    }
-    spr_charno += explosion_num;
-    spr_palno += 16;
-
-    //load block effects (explosion & shine)
-    block_charno = spr_charno;
-    cd_load_nosize(beffect_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, beffect_pal);
-    for (int i = 0; i < beffect_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, beffect_width, beffect_height, (Uint8 *)game_buf + (i * beffect_size));
-    }
-    spr_charno += beffect_num;
-    spr_palno += 16;
-
-    //load blocks
-    cd_load_nosize(blocks1_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, blocks1_pal);
-    for (int i = 0; i < blocks1_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks1_width, blocks1_height, (Uint8 *)game_buf + (i * blocks1_size));
-    }
-    spr_charno += blocks1_num;
-    spr_palno += 16;
-    cd_load_nosize(blocks2_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, blocks2_pal);
-    for (int i = 0; i < blocks2_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blocks2_width, blocks2_height, (Uint8 *)game_buf + (i * blocks2_size));
-    }
-    spr_charno += blocks2_num;
-    spr_palno += 16;
-    cd_load_nosize(blockcrack_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, blockcrack_pal);
-    for (int i = 0; i < blockcrack_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, blockcrack_width, blockcrack_height, (Uint8 *)game_buf + (i * blockcrack_size));
-    }
-    spr_charno += blockcrack_num;
-    spr_palno += 16;
-
-    //load powerup capsule
-    capsule_charno = spr_charno;
-    cd_load_nosize(capsule_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, capsule_pal);
-    for (int i = 0; i < capsule_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, capsule_width, capsule_height, (Uint8 *)game_buf + (i * capsule_size));
-    }
-    spr_charno += capsule_num;
-    spr_palno += 16;
-
-    //load barrier
-    barrier_charno = spr_charno;
-    cd_load_nosize(barrier_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, barrier_pal);
-    for (int i = 0; i < barrier_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, barrier_width, barrier_height, (Uint8 *)game_buf + (i * barrier_size));
-    }
-    spr_charno += barrier_num;
-    spr_palno += 16;
-
-    //load circle
-    circle_charno = spr_charno;
-    cd_load_nosize(circle_name, game_buf);
-    SCL_SetColRam(SCL_SPR, spr_palno, 16, circle_pal);
-    for (int i = 0; i < barrier_num; i++) {
-        SPR_2SetChar(i + spr_charno, COLOR_0, spr_palno, circle_width, circle_height, (Uint8 *)game_buf + (i * circle_size));
-    }
-    spr_charno += circle_num;
-    spr_palno += 16;
+    ship_charno = sprite_load("SHIP.SPR", &ship_num);
+    bit_charno = sprite_load("BIT.SPR", NULL);
+    laser_charno = sprite_load("LASER.SPR", NULL);
+    ball_charno = sprite_load("BALL.SPR", NULL);
+    explosion_charno = sprite_load("EXPLOSIO.SPR", NULL);
+    block_charno = sprite_load("BEFFECT.SPR", NULL);
+        sprite_load("BLOCKS1.SPR", NULL);
+        sprite_load("BLOCKS2.SPR", NULL);
+        sprite_load("BLOCKCRA.SPR", NULL);
+    capsule_charno = sprite_load("CAPSULE.SPR", NULL);
+    barrier_charno = sprite_load("BARRIER.SPR", NULL);
+    circle_charno = sprite_load("CIRCLE.SPR", NULL);
 
     //load chip's animation frames into lwram
-    cd_load_nosize(chipgame_name, game_buf);
+    cd_load("CHIPGAME.TLE", game_buf);
     sound_cdda(LEVEL1_TRACK, 1);
 }
 
@@ -404,11 +291,11 @@ static void game_loadchip(int num, int gameover) {
     int y_bound;
     // chip's "game over" graphics has an extra row of tiles
     if (gameover) {
-        frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * (CHIP_YPIXELS + 8)));
+        frame_ptr = scroll_tileptr((void *)LWRAM, NULL) + (num * (CHIP_XPIXELS * (CHIP_YPIXELS + 8)));
         y_bound = CHIP_YTILES + 1;
     }
     else {
-        frame_ptr = ((char *)LWRAM) + (num * (CHIP_XPIXELS * CHIP_YPIXELS));
+        frame_ptr = scroll_tileptr((void *)LWRAM, NULL) + (num * (CHIP_XPIXELS * CHIP_YPIXELS));
         y_bound = CHIP_YTILES;
     }
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1 + ((64 * IMAGE_XTILES) * 4) + (64 * 4); //start at 6 rows + 6 tiles in
@@ -538,7 +425,7 @@ static void game_shipanim() {
         ship_frames = 0;
         ship_sprite.char_num++;
         // reset to idle animation
-        if (ship_sprite.char_num == SHIP_CHARNO + ship_num) {
+        if (ship_sprite.char_num == ship_charno + ship_num) {
             ship_sprite.char_num = SHIP_IDLE;
             ship_sprite.state = SHIP_STATE_NORM;
         }
@@ -616,7 +503,7 @@ int game_run() {
             //init score
             score = 0;
             //init the ship sprite
-            ship_sprite.char_num = SHIP_CHARNO;
+            ship_sprite.char_num = ship_charno;
             ship_sprite.x = SHIP_STARTX;
             ship_sprite.y = SHIP_STARTY;
             ship_frames = 0;
@@ -821,22 +708,13 @@ int game_run() {
                 lives--;
                 if (lives < 0) {
                     frames = 0;
-                    // load "GAME OVER" graphic into VRAM
-                    Uint8 *pic_buf = (Uint8 *)LWRAM;
-                    Uint8 *tile_ptr = (Uint8 *)SCL_VDP2_VRAM_B1 + (stars_num * 128);
-                    cd_load_nosize(gameover_name, pic_buf);
-                    DMA_CpuMemCopy1(tile_ptr, pic_buf, gameover_num * 128);
                     // load chip's "game over" frames into LWRAM
-                    cd_load_nosize(chipover_name, pic_buf);
+                    cd_load("CHIPOVER.TLE", (void *)LWRAM);
                     game_chipset(STATE_CHIP_GAMEOVER);
-                    // This is a hack. Basically the last 3 colors in the nbg1/2/3 palette are blank,
-                    // so this overwrites them with the colors for the game over graphic. then, the graphic
-                    // can be displayed on NBG1 and co-exist with the stars on the remaining two backgrounds.
-                    SCL_SetColRam(SCL_NBG1, 13, 3, gameover_pal + 13);
                     // put nbg1 on top of the other star bgs
                     SCL_SetPriority(SCL_NBG1, 5);
                     Uint16 *map_buf = MAP_PTR(1);
-                    int count = stars_num;
+                    int count = 12; // number of star tiles
                     for (int y = 0; y < 32; y++) {
                         for (int x = 0; x < 32; x++) {
                             if ((x < GAMEOVER_WIDTH) && (y < GAMEOVER_HEIGHT)) {
@@ -863,7 +741,7 @@ int game_run() {
                     break;
                 }
                 game_chipset(STATE_CHIP_NONE);
-                ship_sprite.char_num = SHIP_CHARNO;
+                ship_sprite.char_num = ship_charno;
                 ship_sprite.state = SHIP_STATE_INIT;
                 ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(135));
                 state = STATE_GAME_PLAY;

@@ -3,7 +3,6 @@
 #include <SEGA_SPR.H>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "sprite.h"
 #include "print.h"
 
@@ -14,11 +13,7 @@
 Uint8 text[ROWS][COLS];
 
 void print_load() {
-	cd_load(font_name, sprite_buf, font_size * font_num);
-	for (int i = 0; i < font_num; i++) {
-		SPR_2SetChar(i, COLOR_0, 0, font_width, font_height, sprite_buf + (i * font_size));
-	}
-	SCL_SetColRam(SCL_SPR, 0, 16, &font_pal);
+	sprite_load("FONT.SPR", NULL);
 }
 
 void print_init() {

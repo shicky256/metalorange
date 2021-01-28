@@ -5,7 +5,6 @@
 #include <string.h>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
 #include "sprite.h"
@@ -37,7 +36,6 @@ typedef enum {
 
 static int state = STATE_INTRO_INIT;
 static char *girls[5];
-static Uint32 *girl_pal[5] = {girl1_pal, girl2_pal, girl3_pal, girl4_pal, girl5_pal};
 static char *tile_ptr;
 static char *title_gfx_ptr;
 static char *metalorange_ptr;
@@ -97,7 +95,7 @@ static int introfont_widths[] = {
 	20, 20, 21, 16, 19, 22, 21, 30, 23, 22, 17, 10, 9, 11, 8, 23
 };
 
-#define INTROFONT_START (font_num)
+int introfont_charno;
 static Uint32 introfont_curpal[16];
 
 static char *intro_strs[] = {program_str, design_str, graphic_str, character_str, music_str,
@@ -130,53 +128,60 @@ static inline void intro_init() {
 	SCL_SetPriority(SCL_NBG3, 3);
     
     // load font for intro
-    cd_load_nosize(introfont_name, dest_buf);
-    SPR_2ClrAllChar();
-    for (int i = 0; i < introfont_num; i++) {
-        SPR_2SetChar(i + INTROFONT_START, COLOR_0, 16, introfont_width, introfont_height, (Uint8 *)(dest_buf) + (i * introfont_size));
-    }
+    sprite_clear();
+    introfont_charno = sprite_load("INTROFON.SPR", NULL);
 
     //load all 5 images
+    int size;
     girls[0] = dest_buf;
-    cd_load_nosize(girl1_name, dest_buf);
-    dest_buf += 256 * girl1_num;
+    size = cd_load("GIRL1.TLE", dest_buf);
+    dest_buf += size;
     girls[1] = dest_buf;
-    cd_load_nosize(girl2_name, dest_buf);
-    dest_buf += 256 * girl2_num;
+    size = cd_load("GIRL2.TLE", dest_buf);
+    dest_buf += size;
     girls[2] = dest_buf;
-    cd_load_nosize(girl3_name, dest_buf);
-    dest_buf += 256 * girl3_num;
+    size = cd_load("GIRL3.TLE", dest_buf);
+    dest_buf += size;
     girls[3] = dest_buf;
-    cd_load_nosize(girl4_name, dest_buf);
-    dest_buf += 256 * girl4_num;
+    size = cd_load("GIRL4.TLE", dest_buf);
+    dest_buf += size;
     girls[4] = dest_buf;
-    cd_load_nosize(girl5_name, dest_buf);
-    dest_buf += 256 * girl5_num;
+    size = cd_load("GIRL5.TLE", dest_buf);
+    dest_buf += size;
 
     //load star gfx & tilemaps
-    cd_load_nosize(stars_name, dest_buf);
-    DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, dest_buf, 128 * stars_num);
+    // cd_load(stars_name, dest_buf);
+    // DMA_CpuMemCopy1((void *)SCL_VDP2_VRAM_B1, dest_buf, 128 * stars_num);
+    cd_load("STARS.TLE", dest_buf);
+    scroll_loadtile(dest_buf, (void *)SCL_VDP2_VRAM_B1, SCL_NBG1, 0);
+
+    int map_x, map_y;
+    char *map_data;
+
     //near tilemap
-    cd_load_nosize(starnear_name, dest_buf);
-    DMA_CpuMemCopy2(MAP_PTR(1), dest_buf, 32 * 32);
-    SCL_SetColRam(SCL_NBG1, 0, 16, stars_pal);
+    cd_load("STARNEAR.MAP", dest_buf);
+    map_data = scroll_mapptr(dest_buf, &map_x, &map_y);
+    memcpy(MAP_PTR(1), map_data, map_x * map_y * 2);
+
     //mid tilemap
-    cd_load_nosize(starmid_name, dest_buf);
-    DMA_CpuMemCopy2(MAP_PTR(2), dest_buf, 32 * 32);
+    cd_load("STARMID.MAP", dest_buf);
+    map_data = scroll_mapptr(dest_buf, &map_x, &map_y);
+    memcpy(MAP_PTR(2), map_data, map_x * map_y * 2);
     // SCL_SetColRam(SCL_NBG2, 0, 16, stars_pal);
     //far tilemap
-    cd_load_nosize(starfar_name, dest_buf);
-    DMA_CpuMemCopy2(MAP_PTR(3), dest_buf, 32 * 32);
+    cd_load("STARFAR.MAP", dest_buf);
+    map_data = scroll_mapptr(dest_buf, &map_x, &map_y);
+    memcpy(MAP_PTR(3), map_data, map_x * map_y * 2);
     // SCL_SetColRam(SCL_NBG3, 0, 16, stars_pal);
     
     //load title screen gfx
-    int size = cd_load_nosize(title_name, dest_buf);
+    size = cd_load("TITLE.TLE", dest_buf);
     title_gfx_ptr = dest_buf;
     dest_buf += size;
-    size = cd_load_nosize(metalorange_name, dest_buf);
+    size = cd_load("METALORA.TLE", dest_buf);
     metalorange_ptr = dest_buf;
     dest_buf += size;
-    size = cd_load_nosize(cyberblock_name, dest_buf);
+    size = cd_load("CYBERBLO.TLE", dest_buf);
     cyberblock_ptr = dest_buf;
 
     tile_ptr = (char *)SCL_VDP2_VRAM_A1;
@@ -207,7 +212,7 @@ static void intro_print(int x, int y, char *str) {
         }
 
         ch -= 32; //font starts with the space character
-        sprite_make(ch + INTROFONT_START, MTH_IntToFixed(x), MTH_IntToFixed(y), &letter);
+        sprite_make(ch + introfont_charno, MTH_IntToFixed(x), MTH_IntToFixed(y), &letter);
         sprite_draw(&letter);
         x += introfont_widths[(int)ch];
         str++;
@@ -231,7 +236,7 @@ static inline int intro_disptext(int girl) {
         for (int i = 0; i < sizeof(introfont_curpal) / sizeof(introfont_curpal[0]); i++) {
             introfont_curpal[i] = 0;
         }
-        SCL_SetColRam(SCL_SPR, 16, 16, introfont_curpal);
+        SCL_SetColRam(SCL_SPR, 0, 16, introfont_curpal);
     }
     else {
         text_frame++;
@@ -250,7 +255,7 @@ static inline int intro_disptext(int girl) {
                 break;
             }
         }
-        SCL_SetColRam(SCL_SPR, 16, 16, introfont_curpal);
+        SCL_SetColRam(SCL_SPR, 0, 16, introfont_curpal);
     }
 
     intro_print(x_pos, y_pos, intro_strs[girl * 2 + text_num]);
@@ -259,6 +264,8 @@ static inline int intro_disptext(int girl) {
 
 static inline void intro_drawpolys(int num) {
     XyInt rect[4];
+    Uint32 black = 0;
+    SCL_SetColRam(SCL_SPR, 2, 1, &black);
     switch (num) {
         case 5:
             rect[0].x = 140; rect[0].y = 0; //top left
@@ -345,10 +352,8 @@ int intro_run() {
             break;
         
         case STATE_INTRO_LOADGIRL:
-            SCL_SetColRam(SCL_NBG0, 0, 256, girl_pal[cursor]); //load palette
             SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, 0, 0, 0);
-            // SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255);
-            DMA_CpuMemCopy1(tile_ptr, girls[cursor], 256 * 17 * 30); //load tiles
+            scroll_loadtile(girls[cursor], tile_ptr, SCL_NBG0, 0);
             girl_xpos = MTH_FIXED(-((SCREEN_X / 2) - (GIRL_X / 2)));
             scroll_set(0, girl_xpos, MTH_FIXED(0)); //center image
             // SCL_SetAutoColOffset(SCL_OFFSET_A, 1, 30, &start, &end); //fade in image
@@ -405,11 +410,12 @@ int intro_run() {
             break;
 
         case STATE_INTRO_LOADTITLE:
-            SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
+            // SCL_SetColRam(SCL_NBG0, 0, 256, title_pal);
             SCL_SetColMixRate(SCL_NBG0, 0); //make screen opaque
             SCL_SetColOffset(SCL_OFFSET_A, SCL_NBG0, -255, -255, -255); // black out the screen
             // DMA_CpuMemCopy1(tile_ptr, title_gfx_ptr, 256 * title_num);
-            memcpy(tile_ptr, title_gfx_ptr, 256 * title_num);
+            // memcpy(tile_ptr, title_gfx_ptr, 256 * title_num);
+            scroll_loadtile(title_gfx_ptr, tile_ptr, SCL_NBG0, 0);
             scroll_set(0, MTH_FIXED(0), MTH_FIXED(0)); //reset map
             count = 2;
             map_ptr = MAP_PTR(0);
@@ -453,8 +459,9 @@ int intro_run() {
             break;
         
         case STATE_INTRO_LOADMETALORANGE:
-            SCL_SetColRam(SCL_NBG1, 0, 16, metalorange_pal); //load palette
-            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
+            // SCL_SetColRam(SCL_NBG1, 0, 16, metalorange_pal); //load palette
+            // DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + 128), metalorange_ptr, 128 * metalorange_num); //skip first tile
+            scroll_loadtile(metalorange_ptr, (void *)(SCL_VDP2_VRAM_B1 + 128), SCL_NBG1, 0);
             SCL_SetPriority(SCL_NBG1, 7); //put nbg1 on top of nbg0
             scroll_set(1, MTH_FIXED(-((352 / 2) - (256 / 2))), MTH_FIXED(METALORANGE_Y)); //reset position
             map_ptr = MAP_PTR(1);
@@ -492,13 +499,16 @@ int intro_run() {
 
         case STATE_INTRO_LOADCYBERBLOCK:
             SCL_SetColMixRate(SCL_NBG2, 31); //make bg2 transparent
-            SCL_SetColRam(SCL_NBG1, 16, 16, cyberblock_pal);
+            // SCL_SetColRam(SCL_NBG1, 16, 16, cyberblock_pal);
             //skip 1st blank tile & all the "metal orange" text tiles
-            DMA_CpuMemCopy1((void *)(SCL_VDP2_VRAM_B1 + (128 * (metalorange_num + 1))), cyberblock_ptr, 128 * cyberblock_num);
+            int metalorange_size;
+            scroll_tileptr(metalorange_ptr, &metalorange_size);
+            char *cyberblock_dest = (void *)(SCL_VDP2_VRAM_B1 + metalorange_size);
+            scroll_loadtile(cyberblock_ptr, cyberblock_dest, SCL_NBG1, 16);
             SCL_SetPriority(SCL_NBG2, 7); //put on top
             scroll_set(2, MTH_FIXED(-((352 / 2) - (192 / 2))), MTH_FIXED(-120));
             map_ptr = MAP_PTR(2);
-            count = metalorange_num + 1;
+            count = metalorange_size / 128;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {
                     if (i < 2 && j < 12) {

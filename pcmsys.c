@@ -81,9 +81,9 @@ void smpc_issue_command(unsigned char cmd)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void load_driver_binary(Sint8 * filename, void * buffer)
+void load_driver_binary(char *filename, void * buffer)
 {
-	Sint32 file_size = cd_load_nosize(filename, buffer);
+	Sint32 file_size = cd_load(filename, buffer);
 	//The immediacy of these commands is important.
 	//As per SEGA technical bulletin 51, the Sound CPU is not to be turned off for more than 0.5 seconds.
 	// Turn off Sound CPU
@@ -120,7 +120,7 @@ void load_drv(void)
 	void * binary_buffer = (void*)2097152;
 	
 	// Load driver binary from CD and copy it to Sound RAM
-	load_driver_binary((Sint8*)"SDRV.BIN", binary_buffer);
+	load_driver_binary((char *)"SDRV.BIN", binary_buffer);
 
 }
 
@@ -136,7 +136,7 @@ short calculate_bytes_per_blank(int sampleRate, int is8Bit, int isPAL)
 	
 }
 
-short load_16bit_pcm(Sint8 * filename, int sampleRate)
+short load_16bit_pcm(char *filename, int sampleRate)
 {
 	//Quick sanity check to see if the loading pointer has gone outside of sound RAM already.
 	if( (int)scsp_load > 0x7F800)
@@ -149,7 +149,7 @@ short load_16bit_pcm(Sint8 * filename, int sampleRate)
 	int fnsr;
 	//
 	//Find the file system ID of the file according to its name
-	Sint32 file_size = cd_load_nosize(filename, (Uint32 *)((unsigned int)scsp_load + SNDRAM));
+	Sint32 file_size = cd_load(filename, (Uint32 *)((unsigned int)scsp_load + SNDRAM));
 
 	//These align the file on a 4-byte boundary. This is neccessary for the SCSP to not-crash.
 	file_size += ((unsigned int)file_size & 1) ? 1 : 0;
@@ -179,7 +179,7 @@ short load_16bit_pcm(Sint8 * filename, int sampleRate)
 	return (numberPCMs-1); //Return the PCM # this sound recieved
 }
 
-short load_8bit_pcm(Sint8 * filename, int sampleRate)
+short load_8bit_pcm(char *filename, int sampleRate)
 {
 	//Quick sanity check to see if the loading pointer has gone outside of sound RAM already.
 	if( (int)scsp_load > 0x7F800)
@@ -193,7 +193,7 @@ short load_8bit_pcm(Sint8 * filename, int sampleRate)
 	int fnsr;
 	//
 	//Find the file system ID of the file according to its name
-	Sint32 file_size = cd_load_nosize(filename, (Uint32 *)((unsigned int)scsp_load + SNDRAM));
+	Sint32 file_size = cd_load(filename, (Uint32 *)((unsigned int)scsp_load + SNDRAM));
 
 	//These align the file on a 4-byte boundary. This is neccessary for the SCSP to not-crash.
 	file_size += ((unsigned int)file_size & 1) ? 1 : 0;

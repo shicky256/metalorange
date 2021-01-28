@@ -1,9 +1,13 @@
-#include <byteswap.h>
 #include <dirent.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if WINDOWS
+	#include <winsock.h>
+#else
+	#include <arpa/inet.h>
+#endif
 
 #include "debug.h"
 #include "qdbmp.h"
@@ -41,7 +45,7 @@ void sprite_convert(BMP *tile) {
 	for (int i = 0; i < PALETTE_SIZE; i++) {
 		BMP_GetPaletteColor(tile, i, &r, &g, &b);
 		color = r | (g << 8) | (b << 16);
-		palette_buffer[i] = bswap_32(color);
+		palette_buffer[i] = htonl(color);
 	}
 	// check for a matching palette
 	int palno = -1;
@@ -125,7 +129,7 @@ int sprite_process(char *dirname, char *outname) {
 			continue;
 		}
 		if (entry->d_type == DT_REG) {
-			printf("%s/%s\n", dirname, entry->d_name);
+			DBG_PRINTF("%s/%s\n", dirname, entry->d_name);
 			int retval;
 			if ((retval = snprintf(filename, FILENAME_BUFLEN, "%s/%s", dirname, entry->d_name)) > FILENAME_BUFLEN) {
 				printf("Error: overran filename buffer by %d bytes. Increase FILENAME_BUFLEN define in sprite.c.\n", retval);
@@ -160,21 +164,21 @@ int sprite_process(char *dirname, char *outname) {
 	}
 	// saturn is big-endian so all the data over one byte must be byteswapped
 	// write number of palettes
-	int palette_cursor_be = bswap_32(palette_cursor);
+	int palette_cursor_be = htonl(palette_cursor);
 	fwrite(&palette_cursor_be, sizeof(palette_cursor_be), 1, out);
 	// write all the palettes (they're already byteswapped)
 	for (int i = 0; i < palette_cursor; i++) {
 		fwrite(palette_list[i], sizeof(uint32_t), PALETTE_SIZE, out);
 	}
 	// write number of sprites
-	int num_files_be = bswap_32(num_files);
+	int num_files_be = htonl(num_files);
 	fwrite(&num_files_be, sizeof(num_files_be), 1, out);
 	// write IMAGE_INFO structs
 	int tmp_x, tmp_y, tmp_pal;
 	for (int i = 0; i < num_files; i++) {
-		tmp_x = bswap_32(info_list[i].x);
-		tmp_y = bswap_32(info_list[i].y);
-		tmp_pal = bswap_32(info_list[i].pal);
+		tmp_x = htonl(info_list[i].x);
+		tmp_y = htonl(info_list[i].y);
+		tmp_pal = htonl(info_list[i].pal);
 		fwrite(&tmp_x, sizeof(tmp_x), 1, out);
 		fwrite(&tmp_y, sizeof(tmp_y), 1, out);
 		fwrite(&tmp_pal, sizeof(tmp_pal), 1, out);

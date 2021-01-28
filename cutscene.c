@@ -3,7 +3,6 @@
 #include <SEGA_SCL.H>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
 #include "vblank.h"
@@ -43,11 +42,10 @@ static inline void cutscene_init() {
     // reset scroll
     scroll_set(0, 0, 0);
 
-    // load palette
-    SCL_SetColRam(SCL_NBG0, 0, 256, tomo_pal);
-
     // load graphic
-    cd_load_nosize(tomo_name, gfx_ptr);
+    cd_load("TOMO.TLE", gfx_ptr);
+    scroll_loadtile(gfx_ptr, NULL, SCL_NBG0, 0);
+    gfx_ptr = scroll_tileptr(gfx_ptr, NULL);
     for (int y = 0; y < IMG_HEIGHT; y++) {
         for (int x = 0; x < IMG_WIDTH; x++) {
             vram[BMP_WIDTH * y + x] = gfx_ptr[IMG_WIDTH * y + x];
@@ -55,7 +53,7 @@ static inline void cutscene_init() {
     }
 
     // load font
-    cd_load_nosize(cutscfont_name, gfx_ptr);
+    cd_load("CUTSCFON.TLE", (char *)LWRAM);
     // set up auto fade-in
     SclRgb start, end;
     start.red = start.green = start.blue = -255;
@@ -79,9 +77,8 @@ static void cutscene_print(int x_pos, int y_pos, char *str) {
 
         ch -= 32; // font starts with the space character
         // each row in the font image has 16 characters
-        int graphic_start = LWRAM + ((ch >> 4) * (CHAR_HEIGHT * FONT_WIDTH)) + ((ch & 0xf) * CHAR_WIDTH);
         // pointer to top left pixel of the character in the font
-        char *graphic_ptr = (char *)graphic_start;
+        char *graphic_ptr = (char *)LWRAM + 0x408 + ((ch >> 4) * (CHAR_HEIGHT * FONT_WIDTH)) + ((ch & 0xf) * CHAR_WIDTH);
         for (int y = 0; y < CHAR_HEIGHT; y++) {
             for (int x = 0; x < CHAR_WIDTH; x++) {
                 vram[(y + y_pos) * BMP_WIDTH + (x + x_pos)] = graphic_ptr[y * FONT_WIDTH + x];

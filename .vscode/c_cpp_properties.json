@@ -10,7 +10,7 @@
             "compilerPath": "C:/saturn/gcc84/bin/sh-elf-gcc.exe",
             "cStandard": "gnu99",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
+            "intelliSenseMode": "gcc-x86"
         }
     ],
     "version": 4

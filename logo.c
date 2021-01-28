@@ -3,7 +3,6 @@
 
 #include "cd.h"
 #include "devcart.h"
-#include "graphicrefs.h"
 #include "scroll.h"
 #include "sound.h"
 #include "vblank.h"
@@ -31,7 +30,7 @@ static int state;
 static int frame;
 
 void logo_loadframe(int num) {
-    char *frame_ptr = ((char *)LWRAM) + (num * (FRAME_XPIXELS * FRAME_YPIXELS));
+    char *frame_ptr = scroll_tileptr((void *)LWRAM, NULL) + (num * (FRAME_XPIXELS * FRAME_YPIXELS));
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1 + (256 * IMAGE_XTILES) + (256 * 5); //start at one row + 5 tiles in
 
     int offset;
@@ -44,7 +43,6 @@ void logo_loadframe(int num) {
 }
 
 static inline void logo_init() {
-    char *logo_buf = (char *)LWRAM;
     char *tile_ptr = (char *)SCL_VDP2_VRAM_A1;
     Uint16 *map_ptr = MAP_PTR(0);
     //put the image in a good location
@@ -53,9 +51,8 @@ static inline void logo_init() {
     scroll_set(0, MTH_FIXED(-208), MTH_FIXED(-80));
     scroll_charsize(0, SCL_CHAR_SIZE_2X2);
     scroll_mapsize(0, SCL_PN1WORD);
-    cd_load_nosize(roarbg_name, logo_buf);
-    DMA_CpuMemCopy1(tile_ptr, logo_buf, 256 * roarbg_num);
-    SCL_SetColRam(SCL_NBG0, 0, 256, roarbg_pal);
+    cd_load("ROARBG.TLE", (void *)LWRAM);
+    int roarbg_num = scroll_loadtile((void *)LWRAM, tile_ptr, SCL_NBG0, 0);
 
     int xnum = 0;
     int ynum = 0;
@@ -69,7 +66,7 @@ static inline void logo_init() {
         }
     }
     //load rest of frames into LWRAM to prepare for loading to VRAM
-    cd_load_nosize(roarframes_name, logo_buf);
+    cd_load("ROARFRAM.TLE", (void *)LWRAM);
 
     // clear the variables
     timer = 0;

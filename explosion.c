@@ -1,7 +1,6 @@
 #include <sega_mth.h>
 
 #include "explosion.h"
-#include "graphicrefs.h"
 #include "sprite.h"
 #include "print.h"
 

@@ -42,13 +42,18 @@ typedef struct SpriteInfo {
 #define SPRITE_LIST_SIZE (80)
 extern SPRITE_INFO sprites[];
 //buffer in HWRAM to load sprite graphics in since you can't dma from LWRAM
-#define SPRITE_BUF_SIZE (8192)
+#define SPRITE_BUF_SIZE (65536)
 extern Uint8 sprite_buf[];
 
 //sets up initial sprite display
 void sprite_init(void);
 //erases framebuffer (run at start of draw command)
 void sprite_erase(Sint16 x, Sint16 y);
+// clears vdp1 memory
+void sprite_clear(void);
+// loads a sprite off the disc, returns the tile number of the first loaded sprite
+// count: optional parameter, if it's not null gets set to # of sprites loaded
+int sprite_load(char *filename, int *count);
 //gets vdp1 ready for draw commands
 void sprite_startdraw(void);
 //automatically picks the simplest SBL function for drawing the sprite depending

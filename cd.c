@@ -33,26 +33,14 @@ void cd_init(void) {
  * read data off the cd's root directory
  * filename: duh
  * dataBuf: where you want to copy the data to
- * read_size: # of bytes to read 
+ * returns number of bytes read
  */
-void cd_load(Sint8 *filename, void *dataBuf, int read_size) {
-    #if DEVCART_LOAD
-    devcart_loadfile(filename, dataBuf);
-    #else
-    GfsHn gfs = GFS_Open(GFS_NameToId(filename));
-    //make sure we read at least one sector
-    GFS_Fread(gfs, read_size < SECT_SIZE ? 1 : (read_size >> 11) + 1, dataBuf, read_size);
-    GFS_Close(gfs);
-    #endif
-}
-
-
-Sint32 cd_load_nosize(Sint8 *filename, void *dataBuf) {
+Sint32 cd_load(char *filename, void *dataBuf) {
     #if DEVCART_LOAD
     return devcart_loadfile(filename, dataBuf);
     #else
     Sint32 filesize;
-    GfsHn gfs = GFS_Open(GFS_NameToId(filename));
+    GfsHn gfs = GFS_Open(GFS_NameToId((Sint8 *)filename));
     GFS_GetFileInfo(gfs, NULL, NULL, &filesize, NULL);
     //make sure we read at least one sector
     GFS_Fread(gfs, filesize < SECT_SIZE ? 1 : (filesize >> 11) + 1, dataBuf, filesize);

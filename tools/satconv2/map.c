@@ -1,9 +1,14 @@
-#include <byteswap.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if WINDOWS
+	#include <winsock.h>
+#else
+	#include <arpa/inet.h>
+#endif
 
+#include "debug.h"
 #include "ezxml.h"
 #include "map.h"
 
@@ -43,7 +48,7 @@ void map_conv1(char *instr, uint16_t *out, int bpp) {
 		if (in_val & 0x40000000) {
 			out_val |= 0x800;
 		}
-		*out = bswap_16(out_val);
+		*out = htons(out_val);
 		out++;
 	}
 }
@@ -66,7 +71,7 @@ void map_conv2(char *instr, uint32_t *out) {
 			out_val |= 0x40000000;
 		}
 		// reverse endianness
-		*out = bswap_32(out_val);
+		*out = htonl(out_val);
 		out++;
 	}
 }
@@ -92,8 +97,8 @@ int map_process(char *inname, char *outname, int bpp, int type) {
 		return 0;
 	}
 	int width = atoi(width_str);
-	int width_be = bswap_32(width);
-	printf("Width: %d\n", width);
+	int width_be = htonl(width);
+	DBG_PRINTF("Width: %d\n", width);
 	
 	const char *height_str = ezxml_attr(root_xml, "height");
 	if (height_str == NULL) {
@@ -102,8 +107,8 @@ int map_process(char *inname, char *outname, int bpp, int type) {
 		return 0;
 	}
 	int height = atoi(height_str);
-	int height_be = bswap_32(height);
-	printf("Height: %d\n", height);
+	int height_be = htonl(height);
+	DBG_PRINTF("Height: %d\n", height);
 	
 	// get map data (tiled stores it as csv)
 	ezxml_t map = ezxml_get(root_xml, "layer", 0, "data", -1);
@@ -134,7 +139,7 @@ int map_process(char *inname, char *outname, int bpp, int type) {
 		uint32_t *map_data = malloc(width * height * sizeof(uint32_t));
 		map_conv2(ezxml_txt(map), map_data);
 		ezxml_free(root_xml);
-		FILE *out_file = fopen(outname, "w");
+		FILE *out_file = fopen(outname, "wb");
 		if (out_file == NULL) {
 			printf("Error: couldn't open output file %s\n", outname);
 			free(map_data);

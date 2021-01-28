@@ -5,7 +5,6 @@
 #include <SEGA_SPR.H>
 
 #include "cd.h"
-#include "graphicrefs.h"
 #include "menu.h"
 #include "pcmsys.h"
 #include "sound.h"
@@ -18,26 +17,26 @@
 static int chip_cursor;
 #define CHIP_ANIMIN_NUMFRAMES (5)
 static int chip_animin_timings[CHIP_ANIMIN_NUMFRAMES] = {50, 32, 16, 10, 10};
-static char *chip_animin_frames[CHIP_ANIMIN_NUMFRAMES] = {(char *)LWRAM,
-                                                          (char *)LWRAM + 1 * CHIP_FRAME_SIZE,
-                                                          (char *)LWRAM,
-                                                          (char *)LWRAM + 2 * CHIP_FRAME_SIZE,
-                                                          (char *)LWRAM + 3 * CHIP_FRAME_SIZE};
+static char *chip_animin_frames[CHIP_ANIMIN_NUMFRAMES] = {(char *)LWRAM + SCROLL_HEADER256,
+                                                          (char *)LWRAM + SCROLL_HEADER256 + (1 * CHIP_FRAME_SIZE),
+                                                          (char *)LWRAM + SCROLL_HEADER256,
+                                                          (char *)LWRAM + SCROLL_HEADER256 + (2 * CHIP_FRAME_SIZE),
+                                                          (char *)LWRAM + SCROLL_HEADER256 + (3 * CHIP_FRAME_SIZE)};
 #define CHIP_RUN_NUMFRAMES (4)
 #define CHIP_RUN_TIMING (13)
-static char *chip_run_frames[CHIP_RUN_NUMFRAMES] = {(char *)LWRAM + 4 * CHIP_FRAME_SIZE,
-                                                    (char *)LWRAM + 5 * CHIP_FRAME_SIZE,
-                                                    (char *)LWRAM + 6 * CHIP_FRAME_SIZE,
-                                                    (char *)LWRAM + 7 * CHIP_FRAME_SIZE};
+static char *chip_run_frames[CHIP_RUN_NUMFRAMES] = {(char *)LWRAM + SCROLL_HEADER256 + (4 * CHIP_FRAME_SIZE),
+                                                    (char *)LWRAM + SCROLL_HEADER256 + (5 * CHIP_FRAME_SIZE),
+                                                    (char *)LWRAM + SCROLL_HEADER256 + (6 * CHIP_FRAME_SIZE),
+                                                    (char *)LWRAM + SCROLL_HEADER256 + (7 * CHIP_FRAME_SIZE)};
 
 #define CHIP_ANIMOUT_NUMFRAMES (6)
 static int chip_animout_timings[CHIP_ANIMOUT_NUMFRAMES] = {10, 10, 16, 32, 32, 32};
-static char *chip_animout_frames[CHIP_ANIMOUT_NUMFRAMES] = {(char *)LWRAM + 3 * CHIP_FRAME_SIZE,
-                                                            (char *)LWRAM + 2 * CHIP_FRAME_SIZE,
-                                                            (char *)LWRAM,
-                                                            (char *)LWRAM + 1 * CHIP_FRAME_SIZE,
-                                                            (char *)LWRAM,
-                                                            (char *)LWRAM + 8 * CHIP_FRAME_SIZE};
+static char *chip_animout_frames[CHIP_ANIMOUT_NUMFRAMES] = {(char *)LWRAM + SCROLL_HEADER256 + (3 * CHIP_FRAME_SIZE),
+                                                            (char *)LWRAM + SCROLL_HEADER256 + (2 * CHIP_FRAME_SIZE),
+                                                            (char *)LWRAM + SCROLL_HEADER256,
+                                                            (char *)LWRAM + SCROLL_HEADER256 + (1 * CHIP_FRAME_SIZE),
+                                                            (char *)LWRAM + SCROLL_HEADER256,
+                                                            (char *)LWRAM + SCROLL_HEADER256 + (8 * CHIP_FRAME_SIZE)};
 
 static char *tile_ptr = ((char *)SCL_VDP2_VRAM_A1) + 256;
 static char *font_ptr = ((char *)SCL_VDP2_VRAM_B1);
@@ -46,7 +45,10 @@ static int timer;
 static int menu_cursor = 0;
 int cutscene = 1;
 
-#define STAR_CHARNO (font_num)
+#define STAR_WIDTH (16)
+#define STAR_HEIGHT (16)
+int star_charno;
+int star_num;
 
 typedef enum {
     STATE_MENU_INIT,
@@ -142,17 +144,12 @@ static inline void menu_init() {
     scroll_set(0, MTH_FIXED(-220), MTH_FIXED(-140));
     scroll_set(1, MTH_FIXED(0), MTH_FIXED(0));
     //load star gfx
-    cd_load_nosize(starspr_name, sprite_buf);
-    SPR_2ClrAllChar();
-    SCL_SetColRam(SCL_SPR, 16, 16, starspr_pal);
-	for (int i = 0; i < starspr_num; i++) {
-		SPR_2SetChar(i + STAR_CHARNO, COLOR_0, 16, starspr_width, starspr_height, sprite_buf + (i * starspr_size));
-	}
+    sprite_clear();
+    star_charno = sprite_load("STARSPR.SPR", &star_num);
     SCL_SetPriority(SCL_SPR, 2); //put spr scroll layer under everything
     //load font gfx
-    cd_load_nosize(menufont_name, menu_buf);
-    DMA_CpuMemCopy1(font_ptr, menu_buf, 128 * menufont_num);
-    SCL_SetColRam(SCL_NBG1, 0, 16, menufont_pal);
+    cd_load("MENUFONT.TLE", menu_buf);
+    scroll_loadtile(menu_buf, font_ptr, SCL_NBG1, 0);  
     menu_print(5, 5, 0, "START GAME");
     // menu_print(5, 6, 0, "LOAD GAME");
     if (cutscene) {
@@ -162,8 +159,8 @@ static inline void menu_init() {
         menu_print(5, 7, 0, "CUTSCENE: OFF");
     }
     //load chip gfx
-    cd_load_nosize(chipframes_name, menu_buf);
-    DMA_CpuMemCopy1(tile_ptr, menu_buf, 256 * 42);
+    cd_load("CHIPFRAM.TLE", menu_buf);
+    scroll_loadtile(menu_buf, tile_ptr, SCL_NBG0, 0);
     int counter = 2;
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 32; j++) {
@@ -176,7 +173,6 @@ static inline void menu_init() {
             }
         }
     }
-    SCL_SetColRam(SCL_NBG0, 0, 256, chipframes_pal);
     sound_cdda(MENU_TRACK, 1);
 }
 
@@ -218,10 +214,10 @@ static void menu_starmove(SPRITE_INFO *star) {
 static inline void menu_starcreate(SPRITE_INFO *star) {
     Fixed32 x = (Fixed32)MTH_GetRand() % MTH_FIXED(5) + MTH_FIXED(SCROLL_LORES_X >> 1);
     Fixed32 y = (Fixed32)MTH_GetRand() % MTH_FIXED(5) + MTH_FIXED(SCROLL_LORES_Y >> 1);
-    int tile_num = STAR_CHARNO + ((MTH_GetRand() >> 5) % starspr_num);
+    int tile_num = star_charno + ((MTH_GetRand() >> 5) % star_num);
     sprite_make(tile_num, x, y, star);
-    star->x_size = MTH_FIXED(starspr_width);
-    star->y_size = MTH_FIXED(starspr_height);
+    star->x_size = MTH_FIXED(STAR_WIDTH);
+    star->y_size = MTH_FIXED(STAR_HEIGHT);
     Fixed32 angle = (Fixed32)(MTH_GetRand() % MTH_FIXED(360));
     angle -= MTH_FIXED(180);
     star->dx = MTH_Mul(MTH_FIXED(5), MTH_Cos(angle));
@@ -289,7 +285,7 @@ int menu_run() {
                 if (chip_cursor == CHIP_ANIMOUT_NUMFRAMES) {
                     chip_cursor = 0;
                     //use first frame for fadeout
-                    DMA_CpuMemCopy1(tile_ptr, (Uint8 *)LWRAM, 42 * 256);
+                    DMA_CpuMemCopy1(tile_ptr, chip_animin_frames[0], 42 * 256);
                     state = STATE_MENU_FADEOUT;
                     break;
                 }

@@ -1,8 +1,12 @@
-#include <byteswap.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if WINDOWS
+	#include <winsock.h>
+#else
+	#include <arpa/inet.h>
+#endif
 
 #include "qdbmp.h"
 #include "tile.h"
@@ -34,13 +38,14 @@ int tile_process(char *filename, char *outname, int type) {
 		BMP_Free(infile);
 		return 0;
 	}
-	uint32_t *palette = malloc((1 << bpp) * sizeof(uint32_t));
+	uint32_t palsize = (1 << bpp);
+	uint32_t *palette = malloc(palsize * sizeof(uint32_t));
 	int color;
 	uint8_t r, g, b;
-	for (int i = 0; i < (1 << bpp); i++) {
+	for (int i = 0; i < palsize; i++) {
 		BMP_GetPaletteColor(infile, i, &r, &g, &b);
 		color = r | (g << 8) | (b << 16);
-		palette[i] = bswap_32(color); // saturn is big endian
+		palette[i] = htonl(color); // saturn is big endian
 	}
 	
 	size_t image_data_size;
@@ -143,9 +148,11 @@ int tile_process(char *filename, char *outname, int type) {
 		BMP_Free(infile);
 		return 0;
 	}
-	uint32_t out_bpp = bswap_32((int)bpp);
-	fwrite(&out_bpp, sizeof(uint32_t), 1, outfile);
-	fwrite(palette, sizeof(uint32_t), (1 << bpp), outfile);
+	uint32_t out_palsize = htonl(palsize);
+	fwrite(&out_palsize, sizeof(uint32_t), 1, outfile);
+	fwrite(palette, sizeof(uint32_t), palsize, outfile);
+	uint32_t out_image_data_size = htonl(image_data_size);
+	fwrite(&out_image_data_size, sizeof(uint32_t), 1, outfile);
 	fwrite(image_data, sizeof(uint8_t), image_data_size, outfile);
 	fclose(outfile);
 	
