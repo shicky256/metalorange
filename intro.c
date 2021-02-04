@@ -503,12 +503,12 @@ int intro_run() {
             //skip 1st blank tile & all the "metal orange" text tiles
             int metalorange_size;
             scroll_tileptr(metalorange_ptr, &metalorange_size);
-            char *cyberblock_dest = (void *)(SCL_VDP2_VRAM_B1 + metalorange_size);
+            char *cyberblock_dest = (void *)((SCL_VDP2_VRAM_B1 + 128) + metalorange_size);
             scroll_loadtile(cyberblock_ptr, cyberblock_dest, SCL_NBG1, 16);
             SCL_SetPriority(SCL_NBG2, 7); //put on top
             scroll_set(2, MTH_FIXED(-((352 / 2) - (192 / 2))), MTH_FIXED(-120));
             map_ptr = MAP_PTR(2);
-            count = metalorange_size / 128;
+            count = (metalorange_size / 128) + 1;
             for (int i = 0; i < 32; i++) {
                 for (int j = 0; j < 32; j++) {
                     if (i < 2 && j < 12) {

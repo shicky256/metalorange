@@ -36,6 +36,7 @@ s laser
 s barrier
 t2 soon.bmp
 t0 tomo.bmp
+t0 tomoface.bmp
 t0 cutscfont.bmp
 t2 gameover.bmp
 t1 chipover.bmp
