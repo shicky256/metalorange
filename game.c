@@ -1,8 +1,8 @@
-#include <SEGA_DMA.H>
-#include <SEGA_MTH.H>
-#include <SEGA_SCL.H>
+#include <sega_dma.h>
+#include <sega_mth.h>
+#include <sega_scl.h>
 #define _SPR2_
-#include <SEGA_SPR.H>
+#include <sega_spr.h>
 
 #include "ball.h"
 #include "barrier.h"
@@ -518,7 +518,6 @@ int game_run() {
             barrier_init(barrier_charno);
             // init circle
             circle_init(circle_charno);
-            // circle_add(MTH_FIXED(150), MTH_FIXED(150));
             //add first ball
             ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
             //init powerup state
@@ -644,8 +643,6 @@ int game_run() {
 
             // move all balls on screen
             ball_move();
-            // move all lasers
-            laser_move();
             // move all circles
             circle_move();
             // move all capsules
@@ -944,7 +941,6 @@ int game_run() {
     if (state < STATE_GAME_OVER) {
         level_disp(); // draw blocks
         capsule_draw(); // draw capsules
-        laser_draw(); // draw laser
         barrier_draw(); // draw barrier
         circle_draw(); // draw circle
         ball_draw(); // draw ball

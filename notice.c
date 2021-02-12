@@ -1,6 +1,6 @@
-#include <SEGA_DMA.H>
-#include <SEGA_MTH.H>
-#include <SEGA_SCL.H>
+#include <sega_dma.h>
+#include <sega_scl.h>
+#include <sega_xpt.h>
 #include <string.h>
 
 #include "cd.h"
@@ -15,7 +15,7 @@
 
 int notice_displayed = 0;
 char *notice_text = "\"Cyberblock Metal Orange\" for Sega Saturn\n"
-                    "http://www.infochunk.com/orange/index.html\n"
+                    "    http://www.infochunk.com/orange/\n"
                     "------------------------------------------\n\n"
                     "Art, Sounds, Music (c) 1993 CUSTOM\n"
                     "Saturn sound engine (c) 2020 Ponut64\n"

@@ -3,7 +3,7 @@
 //hopefully somewhat portable
 //
 
-#include <SEGA_DMA.H>
+#include <sega_dma.h>
 
 #include "cd.h"
 #include "devcart.h"

@@ -92,8 +92,9 @@ int sprite_load(char *filename, int *count) {
 		memcpy(&sprite_y, sprite_bufptr, sizeof(sprite_y));
 		sprite_bufptr += sizeof(sprite_y);
 		memcpy(&sprite_pal, sprite_bufptr, sizeof(sprite_pal));
+		sprite_pal = (sprite_pal * 16) + sprite_palcnt;
 		sprite_bufptr += sizeof(sprite_pal);
-		SPR_2SetChar((Uint16)(i + sprite_tilecnt), COLOR_0, (Uint16)(sprite_pal + sprite_palcnt),
+		SPR_2SetChar((Uint16)(i + sprite_tilecnt), COLOR_0, (Uint16)(sprite_pal),
 		  (Uint16)sprite_x, (Uint16)sprite_y, sprite_bufptr);
 		sprite_bufptr += ((sprite_x / 2) * sprite_y);
 	}
@@ -166,45 +167,28 @@ void sprite_draw(SPRITE_INFO *info) {
 }
 
 void sprite_make(int tile_num, Fixed32 x, Fixed32 y, SPRITE_INFO *ptr) {
+	ptr->display = 1;
 	ptr->char_num = tile_num;
-	ptr->options = 0;
-	ptr->state = 0;
 	ptr->x = x;
 	ptr->y = y;
 	ptr->x_size = 0;
 	ptr->y_size = 0;
 	ptr->mirror = 0;
-	ptr->dx = 0;
-	ptr->dy = 0;
 	ptr->scale = MTH_FIXED(1);
 	ptr->angle = 0;
-	ptr->anim_timer = 0;
-	ptr->anim_cursor = 0;
 	ptr->iterate = NULL;
 }
 
 void sprite_draw_all() {
-	int i;
-	Sint32 rel_x, rel_y;
-	SPRITE_INFO tmp;
-	for (i = 0; i < SPRITE_LIST_SIZE; i++) {
-		rel_x = sprites[i].x;
-		rel_y = sprites[i].y;
-		//if sprite is more than 1/2 screen offscreen, don't render it
-		if (sprites[i].options & OPTION_NODISP || rel_x + sprites[i].x_size < MTH_FIXED(-160) || rel_x > MTH_FIXED(480) ||
-			 rel_y + sprites[i].y_size < MTH_FIXED(-112) || rel_y > MTH_FIXED(336)) {
-			continue;
-		}
-
-		if (sprites[i].iterate != NULL) {
-			sprites[i].iterate(&sprites[i]);
-		}
-		//check again because iterate function may have deleted sprite
-		if (!(sprites[i].options & OPTION_NODISP)) {
-			memcpy((void *)&tmp, (void *)&sprites[i], sizeof(SPRITE_INFO));
-			tmp.x = rel_x;
-			tmp.y = rel_y;
-			sprite_draw(&tmp);
+	for (int i = 0; i < SPRITE_LIST_SIZE; i++) {
+		if (sprites[i].display) {
+			if (sprites[i].iterate != NULL) {
+				sprites[i].iterate(&sprites[i]);
+			}
+			//check again because iterate function may have deleted sprite
+			if (sprites[i].display) {
+				sprite_draw(&sprites[i]);
+			}
 		}
 	}
 }
@@ -212,7 +196,7 @@ void sprite_draw_all() {
 SPRITE_INFO *sprite_next() {
 	int i;
 	for (i = 0; i < SPRITE_LIST_SIZE; i++) {
-		if (sprites[i].options & OPTION_NODISP) {
+		if (!sprites[i].display) {
 			num_sprites++;
 			sprites[i].index = i;
 			sprites[i].iterate = NULL;
@@ -223,14 +207,14 @@ SPRITE_INFO *sprite_next() {
 }
 
 void sprite_delete(SPRITE_INFO *sprite) {
-	sprite->options |= OPTION_NODISP;
+	sprite->display = 0;
 	sprite->iterate = NULL;
 	num_sprites--;
 }
 
 void sprite_deleteall() {
 	for (int i = 0; i < SPRITE_LIST_SIZE; i++) {
-		sprites[i].options = OPTION_NODISP;
+		sprites[i].display = 0;
 	}
 	num_sprites = 0;
 }

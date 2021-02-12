@@ -1,8 +1,9 @@
-#include <SEGA_DMA.H>
-#include <SEGA_MTH.H>
-#include <SEGA_SCL.H>
+#include <assert.h>
+#include <sega_dma.h>
+#include <sega_mth.h>
+#include <sega_scl.h>
 #define _SPR2_
-#include <SEGA_SPR.H>
+#include <sega_spr.h>
 
 #include "cd.h"
 #include "menu.h"
@@ -49,6 +50,13 @@ int cutscene = 1;
 #define STAR_HEIGHT (16)
 int star_charno;
 int star_num;
+
+typedef struct {
+    Fixed32 dx;
+    Fixed32 dy;
+} STAR_DATA;
+
+static_assert(sizeof(STAR_DATA) <= SPRITE_DATA_SIZE, "Struct size too large");
 
 typedef enum {
     STATE_MENU_INIT,
@@ -199,8 +207,9 @@ static void menu_starmove(SPRITE_INFO *star) {
         return;
     }
     //acceleration
-    star->x += MTH_Mul(star->dx, MAX(star->scale, MTH_FIXED(0.5)));
-    star->y += MTH_Mul(star->dy, MAX(star->scale, MTH_FIXED(0.5)));
+    STAR_DATA *star_data = (STAR_DATA *)star->data;
+    star->x += MTH_Mul(star_data->dx, MAX(star->scale, MTH_FIXED(0.5)));
+    star->y += MTH_Mul(star_data->dy, MAX(star->scale, MTH_FIXED(0.5)));
     //calculate distance using pythagorean theorem, use to calculate sprite scale
     Sint32 distance_x = (star->x >> 16) - (SCROLL_LORES_X >> 1);
     Sint32 distance_y = (star->y >> 16) - (SCROLL_LORES_Y >> 1);
@@ -220,8 +229,9 @@ static inline void menu_starcreate(SPRITE_INFO *star) {
     star->y_size = MTH_FIXED(STAR_HEIGHT);
     Fixed32 angle = (Fixed32)(MTH_GetRand() % MTH_FIXED(360));
     angle -= MTH_FIXED(180);
-    star->dx = MTH_Mul(MTH_FIXED(5), MTH_Cos(angle));
-    star->dy = MTH_Mul(MTH_FIXED(5), MTH_Sin(angle));
+    STAR_DATA *star_data = (STAR_DATA *)star->data;
+    star_data->dx = MTH_Mul(MTH_FIXED(5), MTH_Cos(angle));
+    star_data->dy = MTH_Mul(MTH_FIXED(5), MTH_Sin(angle));
     star->iterate = menu_starmove;
 }
 

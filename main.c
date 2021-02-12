@@ -6,7 +6,7 @@
 #include <sega_mth.h>
 #include <sega_cdc.h>
 #include <sega_sys.h>
-#include <SEGA_PER.H>
+#include <sega_per.h>
 
 #include "cd.h"
 #include "cutscene.h"
@@ -55,7 +55,7 @@ int main() {
 
 	off_config.dispenbl = OFF;
 
-	int state = STATE_NOTICE;
+	int state = STATE_GAME;
 	while(1) {
 		sprite_startdraw();
 
@@ -114,13 +114,13 @@ int main() {
 
 		frame++;
 		//if the cd drive is opened, return to menu
+		#if DEVCART_LOAD == 0
 		CDC_GetPeriStat(&cd_status);
 		if ((cd_status.status & 0xF) == CDC_ST_OPEN) {
-			#if DEVCART_LOAD
-			#else
 			SYS_EXECDMP();
-			#endif
 		}
+		#endif
+
 		//if player hits A+B+C+Start, return to menu
 		if (PadData1 == (PAD_A | PAD_B | PAD_C | PAD_S)) {
 			#if DEVCART_LOAD

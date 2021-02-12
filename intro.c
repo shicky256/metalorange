@@ -1,7 +1,7 @@
-#include <SEGA_DMA.H>
-#include <SEGA_SCL.H>
+#include <sega_dma.h>
+#include <sega_scl.h>
 #define _SPR2_
-#include <SEGA_SPR.H>
+#include <sega_spr.h>
 #include <string.h>
 
 #include "cd.h"

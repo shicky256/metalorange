@@ -1,5 +1,5 @@
-#include <sega_xpt.h>
 #include <sega_cdc.h>
+#include <sega_xpt.h>
 
 #include "cd.h"
 #include "sound.h"

@@ -8,7 +8,7 @@
             ],
             "defines": [],
             "compilerPath": "C:/saturn/gcc84/bin/sh-elf-gcc.exe",
-            "cStandard": "gnu99",
+            "cStandard": "gnu11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x86"
         }

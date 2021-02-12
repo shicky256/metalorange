@@ -33,8 +33,6 @@
 typedef struct {
     Fixed32 x; //x pos onscreen
     Fixed32 y; //y pos onscreen
-    // Fixed32 dx; //x delta
-    // Fixed32 dy; //y delta
     Fixed32 speed; //speed (used to calculate dx/dy)
     Fixed32 angle; //angle (only updated when bouncing off paddle)
     int state; //state variable

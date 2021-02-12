@@ -1,6 +1,6 @@
-#include <SEGA_DMA.H>
-#include <SEGA_MTH.H>
-#include <SEGA_SCL.H>
+#include <sega_dma.h>
+#include <sega_mth.h>
+#include <sega_scl.h>
 #include <string.h>
 
 #include "cd.h"

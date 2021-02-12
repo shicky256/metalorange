@@ -1,5 +1,5 @@
-#include <SEGA_DMA.H>
-#include <SEGA_SCL.H>
+#include <sega_dma.h>
+#include <sega_scl.h>
 
 #include "cd.h"
 #include "devcart.h"

@@ -1,4 +1,4 @@
-#include <SEGA_MTH.H>
+#include <sega_xpt.h>
 
 #include "ball.h"
 #include "capsule.h"
@@ -228,23 +228,25 @@ static void level_normalblock(BLOCK_SPR *block) {
         }
     }
     // check all lasers
-    for (int i = 0; i < laser_count; i++) {
+    SPRITE_INFO *laser = laser_head;
+    while (laser != NULL) {
         // laser is 2px wide
-        if ((level_pixelinside(block->x, block->y, laser_sprites[i].x, laser_sprites[i].y)) ||
-            (level_pixelinside(block->x, block->y, laser_sprites[i].x + MTH_FIXED(1), laser_sprites[i].y))) {
-            laser_remove(&laser_sprites[i]);
+        if ((level_pixelinside(block->x, block->y, laser->x, laser->y)) ||
+            (level_pixelinside(block->x, block->y, laser->x + MTH_FIXED(1), laser->y))) {
+            laser_remove(laser);
             collision = 1;
             break;
         }
 
         // check for circle collision
         for (int j = 0; j < circle_cursor; j++) {
-            if ((laser_sprites[i].x >= circle_sprites[j].x) && (laser_sprites[i].x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
-                if ((laser_sprites[i].y >= circle_sprites[j].y) && (laser_sprites[i].y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
+            if ((laser->x >= circle_sprites[j].x) && (laser->x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
+                if ((laser->y >= circle_sprites[j].y) && (laser->y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
                     circle_explode(&circle_sprites[j]);
                 }
             }
         }
+        laser = ((LASER_DATA *)laser->data)->next;
     }
 
     // if there's a collision, make the block explode
@@ -305,7 +307,7 @@ static void level_normalblock(BLOCK_SPR *block) {
 }
 
 //routine run when a block explodes
-static void level_explodeblock(BLOCK_SPR *block) {
+static int level_explodeblock(BLOCK_SPR *block) {
     block->overlay_no = 0;
     block->anim_timer++;
     if (block->anim_timer >= EXPLOSION_TIMING) {
@@ -313,8 +315,10 @@ static void level_explodeblock(BLOCK_SPR *block) {
         block->anim_timer = 0;
         if (block->tile_no - EXPLOSION_CHARNO >= EXPLOSION_NUM) {
             level_removeblock(block);
+            return 1;
         }
     }
+    return 0;
 }
 
 //routine run to do the shine effect on a block
@@ -414,7 +418,11 @@ void level_disp() {
                 break;
     
             case STATE_EXPLODE:
-                level_explodeblock(&block_arr[i]);
+                // if block gets removed from the array, skip to the next block
+                if (level_explodeblock(&block_arr[i])) {
+                    i--;
+                    continue;
+                }
                 break;
 
             case STATE_SHINEON:

@@ -11,31 +11,20 @@ struct SpriteInfo;
 
 typedef void (*IterateFunc)(struct SpriteInfo *);
 
-//if the sprite shouldn't be displayed
-#define OPTION_NODISP (1 << 0)
-//if we're on a slope
-#define OPTION_SLOPE (1 << 1)
-
-#define SPRITE_GRAVITY (MTH_FIXED(0.5))
-#define SPRITE_MAXFALLSPEED (MTH_FIXED(14))
+#define SPRITE_DATA_SIZE (16)
 
 typedef struct SpriteInfo {
+	Uint16 display;
 	Uint16 char_num; //tile number
 	Uint16 index; //where the sprite is in the sprites array
-	Uint16 options;
-	Uint16 state;
-	Uint16 collision;
 	Fixed32 x;
 	Fixed32 y;
 	Fixed32 x_size;
 	Fixed32 y_size;
-	Fixed32 dx;
-	Fixed32 dy;
 	Fixed32 scale;
 	Fixed32 angle;
 	Uint16 mirror;
-	Uint16 anim_timer; //timer for animations
-	Uint16 anim_cursor; //where we are in animation array
+	Uint8 data[SPRITE_DATA_SIZE] __attribute__((aligned(4)));
 	IterateFunc iterate;
 } SPRITE_INFO;
 
