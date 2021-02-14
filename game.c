@@ -476,8 +476,8 @@ void game_loss() {
     explosion_make(explosion_charno, ship_sprite.x, ship_sprite.y);
     game_powerupreset();
     sound_play(SOUND_DEATH);
-    capsule_init(capsule_charno);
-    laser_init(laser_charno);
+    capsule_removeall();
+    laser_removeall();
     ship_sprite.x = SHIP_STARTX;
     ship_sprite.y = SHIP_STARTY;
 }
@@ -645,8 +645,6 @@ int game_run() {
             ball_move();
             // move all circles
             circle_move();
-            // move all capsules
-            capsule_run();
             // animate the barrier
             barrier_move();
             // animate the ship
@@ -672,9 +670,9 @@ int game_run() {
                     // add a new one for the ship
                     ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
                     // remove all capsules
-                    capsule_init(capsule_charno);
+                    capsule_removeall();
                     // remove all lasers
-                    laser_init(laser_charno);
+                    laser_removeall();
                     // remove all circles
                     circle_init(circle_charno);
                 }
@@ -940,7 +938,6 @@ int game_run() {
     game_chipanim(); // draw chip
     if (state < STATE_GAME_OVER) {
         level_disp(); // draw blocks
-        capsule_draw(); // draw capsules
         barrier_draw(); // draw barrier
         circle_draw(); // draw circle
         ball_draw(); // draw ball

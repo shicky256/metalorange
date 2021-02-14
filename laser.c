@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <sega_mth.h>
+#include "game.h"
 #include "laser.h"
 #include "sprite.h"
 
@@ -20,6 +21,9 @@ void laser_init(int charno) {
 }
 
 static void laser_move(SPRITE_INFO *laser) {
+    if (!game_playing()) {
+        return;
+    }
     laser->y += LASER_SPEED; 
     if (laser->y < 0) { // remove laser when it goes off the screen
         laser_remove(laser);
@@ -60,4 +64,10 @@ void laser_remove(SPRITE_INFO *laser) {
 
     laser_count--;
     sprite_delete(laser);
+}
+
+void laser_removeall() {
+    while (laser_head) {
+        laser_remove(laser_head);
+    }
 }

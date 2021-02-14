@@ -210,6 +210,7 @@ static void menu_starmove(SPRITE_INFO *star) {
     STAR_DATA *star_data = (STAR_DATA *)star->data;
     star->x += MTH_Mul(star_data->dx, MAX(star->scale, MTH_FIXED(0.5)));
     star->y += MTH_Mul(star_data->dy, MAX(star->scale, MTH_FIXED(0.5)));
+
     //calculate distance using pythagorean theorem, use to calculate sprite scale
     Sint32 distance_x = (star->x >> 16) - (SCROLL_LORES_X >> 1);
     Sint32 distance_y = (star->y >> 16) - (SCROLL_LORES_Y >> 1);
@@ -217,6 +218,7 @@ static void menu_starmove(SPRITE_INFO *star) {
     distance_y *= distance_y;
     Uint32 distance = sqrt32((Uint32)distance_x + (Uint32)distance_y);
     star->scale = MTH_Div(MTH_IntToFixed(distance), MTH_FIXED(80));
+
     star->angle += MTH_FIXED(3);
 }
 
