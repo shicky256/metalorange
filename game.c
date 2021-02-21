@@ -640,11 +640,6 @@ int game_run() {
                 ship_right = MAX(ship_right, illusion_arr[bot_index].x + (SHIP_WIDTH - SHIP_XMARGIN));
 
             }
-
-            // move all balls on screen
-            ball_move();
-            // move all circles
-            circle_move();
             // animate the barrier
             barrier_move();
             // animate the ship
@@ -666,7 +661,7 @@ int game_run() {
                     // load new level
                     level_load(block_charno, curr_level);
                     // remove all balls
-                    ball_init(ball_charno);
+                    ball_removeall();
                     // add a new one for the ship
                     ball_add(ship_sprite.x, ship_sprite.y, MTH_FIXED(45));
                     // remove all capsules
@@ -674,7 +669,7 @@ int game_run() {
                     // remove all lasers
                     laser_removeall();
                     // remove all circles
-                    circle_init(circle_charno);
+                    circle_removeall();
                 }
             }
 
@@ -939,9 +934,6 @@ int game_run() {
     if (state < STATE_GAME_OVER) {
         level_disp(); // draw blocks
         barrier_draw(); // draw barrier
-        circle_draw(); // draw circle
-        ball_draw(); // draw ball
-
         // draw ship
         SPRITE_INFO spr;
         // if illusion is active, draw those ships back to front

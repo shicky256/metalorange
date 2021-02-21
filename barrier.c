@@ -37,14 +37,18 @@ void barrier_move() {
         return;
     }
     // handle ball collision
-    for (int i = 0; i < ball_count; i++) {
-        if (ball_sprites[i].y > BARRIER_YPOS) {
-            ball_sprites[i].y = BARRIER_YPOS;
-            ball_sprites[i].speed += MTH_FIXED(0.2);
-            ball_bounce(&ball_sprites[i], DIR_DOWN, 0);          
+    SPRITE_INFO *ball = ball_head;
+    BALL_DATA *ball_data;
+    while (ball != NULL) {
+        ball_data = (BALL_DATA *)ball->data;
+        if (ball->y > BARRIER_YPOS) {
+            ball->y = BARRIER_YPOS;
+            ball_data->speed += MTH_FIXED(0.2);
+            ball_bounce(ball, DIR_DOWN, 0);          
             barrier_life--;
             sound_play(SOUND_START); // menu start sound is the same as barrier bounce sound
         }
+        ball = ball->next;
     }
 
     barrier_timer++;

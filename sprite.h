@@ -8,10 +8,11 @@
 #define MIRROR_VERT (1 << 5)
 
 struct SpriteInfo;
+typedef struct SpriteInfo SPRITE_INFO;
 
-typedef void (*IterateFunc)(struct SpriteInfo *);
+typedef void (*IterateFunc)(SPRITE_INFO *);
 
-#define SPRITE_DATA_SIZE (16)
+#define SPRITE_DATA_SIZE (12)
 
 typedef struct SpriteInfo {
 	Uint16 display;
@@ -24,6 +25,8 @@ typedef struct SpriteInfo {
 	Fixed32 scale;
 	Fixed32 angle;
 	Uint16 mirror;
+	SPRITE_INFO *prev; // for iterating through a certain type of sprite
+	SPRITE_INFO *next;
 	Uint8 data[SPRITE_DATA_SIZE] __attribute__((aligned(4)));
 	IterateFunc iterate;
 } SPRITE_INFO;
@@ -55,6 +58,10 @@ void sprite_make(int tile_num, Fixed32 x, Fixed32 y, SPRITE_INFO *ptr);
 void sprite_draw_all(void);
 //gets a pointer to the next sprite in the list
 SPRITE_INFO *sprite_next(void);
+// adds the sprite to a doubly linked list
+void sprite_listadd(SPRITE_INFO **head, SPRITE_INFO *sprite);
+// removes the sprite from a doubly linked list
+void sprite_listremove(SPRITE_INFO **head, SPRITE_INFO *sprite);
 //deletes the given sprite from the sprite list
 void sprite_delete(SPRITE_INFO *sprite);
 //deletes all sprites from the list

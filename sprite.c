@@ -176,6 +176,8 @@ void sprite_make(int tile_num, Fixed32 x, Fixed32 y, SPRITE_INFO *ptr) {
 	ptr->mirror = 0;
 	ptr->scale = MTH_FIXED(1);
 	ptr->angle = 0;
+	ptr->prev = NULL;
+	ptr->next = NULL;
 	ptr->iterate = NULL;
 }
 
@@ -204,6 +206,29 @@ SPRITE_INFO *sprite_next() {
 		}
 	}
 	return NULL;
+}
+
+void sprite_listadd(SPRITE_INFO **head, SPRITE_INFO *sprite) {
+	sprite->next = *head;
+	sprite->prev = NULL;
+	if (*head != NULL) {
+		(*head)->prev = sprite;
+	}
+	*head = sprite;
+}
+
+void sprite_listremove(SPRITE_INFO **head, SPRITE_INFO *sprite) {
+	if (*head == sprite) {
+		*head = sprite->next;
+	}
+
+	if (sprite->next != NULL) {
+		sprite->next->prev = sprite->prev;
+	}
+
+	if (sprite->prev != NULL) {
+		sprite->prev->next = sprite->next;
+	}
 }
 
 void sprite_delete(SPRITE_INFO *sprite) {

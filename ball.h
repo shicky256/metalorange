@@ -1,5 +1,6 @@
 #ifndef BALL_H
 #define BALL_H
+#include <assert.h>
 #include "sprite.h"
 
 #define BALL_MARGIN (MTH_FIXED(2))
@@ -31,18 +32,14 @@
 #define BALL_SPAWN_YOFFSET (MTH_FIXED(-2))
 
 typedef struct {
-    Fixed32 x; //x pos onscreen
-    Fixed32 y; //y pos onscreen
-    Fixed32 speed; //speed (used to calculate dx/dy)
-    Fixed32 angle; //angle (only updated when bouncing off paddle)
-    int state; //state variable
-    int index; //index in ball arr
-} BALL_SPRITE;
+    Fixed32 speed;
+    Fixed32 angle;
+    int state;
+} BALL_DATA;
 
-#define MAX_BALLS (20)
+static_assert(sizeof(BALL_DATA) <= SPRITE_DATA_SIZE, "Struct size too large");
 
-extern BALL_SPRITE ball_sprites[MAX_BALLS];
-extern int ball_count; //number of balls being displayed
+extern SPRITE_INFO *ball_head;
 
 typedef enum {
     BALL_NORMAL = 0,
@@ -52,14 +49,13 @@ typedef enum {
 extern int ball_mode;
 
 void ball_init(int charno);
-void ball_add(Fixed32 x_pos, Fixed32 y_pos, Fixed32 angle);
+void ball_add(Fixed32 x, Fixed32 y, Fixed32 angle);
+void ball_removeall(void);
 //makes a ball bounce from a collision in the given direction
 #define DIR_UP (0)
 #define DIR_DOWN (1)
 #define DIR_LEFT (2)
 #define DIR_RIGHT (3)
-void ball_bounce(BALL_SPRITE *ball, int direction, int breakable);
-void ball_move();
-void ball_draw();
+void ball_bounce(SPRITE_INFO *ball, int direction, int breakable);
 
 #endif

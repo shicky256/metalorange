@@ -1,15 +1,15 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
+#include <assert.h>
+#include "sprite.h"
 
 typedef struct {
-    Fixed32 x;
-    Fixed32 y;
     Fixed32 angle;
-    int index;
-    int charno;
     int timer;
     int movement_timer;
-} CIRCLE;
+} CIRCLE_DATA;
+
+static_assert(sizeof(CIRCLE_DATA) <= SPRITE_DATA_SIZE, "Struct too large");
 
 #define CIRCLE_PXWIDTH (16)
 #define CIRCLE_PXHEIGHT (16)
@@ -31,18 +31,15 @@ typedef struct {
 
 #define CIRCLE_SPEED (MTH_FIXED(1))
 
-extern CIRCLE circle_sprites[];
-extern int circle_cursor;
+extern SPRITE_INFO *circle_head;
 
 void circle_init(int charno);
 void circle_add(Fixed32 x, Fixed32 y);
-void circle_explode(CIRCLE *circle);
+void circle_removeall();
+void circle_explode(SPRITE_INFO *circle);
 #define DIR_UP (0)
 #define DIR_DOWN (1)
 #define DIR_LEFT (2)
 #define DIR_RIGHT (3)
-void circle_bounce(CIRCLE *circle, int direction);
-void circle_move();
-void circle_draw();
-
+void circle_bounce(SPRITE_INFO *circle, int direction);
 #endif

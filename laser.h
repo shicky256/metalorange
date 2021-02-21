@@ -2,11 +2,6 @@
 #define LASER_H
 #include "sprite.h"
 
-typedef struct {
-    SPRITE_INFO *next;
-    SPRITE_INFO *prev;
-} LASER_DATA;
-
 #define MAX_LASERS (16)
 
 extern SPRITE_INFO *laser_head;

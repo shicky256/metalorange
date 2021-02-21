@@ -8,8 +8,6 @@
 
 typedef struct {
     int anim_timer;
-    SPRITE_INFO *prev;
-    SPRITE_INFO *next;
 } CAPSULE_DATA;
 
 static_assert(sizeof(CAPSULE_DATA) <= SPRITE_DATA_SIZE, "Struct size too large");
@@ -31,19 +29,7 @@ void capsule_init(int charno) {
 }
 
 void capsule_remove(SPRITE_INFO *capsule) {
-    CAPSULE_DATA *capsule_data = (CAPSULE_DATA *)capsule->data;
-
-    if (capsule == capsule_head) {
-        capsule_head = capsule_data->next;
-    }
-
-    if (capsule_data->next != NULL) {
-        ((CAPSULE_DATA *)(capsule_data->next->data))->prev = capsule_data->prev;
-    }
-
-    if (capsule_data->prev != NULL) {
-        ((CAPSULE_DATA *)(capsule_data->prev->data))->next = capsule_data->next;
-    }
+    sprite_listremove(&capsule_head, capsule);
     capsule_count--;
     sprite_delete(capsule);
 }
@@ -88,13 +74,8 @@ static void capsule_move(SPRITE_INFO *capsule) {
 void capsule_add(Fixed32 x, Fixed32 y) {
     SPRITE_INFO *capsule = sprite_next();
     sprite_make(capsule_charno, x, y, capsule);
+    sprite_listadd(&capsule_head, capsule);
     CAPSULE_DATA *capsule_data = (CAPSULE_DATA *)(capsule->data);
-    capsule_data->next = capsule_head;
-    capsule_data->prev = NULL;
-    if (capsule_head != NULL) {
-        ((CAPSULE_DATA *)(capsule_head->data))->prev = capsule;
-    }
-    capsule_head = capsule;
     capsule_data->anim_timer = 0;
     capsule->iterate = capsule_move;
     capsule_count++;

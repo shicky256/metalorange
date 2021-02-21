@@ -192,40 +192,33 @@ static inline int level_pixelinside(Fixed32 block_x, Fixed32 block_y, Fixed32 pi
 static void level_normalblock(BLOCK_SPR *block) {
     int collision = 0;
     // check all balls
-    for (int i = 0; i < ball_count; i++) {
+    SPRITE_INFO *ball = ball_head;
+    while (ball != NULL) {
         // left collision
-        if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_LSENSORX, ball_sprites[i].y + BALL_LSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_LEFT, level_breakable(block->tile_no));
+        if (level_pixelinside(block->x, block->y, ball->x + BALL_LSENSORX, ball->y + BALL_LSENSORY)) {
+            ball_bounce(ball, DIR_LEFT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         // right collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_RSENSORX, ball_sprites[i].y + BALL_RSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_RIGHT, level_breakable(block->tile_no));
+        else if (level_pixelinside(block->x, block->y, ball->x + BALL_RSENSORX, ball->y + BALL_RSENSORY)) {
+            ball_bounce(ball, DIR_RIGHT, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         // top collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_TSENSORX, ball_sprites[i].y + BALL_TSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_UP, level_breakable(block->tile_no));
+        else if (level_pixelinside(block->x, block->y, ball->x + BALL_TSENSORX, ball->y + BALL_TSENSORY)) {
+            ball_bounce(ball, DIR_UP, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
         // bottom collision
-        else if (level_pixelinside(block->x, block->y, ball_sprites[i].x + BALL_BSENSORX, ball_sprites[i].y + BALL_BSENSORY)) {
-            ball_bounce(&ball_sprites[i], DIR_DOWN, level_breakable(block->tile_no));
+        else if (level_pixelinside(block->x, block->y, ball->x + BALL_BSENSORX, ball->y + BALL_BSENSORY)) {
+            ball_bounce(ball, DIR_DOWN, level_breakable(block->tile_no));
             collision = 1;
             break;
         }
-
-        // check for circle collision
-        for (int j = 0; j < circle_cursor; j++) {
-            if ((ball_sprites[i].x >= circle_sprites[j].x) && (ball_sprites[i].x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
-                if ((ball_sprites[i].y >= circle_sprites[j].y) && (ball_sprites[i].y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
-                    circle_explode(&circle_sprites[j]);
-                }
-            }
-        }
+        ball = ball->next;
     }
     // check all lasers
     SPRITE_INFO *laser = laser_head;
@@ -237,16 +230,7 @@ static void level_normalblock(BLOCK_SPR *block) {
             collision = 1;
             break;
         }
-
-        // check for circle collision
-        for (int j = 0; j < circle_cursor; j++) {
-            if ((laser->x >= circle_sprites[j].x) && (laser->x < (circle_sprites[j].x + CIRCLE_WIDTH))) {
-                if ((laser->y >= circle_sprites[j].y) && (laser->y < (circle_sprites[j].y + CIRCLE_HEIGHT))) {
-                    circle_explode(&circle_sprites[j]);
-                }
-            }
-        }
-        laser = ((LASER_DATA *)laser->data)->next;
+        laser = laser->next;
     }
 
     // if there's a collision, make the block explode
@@ -287,22 +271,24 @@ static void level_normalblock(BLOCK_SPR *block) {
     }
 
     // check all circles
-    for (int i = 0; i < circle_cursor; i++) {
-        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_LSENSORX, circle_sprites[i].y + CIRCLE_LSENSORY)) {
-            circle_bounce(&circle_sprites[i], DIR_LEFT);
+    SPRITE_INFO *circle = circle_head;
+    while (circle != NULL) {
+        if (level_pixelinside(block->x, block->y, circle->x + CIRCLE_LSENSORX, circle->y + CIRCLE_LSENSORY)) {
+            circle_bounce(circle, DIR_LEFT);
         }
 
-        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_RSENSORX, circle_sprites[i].y + CIRCLE_RSENSORY)) {
-            circle_bounce(&circle_sprites[i], DIR_RIGHT);
+        if (level_pixelinside(block->x, block->y, circle->x + CIRCLE_RSENSORX, circle->y + CIRCLE_RSENSORY)) {
+            circle_bounce(circle, DIR_RIGHT);
         }
 
-        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_TSENSORX, circle_sprites[i].y + CIRCLE_TSENSORY)) {
-            circle_bounce(&circle_sprites[i], DIR_UP);
+        if (level_pixelinside(block->x, block->y, circle->x + CIRCLE_TSENSORX, circle->y + CIRCLE_TSENSORY)) {
+            circle_bounce(circle, DIR_UP);
         }
 
-        if (level_pixelinside(block->x, block->y, circle_sprites[i].x + CIRCLE_BSENSORX, circle_sprites[i].y + CIRCLE_BSENSORY)) {
-            circle_bounce(&circle_sprites[i], DIR_DOWN);
+        if (level_pixelinside(block->x, block->y, circle->x + CIRCLE_BSENSORX, circle->y + CIRCLE_BSENSORY)) {
+            circle_bounce(circle, DIR_DOWN);
         }
+        circle = circle->next;
     }
 }
 
